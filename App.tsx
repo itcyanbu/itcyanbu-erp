@@ -290,11 +290,13 @@ const LandingPage = () => {
         </button>
       </div>
 
-      <LoginModal
-        isOpen={activeModal === 'Register' || activeModal === 'Super Admin Login'}
-        onClose={() => setActiveModal(null)}
-        type={activeModal}
-      />
+      {(activeModal === 'Register' || activeModal === 'Super Admin Login') && (
+        <LoginModal
+          isOpen={true}
+          onClose={() => setActiveModal(null)}
+          type={activeModal}
+        />
+      )}
       <ResellerModal isOpen={showResellerModal} onClose={() => setShowResellerModal(false)} />
       <PolicyModal isOpen={!!activePolicy} onClose={() => setActivePolicy(null)} title={activePolicy} />
       <ComingSoonModal isOpen={showDownloadModal} onClose={() => setShowDownloadModal(false)} />
