@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { X, User, Lock, Mail, Building, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
-// Note: Services are completely REMOVED to prevent crashes. 
-// This is a UI-only component.
+import { getSupabase } from '../services/supabase';
+// Dynamic import for EmailJS to be safe
+// import { sendWelcomeEmail } from '../services/email';
 
 interface LoginModalProps {
     isOpen: boolean;
@@ -18,7 +18,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, type }) => {
     // Debug logging
     useEffect(() => {
         if (isOpen) {
-            console.log('LoginModal (SAFE MODE) mounted. Type:', type);
+            console.log('LoginModal mounted. Type:', type);
         }
     }, [isOpen, type]);
 
@@ -27,7 +27,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, type }) => {
     const getTitle = () => {
         switch (type) {
             case 'Register': return 'Create Account';
-            case 'Super Admin Login': return 'Admin Portal (Safe Mode)';
+            case 'Super Admin Login': return 'Admin Portal';
             case 'Software Login': return 'Software Access';
             case 'CRM Login': return 'CRM Dashboard';
             default: return 'Login';
@@ -38,7 +38,112 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, type }) => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        alert("Safe Mode: Logic disabled. If you see this, the UI is working.");
+        setIsLoading(true);
+        const form = e.target as HTMLFormElement;
+
+        try {
+            // Lazy initialize Supabase
+            const supabase = getSupabase();
+
+            if (isRegister) {
+                const formData = new FormData(form);
+                const companyName = formData.get('companyName') as string;
+                const email = formData.get('email') as string;
+                const password = formData.get('password') as string;
+                const phone = formData.get('phone') as string;
+                const country = formData.get('country') as string;
+                const resellerCode = formData.get('resellerCode') as string;
+
+                if (companyName && email && password) {
+                    // 1. Sign Up
+                    const { data, error } = await supabase.auth.signUp({
+                        email: email,
+                        password: password,
+                        options: {
+                            data: {
+                                full_name: companyName,
+                                phone: phone,
+                                country: country,
+                                reseller_code: resellerCode,
+                                role: 'user'
+                            }
+                        }
+                    });
+
+                    if (error) throw error;
+
+                    if (data.user) {
+                        try {
+                            // 2. Send Welcome Email (Lazy Load)
+                            const { sendWelcomeEmail } = await import('../services/email');
+                            await sendWelcomeEmail(companyName, email);
+                        } catch (emailError) {
+                            console.error("Email sending warning (non-fatal):", emailError);
+                        }
+
+                        alert('Registration successful! Please check your email to verify your account.');
+                        onClose();
+                    }
+                }
+            } else {
+                // Login Logic
+                const emailInput = form.querySelector('input[name="email"]') as HTMLInputElement;
+                const passwordInput = form.querySelector('input[name="password"]') as HTMLInputElement;
+
+                if (!emailInput || !passwordInput) throw new Error("Input fields not found");
+
+                const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+                    email: emailInput.value,
+                    password: passwordInput.value
+                });
+
+                if (authError) throw authError;
+
+                if (authData.user) {
+                    // 3. Fetch User Role
+                    const { data: profile } = await supabase
+                        .from('profiles')
+                        .select('role')
+                        .eq('id', authData.user.id)
+                        .single();
+
+                    const userRole = profile?.role || 'user';
+
+                    // 4. Redirect based on Role or Intended Login Type
+                    if (userRole === 'super_admin' || type === 'Super Admin Login') {
+                        navigate('/admin');
+                    } else if (type === 'Software Login' || type === 'CRM Login') {
+                        navigate('/software');
+                    } else {
+                        // Default to software portal for standard users
+                        navigate('/software');
+                    }
+                    onClose();
+                }
+            }
+        } catch (err: any) {
+            console.error('Auth Error:', err);
+
+            // Check for specific Supabase connection errors
+            const isConfigError = err.message?.includes('Mix of Supabase URL') ||
+                err.message?.includes('Failed to fetch') ||
+                err.message?.includes('Load failed') ||
+                err.message?.includes('supabaseUrl is required');
+
+            if (isConfigError) {
+                console.warn("Supabase connection issue. Entering Demo Mode fallback.");
+                alert("Demo Mode: Supabase connection failed. Redirecting to dashboard...");
+                setTimeout(() => {
+                    sessionStorage.setItem('demoMode', 'true');
+                    navigate(type === 'Super Admin Login' ? '/admin?demo=true' : '/software?demo=true');
+                    onClose();
+                }, 1000);
+            } else {
+                alert(`Authentication failed: ${err.message}`);
+            }
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (

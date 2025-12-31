@@ -1,23 +1,29 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+let supabaseInstance: SupabaseClient | null = null;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-    console.warn('Missing Supabase URL or Key. Please check your .env file.');
-}
+export const getSupabase = (): SupabaseClient => {
+    if (supabaseInstance) return supabaseInstance;
 
-let supabaseInstance;
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-try {
-    if (!supabaseUrl || !supabaseAnonKey) {
-        throw new Error('Missing Supabase URL or Key');
+    // Robust check for missing or placeholder keys
+    if (!supabaseUrl || !supabaseAnonKey || supabaseUrl.includes('your-actual-key')) {
+        console.warn('Supabase Configuration Missing or Invalid.');
+        // Return a dummy client that won't crash but will fail requests gracefully
+        return createClient('https://placeholder.supabase.co', 'placeholder-key');
     }
-    supabaseInstance = createClient(supabaseUrl, supabaseAnonKey);
-} catch (error) {
-    console.warn('Supabase initialization failed:', error);
-    // Return a dummy client to prevent crash, requests will just fail gracefully
-    supabaseInstance = createClient('https://placeholder.supabase.co', 'placeholder-key');
-}
 
-export const supabase = supabaseInstance;
+    try {
+        supabaseInstance = createClient(supabaseUrl, supabaseAnonKey);
+    } catch (error) {
+        console.error('Supabase Initialization Failed:', error);
+        return createClient('https://placeholder.supabase.co', 'placeholder-key');
+    }
+
+    return supabaseInstance;
+};
+
+// Keep default export for backwards compatibility if needed, but discourage use
+export const supabase = getSupabase();

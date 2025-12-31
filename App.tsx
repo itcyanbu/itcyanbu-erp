@@ -88,7 +88,7 @@ const LandingPage = () => {
             <button
               onClick={() => {
                 console.log('Clicked Super Admin Button');
-                alert('System Check: Button Clicked'); // Uncommented for prod debug
+                // alert('System Check: Button Clicked'); // Uncommented for prod debug
                 setActiveModal('Super Admin Login');
               }}
               className="hover:text-green-400 cursor-pointer"
