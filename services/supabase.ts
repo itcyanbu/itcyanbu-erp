@@ -25,5 +25,19 @@ export const getSupabase = (): SupabaseClient => {
     return supabaseInstance;
 };
 
-// Keep default export for backwards compatibility if needed, but discourage use
-export const supabase = getSupabase();
+// Use a Proxy to lazy-initialize the client only when properties are accessed.
+// This prevents 'import' statements from triggering the crash-prone createClient logic.
+export const supabase = new Proxy({} as SupabaseClient, {
+    get: (target, prop) => {
+        // Initialize on first access
+        const client = getSupabase();
+        // @ts-ignore - Dynamic access
+        const value = client[prop];
+
+        // Bind functions to the client instance to preserve 'this' context
+        if (typeof value === 'function') {
+            return value.bind(client);
+        }
+        return value;
+    }
+});
