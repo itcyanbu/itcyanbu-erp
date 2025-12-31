@@ -67,17 +67,22 @@ const ProtectedRoute = ({ children, requiredRole, checkLicense }: ProtectedRoute
                 if (checkLicense) {
                     const { data: license } = await supabase
                         .from('licenses')
-                        .select('status, expiry_date')
+                        .select('status, valid_until')
                         .eq('user_id', session.user.id)
-                        .order('created_at', { ascending: false })
+                        .order('issued_at', { ascending: false })
                         .limit(1)
-                        .single();
+                        .maybeSingle();
 
-                    if (!license || license.status !== 'active' || new Date(license.expiry_date) < new Date()) {
-                        setLicenseActive(false);
-                        setAuthorized(false);
-                        setLoading(false);
-                        return;
+                    // Allow access if NO license exists (assume new user/trial)
+                    // Only block if a license EXISTS and is NOT active/expired
+                    if (license) {
+                        const isValid = license.status === 'active' && new Date(license.valid_until) > new Date();
+                        if (!isValid) {
+                            setLicenseActive(false);
+                            setAuthorized(false);
+                            setLoading(false);
+                            return;
+                        }
                     }
                 }
 

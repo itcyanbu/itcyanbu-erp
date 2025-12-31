@@ -43,24 +43,23 @@ const ClientLoginModal: React.FC<ClientLoginModalProps> = ({ isOpen, onClose, ty
                 .from('licenses')
                 .select('*')
                 .eq('client_email', email)
-                .eq('status', 'active')
-                .limit(1);
+                .order('issued_at', { ascending: false });
 
-            if (!licenses || licenses.length === 0) {
-                showToast('error', 'No active license found. Please contact support.');
-                setLoading(false);
-                return;
-            }
+            // Allow if no license (Trial) or if valid license found
+            if (licenses && licenses.length > 0) {
+                const license = licenses[0];
+                const isValid = license.status === 'active' && new Date(license.valid_until) > new Date();
 
-            // Check license expiry
-            const license = licenses[0];
-            const expiryDate = new Date(license.valid_until);
-            const today = new Date();
+                if (!isValid) {
+                    showToast('error', 'Your license has expired. Please renew to continue.');
+                    setLoading(false);
+                    return;
+                }
 
-            if (expiryDate < today) {
-                showToast('error', 'Your license has expired. Please renew to continue.');
-                setLoading(false);
-                return;
+                sessionStorage.setItem('userLicense', JSON.stringify(license));
+            } else {
+                // No license found - Implicit Trial Mode
+                console.log('No license found - entering Trial Mode');
             }
 
             // Success - store license info in session
