@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { sendWelcomeEmail } from '../services/email';
-// Removed unused framer-motion to simplify debugging and stability
+// import { sendWelcomeEmail } from '../services/email'; 
+// Commented out services to isolate crash
 import { X, User, Lock, Mail, Building, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../services/supabase';
+// import { supabase } from '../services/supabase';
 
 interface LoginModalProps {
     isOpen: boolean;
@@ -18,7 +18,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, type }) => {
     // Debug logging
     useEffect(() => {
         if (isOpen) {
-            console.log('LoginModal mounted. Type:', type);
+            console.log('LoginModal (UI ONLY) mounted. Type:', type);
         }
     }, [isOpen, type]);
 
@@ -38,102 +38,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, type }) => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setIsLoading(true);
-        const form = e.target as HTMLFormElement;
-
-        try {
-            if (isRegister) {
-                const formData = new FormData(form);
-                const companyName = formData.get('companyName') as string;
-                const email = formData.get('email') as string;
-                const password = formData.get('password') as string;
-                const phone = formData.get('phone') as string;
-                const country = formData.get('country') as string;
-                const resellerCode = formData.get('resellerCode') as string;
-
-                if (companyName && email && password) {
-                    // 1. Sign Up
-                    const { data, error } = await supabase.auth.signUp({
-                        email: email,
-                        password: password,
-                        options: {
-                            data: {
-                                full_name: companyName,
-                                phone: phone,
-                                country: country,
-                                reseller_code: resellerCode,
-                                role: 'user'
-                            }
-                        }
-                    });
-
-                    if (error) throw error;
-
-                    if (data.user) {
-                        // 2. Send Welcome Email (simulated/EmailJS)
-                        await sendWelcomeEmail(companyName, email);
-                        // Using browser alert for reliability in this debug phase
-                        alert('Registration successful! Please check your email to verify your account.');
-                        onClose();
-                    }
-                }
-            } else {
-                // Login Logic
-                const emailInput = form.querySelector('input[name="email"]') as HTMLInputElement;
-                const passwordInput = form.querySelector('input[name="password"]') as HTMLInputElement;
-
-                if (!emailInput || !passwordInput) throw new Error("Input fields not found");
-
-                const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-                    email: emailInput.value,
-                    password: passwordInput.value
-                });
-
-                if (authError) throw authError;
-
-                if (authData.user) {
-                    // 3. Fetch User Role
-                    const { data: profile } = await supabase
-                        .from('profiles')
-                        .select('role')
-                        .eq('id', authData.user.id)
-                        .single();
-
-                    const userRole = profile?.role || 'user';
-
-                    // 4. Redirect based on Role or Intended Login Type
-                    if (userRole === 'super_admin' || type === 'Super Admin Login') {
-                        navigate('/admin');
-                    } else if (type === 'Software Login' || type === 'CRM Login') {
-                        navigate('/software');
-                    } else {
-                        // Default to software portal for standard users
-                        navigate('/software');
-                    }
-                    onClose();
-                }
-            }
-        } catch (err: any) {
-            console.error('Auth Error:', err);
-
-            const isConfigError = err.message?.includes('Mix of Supabase URL') ||
-                err.message?.includes('Failed to fetch') ||
-                err.message?.includes('Load failed');
-
-            if (isConfigError) {
-                console.warn("Supabase connection issue. Entering Demo Mode fallback.");
-                alert("Demo Mode: Supabase keys missing or unreachable. Redirecting...");
-                setTimeout(() => {
-                    sessionStorage.setItem('demoMode', 'true');
-                    navigate(type === 'Super Admin Login' ? '/admin?demo=true' : '/software?demo=true');
-                    onClose();
-                }, 1000);
-            } else {
-                alert(`Authentication failed: ${err.message}`);
-            }
-        } finally {
-            setIsLoading(false);
-        }
+        alert("UI Only Mode: Logic disabled for debugging.");
     };
 
     return (
