@@ -85,7 +85,16 @@ const LandingPage = () => {
           <div className="flex gap-4">
             <button onClick={() => setActiveModal('Register')} className="hover:text-green-400 cursor-pointer">Register</button>
             <span className="text-gray-500">|</span>
-            <button onClick={() => setActiveModal('Super Admin Login')} className="hover:text-green-400 cursor-pointer">Super Admin Login</button>
+            <button
+              onClick={() => {
+                console.log('Clicked Super Admin Button');
+                // alert('Button Clicked: Super Admin'); // Uncomment for prod debug
+                setActiveModal('Super Admin Login');
+              }}
+              className="hover:text-green-400 cursor-pointer"
+            >
+              Super Admin Login
+            </button>
             <span className="text-gray-500">|</span>
             <button onClick={() => setActiveModal('Software Login')} className="hover:text-green-400 cursor-pointer">Software Login</button>
             <span className="text-gray-500">|</span>
