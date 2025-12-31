@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { sendWelcomeEmail } from '../services/email';
+// import { sendWelcomeEmail } from '../services/email';
 // Removed unused framer-motion to simplify debugging and stability
 import { X, User, Lock, Mail, Building, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../services/supabase';
+// import { supabase } from '../services/supabase';
 
 interface LoginModalProps {
     isOpen: boolean;
@@ -42,7 +42,12 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, type }) => {
         const form = e.target as HTMLFormElement;
 
         try {
+            // Dynamic import to prevent bad Env Vars from crashing the UI on load
+            const { supabase } = await import('../services/supabase');
+            // email service is only needed for registration
+
             if (isRegister) {
+                const { sendWelcomeEmail } = await import('../services/email');
                 const formData = new FormData(form);
                 const companyName = formData.get('companyName') as string;
                 const email = formData.get('email') as string;
@@ -71,7 +76,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, type }) => {
 
                     if (data.user) {
                         try {
-                            // 2. Send Welcome Email (simulated/EmailJS)
+                            // 2. Send Welcome Email
                             await sendWelcomeEmail(companyName, email);
                         } catch (emailError) {
                             console.error("Email sending failed:", emailError);
