@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { sendWelcomeEmail } from '../services/email';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion'; // Keep import but unused for now
 import { X, User, Lock, Mail, Building, ArrowRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '../services/supabase';
 
 interface LoginModalProps {
     isOpen: boolean;
@@ -9,13 +11,18 @@ interface LoginModalProps {
     type: 'Register' | 'Super Admin Login' | 'Software Login' | 'CRM Login' | null;
 }
 
-import { useNavigate } from 'react-router-dom';
-
 const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, type }) => {
     const [isLoading, setIsLoading] = React.useState(false);
     const navigate = useNavigate();
 
-    if (!isOpen) return null; // Restored guard clause
+    // Debug logging on mount
+    useEffect(() => {
+        if (isOpen) {
+            console.log('LoginModal mounted/opened. Type:', type);
+        }
+    }, [isOpen, type]);
+
+    if (!isOpen) return null;
 
     const getTitle = () => {
         switch (type) {
@@ -33,9 +40,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, type }) => {
         e.preventDefault();
         setIsLoading(true);
         const form = e.target as HTMLFormElement;
-
-        // --- Supabase Integration ---
-        const { supabase } = await import('../services/supabase');
 
         try {
             if (isRegister) {
@@ -74,8 +78,10 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, type }) => {
                 }
             } else {
                 // Login Logic
-                const emailInput = form.querySelector('input[type="email"]') as HTMLInputElement;
-                const passwordInput = form.querySelector('input[type="password"]') as HTMLInputElement;
+                const emailInput = form.querySelector('input[name="email"]') as HTMLInputElement;
+                const passwordInput = form.querySelector('input[name="password"]') as HTMLInputElement;
+
+                if (!emailInput || !passwordInput) throw new Error("Input fields not found");
 
                 const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
                     email: emailInput.value,
@@ -97,10 +103,9 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, type }) => {
                     // 4. Redirect based on Role or Intended Login Type
                     if (userRole === 'super_admin' || type === 'Super Admin Login') {
                         navigate('/admin');
-                    } else if (type === 'Software Login' || type === 'CRM Login') { // Any user can access software portal
+                    } else if (type === 'Software Login' || type === 'CRM Login') {
                         navigate('/software');
                     } else {
-                        alert('Login successful!');
                         // Default to software portal for standard users
                         navigate('/software');
                     }
@@ -109,7 +114,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, type }) => {
             }
         } catch (err: any) {
             console.error('Auth Error:', err);
-            // Fallback for demo if supabase isn't configured or network fails (simulated env)
+            // Fallback for demo if supabase isn't configured or network fails
             const isConfigError = err.message?.includes('Mix of Supabase URL') ||
                 err.message?.includes('Failed to fetch') ||
                 err.message?.includes('Load failed');
@@ -117,7 +122,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, type }) => {
             if (isConfigError) {
                 console.warn("Supabase not configured or unreachable. Entering Demo Mode.");
                 alert("Demo Mode: Supabase keys missing or unreachable. Redirecting to dashboard...");
-                // Fallback simulation for demo purposes
                 setTimeout(() => {
                     sessionStorage.setItem('demoMode', 'true');
                     navigate(type === 'Super Admin Login' ? '/admin?demo=true' : '/software?demo=true');
@@ -132,7 +136,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, type }) => {
     };
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4">
             {/* Backdrop */}
             <div
                 onClick={onClose}
@@ -151,7 +155,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, type }) => {
                     >
                         <X size={24} />
                     </button>
-                    <h3 className="text-2xl font-bold text-center">
+                    <h3 className="text-2xl font-bold text-center text-white">
                         {isRegister ? 'Create an Account (Free)' : getTitle()}
                     </h3>
                     {isRegister && (
@@ -163,7 +167,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, type }) => {
                         </div>
                     )}
                     {!isRegister && (
-                        <p className="text-sm text-blue-200 mt-1">
+                        <p className="text-sm text-blue-200 mt-1 text-center">
                             Secure login area
                         </p>
                     )}
@@ -215,7 +219,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, type }) => {
 
                                 <div className="flex">
                                     <div className="bg-[#f0f0f0] p-3 rounded-l-lg flex items-center justify-center w-12 text-gray-600">
-                                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                                        <User size={20} />
                                     </div>
                                     <input
                                         type="text"
@@ -228,7 +232,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, type }) => {
 
                                 <div className="flex">
                                     <div className="bg-[#f0f0f0] p-3 rounded-l-lg flex items-center justify-center w-12 text-gray-600">
-                                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                                        <Building size={20} />
                                     </div>
                                     <select
                                         name="country"
@@ -244,7 +248,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, type }) => {
 
                                 <div className="flex">
                                     <div className="bg-[#f0f0f0] p-3 rounded-l-lg flex items-center justify-center w-12 text-gray-600">
-                                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 12h.01"></path><path d="M10 20H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-7"></path><path d="M16 20l2 2 4-4"></path></svg>
+                                        <ArrowRight size={20} />
                                     </div>
                                     <input
                                         type="text"
