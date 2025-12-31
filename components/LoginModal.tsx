@@ -39,19 +39,26 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, type }) => {
 
         try {
             if (isRegister) {
-                const nameInput = form.querySelector('input[placeholder="John Doe"]') as HTMLInputElement;
-                const emailInput = form.querySelector('input[placeholder="name@company.com"]') as HTMLInputElement;
-                const passwordInput = form.querySelector('input[type="password"]') as HTMLInputElement;
+                const formData = new FormData(form);
+                const companyName = formData.get('companyName') as string;
+                const email = formData.get('email') as string;
+                const password = formData.get('password') as string;
+                const phone = formData.get('phone') as string;
+                const country = formData.get('country') as string;
+                const resellerCode = formData.get('resellerCode') as string;
 
-                if (nameInput?.value && emailInput?.value && passwordInput?.value) {
+                if (companyName && email && password) {
                     // 1. Sign Up
                     const { data, error } = await supabase.auth.signUp({
-                        email: emailInput.value,
-                        password: passwordInput.value,
+                        email: email,
+                        password: password,
                         options: {
                             data: {
-                                full_name: nameInput.value,
-                                role: 'user' // Default role
+                                full_name: companyName,
+                                phone: phone,
+                                country: country,
+                                reseller_code: resellerCode,
+                                role: 'user'
                             }
                         }
                     });
@@ -60,7 +67,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, type }) => {
 
                     if (data.user) {
                         // 2. Send Welcome Email (simulated/EmailJS)
-                        await sendWelcomeEmail(nameInput.value, emailInput.value);
+                        await sendWelcomeEmail(companyName, email);
                         alert('Registration successful! Please check your email to verify your account.');
                         onClose();
                     }
@@ -180,6 +187,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, type }) => {
                                         </div>
                                         <input
                                             type="text"
+                                            name="companyName"
                                             required
                                             className="flex-1 px-4 py-3 bg-white text-gray-900 rounded-r-lg outline-none"
                                             placeholder="Company Name"
@@ -192,9 +200,23 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, type }) => {
                                         </div>
                                         <input
                                             type="email"
+                                            name="email"
                                             required
                                             className="flex-1 px-4 py-3 bg-white text-gray-900 rounded-r-lg outline-none"
                                             placeholder="E-mail"
+                                        />
+                                    </div>
+
+                                    <div className="flex">
+                                        <div className="bg-[#f0f0f0] p-3 rounded-l-lg flex items-center justify-center w-12 text-gray-600">
+                                            <Lock size={20} />
+                                        </div>
+                                        <input
+                                            type="password"
+                                            name="password"
+                                            required
+                                            className="flex-1 px-4 py-3 bg-white text-gray-900 rounded-r-lg outline-none"
+                                            placeholder="Password"
                                         />
                                     </div>
 
@@ -204,6 +226,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, type }) => {
                                         </div>
                                         <input
                                             type="text"
+                                            name="phone"
                                             required
                                             className="flex-1 px-4 py-3 bg-white text-gray-900 rounded-r-lg outline-none"
                                             placeholder="Contact No."
@@ -215,6 +238,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, type }) => {
                                             <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
                                         </div>
                                         <select
+                                            name="country"
                                             className="flex-1 px-4 py-3 bg-white text-gray-900 rounded-r-lg outline-none appearance-none"
                                             defaultValue="Saudi Arabia"
                                         >
@@ -231,6 +255,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, type }) => {
                                         </div>
                                         <input
                                             type="text"
+                                            name="resellerCode"
                                             className="flex-1 px-4 py-3 bg-white text-gray-900 rounded-r-lg outline-none"
                                             placeholder="Reseller Code (optional)"
                                         />
@@ -263,6 +288,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, type }) => {
                                             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                                             <input
                                                 type="email"
+                                                name="email"
                                                 required
                                                 className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#112D4E] focus:border-transparent outline-none transition-all"
                                                 placeholder="name@company.com"
@@ -276,6 +302,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, type }) => {
                                             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                                             <input
                                                 type="password"
+                                                name="password"
                                                 required
                                                 className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#112D4E] focus:border-transparent outline-none transition-all"
                                                 placeholder="••••••••"
@@ -296,7 +323,11 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, type }) => {
                     </div>
 
                     <div className={`${isRegister ? 'bg-black/20 text-gray-500' : 'bg-gray-50 text-gray-500'} px-8 py-4 text-center text-xs`}>
-                        {isRegister ? 'JOIN THE COMMUNITY TODAY' : 'Protected by enterprise-grade security'}
+                        {isRegister ? (
+                            <a href="#" className="hover:text-white transition-colors">
+                                JOIN THE COMMUNITY TODAY
+                            </a>
+                        ) : 'Protected by enterprise-grade security'}
                     </div>
                 </motion.div>
             </div>
