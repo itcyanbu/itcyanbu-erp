@@ -63,7 +63,6 @@ const ClientLoginModal: React.FC<ClientLoginModalProps> = ({ isOpen, onClose, ty
             }
 
             // Success - store license info in session
-            sessionStorage.setItem('userLicense', JSON.stringify(license));
             sessionStorage.setItem('userEmail', email);
 
             // Success path also needs to navigate correctly
