@@ -322,9 +322,8 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, type }) => {
                         </a>
                     ) : 'Protected by enterprise-grade security'}
                 </div>
-            </motion.div>
+            </div>
         </div>
-        </AnimatePresence >
     );
 };
 
