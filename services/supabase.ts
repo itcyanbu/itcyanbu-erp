@@ -1,43 +1,28 @@
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+// EMERGENCY MOCK MODE
+// The real Supabase client is causing the app to crash on load.
+// We are exporting a temporary dummy object to unblock the UI.
 
-let supabaseInstance: SupabaseClient | null = null;
+console.warn("!!! RUNNING IN EMERGENCY MOCK MODE - DATABASE DISCONNECTED !!!");
 
-export const getSupabase = (): SupabaseClient => {
-    if (supabaseInstance) return supabaseInstance;
-
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-    // Robust check for missing or placeholder keys
-    if (!supabaseUrl || !supabaseAnonKey || supabaseUrl.includes('your-actual-key')) {
-        console.warn('Supabase Configuration Missing or Invalid.');
-        // Return a dummy client that won't crash but will fail requests gracefully
-        return createClient('https://placeholder.supabase.co', 'placeholder-key');
-    }
-
-    try {
-        supabaseInstance = createClient(supabaseUrl, supabaseAnonKey);
-    } catch (error) {
-        console.error('Supabase Initialization Failed:', error);
-        return createClient('https://placeholder.supabase.co', 'placeholder-key');
-    }
-
-    return supabaseInstance;
+const mockClient = {
+    auth: {
+        signUp: async () => ({ data: {}, error: { message: "System Maintenance: Database Disconnected" } }),
+        signInWithPassword: async () => ({ data: {}, error: { message: "System Maintenance: Database Disconnected" } }),
+        getSession: async () => ({ data: { session: null }, error: null }),
+        onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => { } } } }),
+    },
+    from: () => ({
+        select: () => ({
+            eq: () => ({
+                single: async () => ({ data: { role: 'user' }, error: null }),
+                order: () => ({ data: [], error: null })
+            }),
+            order: () => ({ data: [], error: null })
+        }),
+        insert: async () => ({ error: { message: "Maintenance Mode" } }),
+        update: async () => ({ error: { message: "Maintenance Mode" } }),
+    })
 };
 
-// Use a Proxy to lazy-initialize the client only when properties are accessed.
-// This prevents 'import' statements from triggering the crash-prone createClient logic.
-export const supabase = new Proxy({} as SupabaseClient, {
-    get: (target, prop) => {
-        // Initialize on first access
-        const client = getSupabase();
-        // @ts-ignore - Dynamic access
-        const value = client[prop];
-
-        // Bind functions to the client instance to preserve 'this' context
-        if (typeof value === 'function') {
-            return value.bind(client);
-        }
-        return value;
-    }
-});
+export const getSupabase = () => mockClient;
+export const supabase = mockClient;
