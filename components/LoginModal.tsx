@@ -42,12 +42,28 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, type }) => {
         const form = e.target as HTMLFormElement;
 
         try {
-            // Dynamic import to prevent bad Env Vars from crashing the UI on load
-            const { supabase } = await import('../services/supabase');
-            // email service is only needed for registration
+            // DEBUG: Commented out real imports to isolate crash
+            // const { supabase } = await import('../services/supabase');
+
+            // Mock object to simulate services
+            const supabase = {
+                auth: {
+                    signUp: async () => ({ data: { user: { id: 'mock-id' } }, error: null }),
+                    signInWithPassword: async () => ({ data: { user: { id: 'mock-id' } }, error: null }),
+                },
+                from: () => ({
+                    select: () => ({
+                        eq: () => ({
+                            single: async () => ({ data: { role: 'super_admin' } })
+                        })
+                    })
+                })
+            };
 
             if (isRegister) {
-                const { sendWelcomeEmail } = await import('../services/email');
+                // const { sendWelcomeEmail } = await import('../services/email');
+                const sendWelcomeEmail = async () => console.log("Mock Email Sent");
+
                 const formData = new FormData(form);
                 const companyName = formData.get('companyName') as string;
                 const email = formData.get('email') as string;
