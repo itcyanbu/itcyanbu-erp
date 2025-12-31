@@ -7,7 +7,17 @@ if (!supabaseUrl || !supabaseAnonKey) {
     console.warn('Missing Supabase URL or Key. Please check your .env file.');
 }
 
-export const supabase = createClient(
-    supabaseUrl || 'https://placeholder.supabase.co',
-    supabaseAnonKey || 'placeholder-key'
-);
+let supabaseInstance;
+
+try {
+    if (!supabaseUrl || !supabaseAnonKey) {
+        throw new Error('Missing Supabase URL or Key');
+    }
+    supabaseInstance = createClient(supabaseUrl, supabaseAnonKey);
+} catch (error) {
+    console.warn('Supabase initialization failed:', error);
+    // Return a dummy client to prevent crash, requests will just fail gracefully
+    supabaseInstance = createClient('https://placeholder.supabase.co', 'placeholder-key');
+}
+
+export const supabase = supabaseInstance;
