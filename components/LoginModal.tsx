@@ -318,6 +318,12 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, type }) => {
                                     </div>
                                 </div>
 
+                                <div className="flex justify-end">
+                                    <button type="button" onClick={() => alert("Please contact IT Support to reset your password.")} className="text-sm text-blue-500 hover:text-blue-600 hover:underline">
+                                        Forgot Password?
+                                    </button>
+                                </div>
+
                                 <button
                                     type="submit"
                                     disabled={isLoading}

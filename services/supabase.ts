@@ -3,8 +3,8 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js';
 // 1. Define a Mock Client for fallback (Emergency Mode)
 const mockClient: any = {
     auth: {
-        signUp: async () => ({ data: {}, error: { message: "System Maintenance: Database Connection Failed (Check Keys)" } }),
-        signInWithPassword: async () => ({ data: {}, error: { message: "System Maintenance: Database Connection Failed (Check Keys)" } }),
+        signUp: async () => ({ data: {}, error: { message: "CRITICAL: VITE_SUPABASE_ANON_KEY is missing in Vercel Settings." } }),
+        signInWithPassword: async () => ({ data: {}, error: { message: "CRITICAL: VITE_SUPABASE_ANON_KEY is missing in Vercel Settings." } }),
         getSession: async () => ({ data: { session: null }, error: null }),
         getUser: async () => ({ data: { user: null }, error: null }),
         onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => { } } } }),
