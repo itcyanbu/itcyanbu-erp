@@ -117,31 +117,47 @@ const ContactsPage = () => {
                 </div>
 
                 {/* Content */}
-                {selectedIds.size > 0 && (
-                    <div className="mb-4 bg-purple-50 border border-purple-100 text-purple-700 px-4 py-3 rounded-md flex items-center justify-between animate-in fade-in slide-in-from-top-2 duration-200">
-                        <span className="font-medium text-sm">{selectedIds.size} selected</span>
-                        <div className="flex items-center gap-3">
-                            <button
-                                onClick={() => {
-                                    selectedIds.forEach(id => deleteContact(id));
-                                    setSelectedIds(new Set());
-                                }}
-                                className="text-sm font-medium hover:text-purple-900 flex items-center gap-2 bg-white px-3 py-1.5 rounded border border-purple-200 shadow-sm"
-                            >
-                                <Trash2 size={14} />
-                                Delete Selected
-                            </button>
+                {activeTab === 'Smart Lists' ? (
+                    <>
+                        {selectedIds.size > 0 && (
+                            <div className="mb-4 bg-purple-50 border border-purple-100 text-purple-700 px-4 py-3 rounded-md flex items-center justify-between animate-in fade-in slide-in-from-top-2 duration-200">
+                                <span className="font-medium text-sm">{selectedIds.size} selected</span>
+                                <div className="flex items-center gap-3">
+                                    <button
+                                        onClick={() => {
+                                            selectedIds.forEach(id => deleteContact(id));
+                                            setSelectedIds(new Set());
+                                        }}
+                                        className="text-sm font-medium hover:text-purple-900 flex items-center gap-2 bg-white px-3 py-1.5 rounded border border-purple-200 shadow-sm"
+                                    >
+                                        <Trash2 size={14} />
+                                        Delete Selected
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        <ContactTable
+                            onEdit={handleOpenModal}
+                            onRowClick={setSelectedContact}
+                            selectedIds={selectedIds}
+                            onSelectionChange={handleSelectionChange}
+                            onSelectAll={handleSelectAll}
+                        />
+                    </>
+                ) : (
+                    <div className="flex items-center justify-center h-96 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+                        <div className="text-center">
+                            <div className="text-gray-400 mb-4">
+                                <svg className="mx-auto w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                            </div>
+                            <h3 className="text-lg font-medium text-gray-900 mb-2">{activeTab}</h3>
+                            <p className="text-gray-500">This feature is currently in development</p>
                         </div>
                     </div>
                 )}
-
-                <ContactTable
-                    onEdit={handleOpenModal}
-                    onRowClick={setSelectedContact}
-                    selectedIds={selectedIds}
-                    onSelectionChange={handleSelectionChange}
-                    onSelectAll={handleSelectAll}
-                />
             </div>
 
             <ContactModal
