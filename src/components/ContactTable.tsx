@@ -1,0 +1,149 @@
+import React from 'react';
+import { Mail, Pencil, Trash2 } from 'lucide-react';
+import { useContacts } from '../context/ContactContext';
+import type { Contact } from '../types/contact';
+
+interface ContactTableProps {
+    onEdit: (contact: Contact) => void;
+    onRowClick: (contact: Contact) => void;
+    selectedIds?: Set<string>;
+    onSelectionChange?: (id: string) => void;
+    onSelectAll?: (ids: string[]) => void;
+}
+
+const ContactTable: React.FC<ContactTableProps> = ({
+    onEdit,
+    onRowClick,
+    selectedIds = new Set(),
+    onSelectionChange = () => { },
+    onSelectAll = () => { }
+}) => {
+    const { contacts, searchQuery, deleteContact } = useContacts();
+
+    const filteredContacts = contacts.filter(contact =>
+        contact.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        contact.email.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    const allSelected = filteredContacts.length > 0 && filteredContacts.every(c => selectedIds.has(c.id));
+    const someSelected = filteredContacts.some(c => selectedIds.has(c.id));
+
+    const formatDate = (dateString: string) => {
+        return new Date(dateString).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true
+        });
+    };
+
+    return (
+        <div className="bg-white border border-ghl-border rounded-lg overflow-hidden shadow-sm">
+            <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                    <thead>
+                        <tr className="bg-gray-50 border-b border-ghl-border text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                            <th className="p-4 w-10">
+                                <input
+                                    type="checkbox"
+                                    className="rounded border-gray-300 text-ghl-blue focus:ring-ghl-blue"
+                                    checked={allSelected}
+                                    ref={input => {
+                                        if (input) {
+                                            input.indeterminate = someSelected && !allSelected;
+                                        }
+                                    }}
+                                    onChange={() => onSelectAll(filteredContacts.map(c => c.id))}
+                                />
+                            </th>
+                            <th className="p-4">Name</th>
+                            <th className="p-4">Phone</th>
+                            <th className="p-4">Email</th>
+                            <th className="p-4">Created</th>
+                            <th className="p-4 w-20"></th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-ghl-border">
+                        {filteredContacts.map((contact) => (
+                            <tr
+                                key={contact.id}
+                                onClick={() => onRowClick(contact)}
+                                className={`hover:bg-gray-50 transition-colors group cursor-pointer ${selectedIds.has(contact.id) ? 'bg-purple-50 hover:bg-purple-100' : ''}`}
+                            >
+                                <td className="p-4" onClick={e => e.stopPropagation()}>
+                                    <input
+                                        type="checkbox"
+                                        className="rounded border-gray-300 text-ghl-blue focus:ring-ghl-blue"
+                                        checked={selectedIds.has(contact.id)}
+                                        onChange={() => onSelectionChange(contact.id)}
+                                    />
+                                </td>
+                                <td className="p-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium ${contact.avatarColor}`}>
+                                            {contact.initials}
+                                        </div>
+                                        <div>
+                                            <div className="font-medium text-ghl-text">{contact.name}</div>
+                                            <div className="flex gap-1 mt-1">
+                                                {contact.tags.map(tag => (
+                                                    <span key={tag} className="text-xs bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded capitalize">
+                                                        {tag}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td className="p-4 text-sm text-gray-600">
+                                    <div className="flex items-center gap-2">
+                                        {contact.phone}
+                                    </div>
+                                </td>
+                                <td className="p-4 text-sm text-gray-600">
+                                    <div className="flex items-center gap-2">
+                                        <Mail size={14} className="text-gray-400" />
+                                        {contact.email}
+                                    </div>
+                                </td>
+                                <td className="p-4 text-sm text-gray-600">
+                                    {formatDate(contact.createdAt)}
+                                </td>
+                                <td className="p-4 text-right" onClick={e => e.stopPropagation()}>
+                                    <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button
+                                            onClick={() => onEdit(contact)}
+                                            className="p-1.5 text-gray-400 hover:text-ghl-blue hover:bg-blue-50 rounded transition-colors"
+                                            title="Edit"
+                                        >
+                                            <Pencil size={16} />
+                                        </button>
+                                        <button
+                                            onClick={() => deleteContact(contact.id)}
+                                            className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
+                                            title="Delete"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+
+                        {filteredContacts.length === 0 && (
+                            <tr>
+                                <td colSpan={6} className="p-8 text-center text-gray-500">
+                                    No contacts found.
+                                </td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    );
+};
+
+export default ContactTable;
