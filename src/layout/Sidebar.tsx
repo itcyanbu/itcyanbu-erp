@@ -7,6 +7,10 @@ import {
     Users,
     Briefcase,
     CreditCard,
+    Megaphone,
+    Workflow,
+    Globe,
+    Star,
     Settings,
     ChevronLeft
 } from 'lucide-react';
@@ -24,11 +28,15 @@ const Sidebar: React.FC<SidebarProps> = ({ onLogout }) => {
         { icon: Users, label: 'Contacts', active: true },
         { icon: Briefcase, label: 'Opportunities' },
         { icon: CreditCard, label: 'Payments' },
+        { icon: Megaphone, label: 'Marketing' },
+        { icon: Workflow, label: 'Automation' },
+        { icon: Globe, label: 'Sites' },
+        { icon: Star, label: 'Reputation' },
         { icon: Settings, label: 'Settings' },
     ];
 
     return (
-        <div className="w-64 h-screen bg-white border-r border-ghl-border flex flex-col hidden md:flex shrink-0">
+        <div className="w-64 h-screen bg-white border-r border-ghl-border flex flex-col shrink-0">
             <div className="h-16 flex items-center justify-center border-b border-ghl-border">
                 {/* Placeholder Logo */}
                 <div className="text-xl font-bold text-ghl-blue">Agency</div>
@@ -40,10 +48,10 @@ const Sidebar: React.FC<SidebarProps> = ({ onLogout }) => {
                         <li key={index} className="mb-1 px-3">
                             <a
                                 href="#"
-                                className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${item.active
-                                    ? 'bg-ghl-blue/10 text-ghl-blue'
-                                    : 'text-gray-500 hover:bg-gray-100'
-                                    }`}
+                                className={`flex items - center gap - 3 px - 3 py - 2 rounded - md text - sm font - medium transition - colors ${item.active
+                                        ? 'bg-ghl-blue/10 text-ghl-blue'
+                                        : 'text-gray-500 hover:bg-gray-100'
+                                    } `}
                             >
                                 <item.icon size={20} />
                                 <span>{item.label}</span>
