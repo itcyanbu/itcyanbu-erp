@@ -163,6 +163,10 @@ const ContactsPage = () => {
                 isOpen={!!selectedContact}
                 contact={selectedContact}
                 onClose={() => setSelectedContact(null)}
+                onEdit={(contact) => {
+                    setSelectedContact(null); // Close the card
+                    handleOpenModal(contact); // Open the modal
+                }}
             />
         </div>
     );
