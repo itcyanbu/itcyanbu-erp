@@ -48,10 +48,10 @@ const Sidebar: React.FC<SidebarProps> = ({ onLogout }) => {
                         <li key={index} className="mb-1 px-3">
                             <a
                                 href="#"
-                                className={`flex items - center gap - 3 px - 3 py - 2 rounded - md text - sm font - medium transition - colors ${item.active
-                                        ? 'bg-ghl-blue/10 text-ghl-blue'
-                                        : 'text-gray-500 hover:bg-gray-100'
-                                    } `}
+                                className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${item.active
+                                    ? 'bg-ghl-blue/10 text-ghl-blue'
+                                    : 'text-gray-500 hover:bg-gray-100'
+                                    }`}
                             >
                                 <item.icon size={20} />
                                 <span>{item.label}</span>
