@@ -54,6 +54,15 @@ const ContactsPage = () => {
     };
 
     const tabs = ['Smart Lists', 'Bulk Actions', 'Restore', 'Tasks', 'Companies', 'Manage Smart Lists'];
+    const filterTabs = [
+        'All',
+        'Twilio ISV Pending',
+        'Twilio Rebilling Beta Testers',
+        'Mobile App Web customiser Beta',
+        'Beauty & Fashion Active Users',
+        'Imported on Feb 13, 2025'
+    ];
+    const [activeFilter, setActiveFilter] = useState('All');
 
     return (
         <div className="flex-1 flex flex-col h-screen overflow-hidden bg-white">
@@ -73,12 +82,32 @@ const ContactsPage = () => {
                 ))}
             </div>
 
+            {/* Filter Tabs Row - Only show when Smart Lists is active */}
+            {activeTab === 'Smart Lists' && (
+                <div className="border-b border-gray-200 px-8 py-2 bg-gray-50">
+                    <div className="flex items-center gap-4 overflow-x-auto">
+                        {filterTabs.map(filter => (
+                            <button
+                                key={filter}
+                                onClick={() => setActiveFilter(filter)}
+                                className={`text-xs font-medium whitespace-nowrap px-3 py-1.5 rounded-md transition-colors ${activeFilter === filter
+                                    ? 'bg-ghl-blue text-white'
+                                    : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                                    }`}
+                            >
+                                {filter}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             {/* Action Bar */}
             <div className="px-8 py-6">
                 <div className="flex items-center justify-between mb-6">
                     <h1 className="text-2xl font-semibold text-ghl-text flex items-center gap-3">
                         Contacts
-                        <span className="bg-gray-100 text-gray-600 text-sm py-0.5 px-2 rounded-full font-normal">All</span>
+                        <span className="bg-gray-100 text-gray-600 text-sm py-0.5 px-2 rounded-full font-normal">{activeFilter}</span>
                     </h1>
                     <div className="flex items-center gap-3">
                         <button
