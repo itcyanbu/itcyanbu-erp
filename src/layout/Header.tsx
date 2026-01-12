@@ -1,5 +1,5 @@
-import React from 'react';
-import { Search, Bell, HelpCircle, User } from 'lucide-react';
+
+import { Search, Bell, HelpCircle } from 'lucide-react';
 
 const Header = () => {
     return (

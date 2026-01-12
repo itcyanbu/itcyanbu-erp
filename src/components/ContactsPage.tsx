@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Plus, Filter, ArrowUpDown, Trash2 } from 'lucide-react';
 import ContactTable from '../components/ContactTable';
 import ContactModal from '../components/ContactModal';
@@ -7,7 +7,7 @@ import { useContacts } from '../context/ContactContext';
 import ContactDetailSlideOver from '../components/ContactDetailSlideOver';
 
 const ContactsPage = () => {
-    const { addContact, updateContact, deleteContact, contacts, setSearchQuery } = useContacts();
+    const { addContact, updateContact, deleteContact, setSearchQuery } = useContacts();
     const [activeTab, setActiveTab] = useState('Smart Lists');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingContact, setEditingContact] = useState<any>(null);
@@ -32,12 +32,7 @@ const ContactsPage = () => {
         }
     };
 
-    const handleBulkDelete = () => {
-        // In a real app, we'd add bulkDelete to context.
-        // For now, we'll just iterate (not efficient but works for clone)
-        const { deleteContact } = useContacts(); // This won't work inside callback due to hook rules, need to get it from destructuring above
-        // Fix: accessing deleteContact from the top level closure
-    };
+
 
     const handleOpenModal = (contact?: any) => {
         if (contact) {
