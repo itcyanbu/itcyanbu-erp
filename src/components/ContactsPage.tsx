@@ -85,85 +85,64 @@ const ContactsPage = () => {
             {/* Filter Tabs Row - Only show when Smart Lists is active */}
             {activeTab === 'Smart Lists' && (
                 <div className="border-b border-gray-200 px-8 py-2 bg-gray-50">
-                    <div className="flex items-center gap-4 overflow-x-auto">
-                        {filterTabs.map(filter => (
-                            <button
-                                key={filter}
-                                onClick={() => setActiveFilter(filter)}
-                                className={`text-xs font-medium whitespace-nowrap px-3 py-1.5 rounded-md transition-colors ${activeFilter === filter
-                                    ? 'bg-ghl-blue text-white'
-                                    : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
-                                    }`}
-                            >
-                                {filter}
-                            </button>
-                        ))}
+                    <div className="flex items-center justify-between gap-4">
+                        {/* Left side - Filter tabs */}
+                        <div className="flex items-center gap-4 overflow-x-auto">
+                            {filterTabs.map(filter => (
+                                <button
+                                    key={filter}
+                                    onClick={() => setActiveFilter(filter)}
+                                    className={`text-xs font-medium whitespace-nowrap px-3 py-1.5 rounded-md transition-colors ${activeFilter === filter
+                                        ? 'bg-ghl-blue text-white'
+                                        : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                                        }`}
+                                >
+                                    {filter}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Right side - Filter controls */}
+                        <div className="flex items-center gap-3 shrink-0">
+                            {/* Quick Search */}
+                            <div className="relative">
+                                <input
+                                    type="text"
+                                    placeholder="Quick Search..."
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="w-48 px-3 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-ghl-blue"
+                                />
+                                <Filter className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400" size={12} />
+                            </div>
+
+                            {/* More Filters Dropdown */}
+                            <select className="px-3 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-ghl-blue bg-white">
+                                <option>More Filters</option>
+                                <option>Status: Active</option>
+                                <option>Status: Inactive</option>
+                                <option>Tags: Lead</option>
+                                <option>Tags: Customer</option>
+                                <option>Last 7 days</option>
+                                <option>Last 30 days</option>
+                            </select>
+
+                            {/* Columns Dropdown */}
+                            <select className="px-3 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-ghl-blue bg-white">
+                                <option>Columns</option>
+                                <option>✓ Name</option>
+                                <option>✓ Email</option>
+                                <option>✓ Phone</option>
+                                <option>✓ Status</option>
+                                <option>✓ Tags</option>
+                                <option>✓ Created Date</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             )}
 
             {/* Action Bar */}
             <div className="flex-1 flex overflow-hidden">
-                {/* Left Sidebar - Filters */}
-                <div className="w-64 border-r border-gray-200 bg-gray-50 overflow-y-auto shrink-0">
-                    <div className="p-4 space-y-6">
-                        {/* Quick Search */}
-                        <div>
-                            <label className="block text-xs font-semibold text-gray-700 mb-2 uppercase">Quick Search</label>
-                            <div className="relative">
-                                <input
-                                    type="text"
-                                    placeholder="Search contacts..."
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-ghl-blue"
-                                />
-                                <Filter className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
-                            </div>
-                        </div>
-
-                        {/* More Filters */}
-                        <div>
-                            <label className="block text-xs font-semibold text-gray-700 mb-2 uppercase">More Filters</label>
-                            <div className="space-y-2">
-                                <select className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-ghl-blue bg-white">
-                                    <option>Status</option>
-                                    <option>Active</option>
-                                    <option>Inactive</option>
-                                </select>
-                                <select className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-ghl-blue bg-white">
-                                    <option>Tags</option>
-                                    <option>Lead</option>
-                                    <option>Customer</option>
-                                </select>
-                                <select className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-ghl-blue bg-white">
-                                    <option>Date Range</option>
-                                    <option>Last 7 days</option>
-                                    <option>Last 30 days</option>
-                                    <option>Last 90 days</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        {/* Column Customization */}
-                        <div>
-                            <label className="block text-xs font-semibold text-gray-700 mb-2 uppercase">Columns</label>
-                            <div className="space-y-2">
-                                {['Name', 'Email', 'Phone', 'Status', 'Tags', 'Created Date'].map((col) => (
-                                    <label key={col} className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer hover:bg-white p-2 rounded">
-                                        <input type="checkbox" defaultChecked className="rounded border-gray-300 text-ghl-blue focus:ring-ghl-blue" />
-                                        <span>{col}</span>
-                                    </label>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Clear Filters */}
-                        <button className="w-full px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                            Clear All Filters
-                        </button>
-                    </div>
-                </div>
-
                 {/* Main Content */}
                 <div className="flex-1 flex flex-col overflow-hidden">
                     <div className="px-8 py-6">
