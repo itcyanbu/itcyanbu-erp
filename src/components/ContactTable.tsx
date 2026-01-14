@@ -4,6 +4,7 @@ import { useContacts } from '../context/ContactContext';
 import type { Contact } from '../types/contact';
 
 interface ContactTableProps {
+    data: Contact[];
     onEdit: (contact: Contact) => void;
     onRowClick: (contact: Contact) => void;
     selectedIds?: Set<string>;
@@ -12,21 +13,18 @@ interface ContactTableProps {
 }
 
 const ContactTable: React.FC<ContactTableProps> = ({
+    data,
     onEdit,
     onRowClick,
     selectedIds = new Set(),
     onSelectionChange = () => { },
     onSelectAll = () => { }
 }) => {
-    const { contacts, searchQuery, deleteContact } = useContacts();
+    const { deleteContact } = useContacts();
 
-    const filteredContacts = contacts.filter(contact =>
-        contact.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        contact.email.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-
-    const allSelected = filteredContacts.length > 0 && filteredContacts.every(c => selectedIds.has(c.id));
-    const someSelected = filteredContacts.some(c => selectedIds.has(c.id));
+    // Use passed data directly - filtering happens in parent
+    const allSelected = data.length > 0 && data.every(c => selectedIds.has(c.id));
+    const someSelected = data.some(c => selectedIds.has(c.id));
 
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString('en-US', {
@@ -55,7 +53,7 @@ const ContactTable: React.FC<ContactTableProps> = ({
                                             input.indeterminate = someSelected && !allSelected;
                                         }
                                     }}
-                                    onChange={() => onSelectAll(filteredContacts.map(c => c.id))}
+                                    onChange={() => onSelectAll(data.map(c => c.id))}
                                 />
                             </th>
                             <th className="p-4">Name</th>
@@ -66,7 +64,7 @@ const ContactTable: React.FC<ContactTableProps> = ({
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-ghl-border">
-                        {filteredContacts.map((contact) => (
+                        {data.map((contact) => (
                             <tr
                                 key={contact.id}
                                 onClick={() => onRowClick(contact)}

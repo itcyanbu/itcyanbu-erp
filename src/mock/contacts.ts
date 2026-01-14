@@ -8,9 +8,18 @@ const NAMES = [
 ];
 
 export const generateMockContacts = (): Contact[] => {
+    const TAG_POOLS = [
+        ['lead', 'new'],
+        ['customer', 'beauty_fashion'],
+        ['isv_pending', 'lead'],
+        ['imported_feb_13', 'customer'],
+        ['beauty_fashion', 'new']
+    ];
+
     return NAMES.map((name, index) => {
         const initials = name.split(' ').map(n => n[0]).join('');
         const id = Math.random().toString(36).substr(2, 9);
+        const tags = TAG_POOLS[index % TAG_POOLS.length];
 
         return {
             id,
@@ -18,7 +27,7 @@ export const generateMockContacts = (): Contact[] => {
             email: `${name.toLowerCase().replace(' ', '.')}@example.com`,
             phone: `(555) ${Math.floor(100 + Math.random() * 900)}-${Math.floor(1000 + Math.random() * 9000)}`,
             createdAt: new Date(Date.now() - Math.floor(Math.random() * 10000000000)).toISOString(),
-            tags: Math.random() > 0.5 ? ['lead', 'new'] : ['customer'],
+            tags,
             initials,
             avatarColor: COLORS[index % COLORS.length]
         };
