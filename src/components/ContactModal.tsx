@@ -97,62 +97,67 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, onSubmit, 
         e.preventDefault();
         setIsSaving(true);
 
-        // Simulate network request/processing time for better UX
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        try {
+            // Simulate network request/processing time for better UX
+            await new Promise(resolve => setTimeout(resolve, 1000));
 
-        const data = {
-            name: `${formData.firstName} ${formData.lastName}`.trim(),
-            emails: formData.emails.filter((e: string) => e),
-            phones: formData.phones.filter((p: string) => p),
-            contactType: formData.contactType,
-            timeZone: formData.timeZone,
-            dndAllChannels: formData.dndAllChannels,
-            channels: Object.entries(formData.channels)
-                .filter(([_, v]) => v)
-                .map(([k, _]) => k),
-            // Include custom fields
-            dateOfBirth: formData.dateOfBirth,
-            marketingSource: formData.marketingSource,
-            message: formData.message,
-            budget: formData.budget,
-            marketingStrategy: formData.marketingStrategy,
-            apptTime: formData.apptTime,
-            contactMethod: formData.contactMethod,
-            questions: formData.questions,
-        };
+            const data = {
+                name: `${formData.firstName} ${formData.lastName}`.trim(),
+                emails: formData.emails.filter((e: string) => e),
+                phones: formData.phones.filter((p: string) => p),
+                contactType: formData.contactType,
+                timeZone: formData.timeZone,
+                dndAllChannels: formData.dndAllChannels,
+                channels: Object.entries(formData.channels)
+                    .filter(([_, v]) => v)
+                    .map(([k, _]) => k),
+                // Include custom fields
+                dateOfBirth: formData.dateOfBirth,
+                marketingSource: formData.marketingSource,
+                message: formData.message,
+                budget: formData.budget,
+                marketingStrategy: formData.marketingStrategy,
+                apptTime: formData.apptTime,
+                contactMethod: formData.contactMethod,
+                questions: formData.questions,
+            };
 
-        onSubmit(data);
+            onSubmit(data);
 
-        if (!addAnother) {
-            // Keep isSaving true until the component unmounts/closes for smooth transition
-            onClose();
-        } else {
-            setIsSaving(false);
-            setFormData({
-                firstName: '',
-                lastName: '',
-                emails: [''],
-                phones: [''],
-                contactType: '',
-                timeZone: '',
-                dndAllChannels: false,
-                channels: {
-                    email: false,
-                    text: false,
-                    callsVoicemail: false,
-                    whatsapp: false,
-                    inboundCallsSms: false,
-                },
-                image: null,
-                dateOfBirth: '',
-                marketingSource: '',
-                message: '',
-                budget: '',
-                marketingStrategy: '',
-                apptTime: '',
-                contactMethod: '',
-                questions: '',
-            });
+            if (!addAnother) {
+                // Keep isSaving true until the component unmounts/closes for smooth transition
+                onClose();
+            } else {
+                setIsSaving(false);
+                setFormData({
+                    firstName: '',
+                    lastName: '',
+                    emails: [''],
+                    phones: [''],
+                    contactType: '',
+                    timeZone: '',
+                    dndAllChannels: false,
+                    channels: {
+                        email: false,
+                        text: false,
+                        callsVoicemail: false,
+                        whatsapp: false,
+                        inboundCallsSms: false,
+                    },
+                    image: null,
+                    dateOfBirth: '',
+                    marketingSource: '',
+                    message: '',
+                    budget: '',
+                    marketingStrategy: '',
+                    apptTime: '',
+                    contactMethod: '',
+                    questions: '',
+                });
+            }
+        } catch (error) {
+            console.error('Error submitting form:', error);
+            setIsSaving(false); // Ensure spinner stops on error
         }
     };
 

@@ -209,6 +209,7 @@ const ContactsPage = () => {
             </div>
 
             <ContactModal
+                key={isModalOpen ? 'open' : 'closed'}
                 isOpen={isModalOpen}
                 onClose={() => {
                     setIsModalOpen(false);

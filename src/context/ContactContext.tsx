@@ -47,7 +47,12 @@ export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children })
     }, []);
 
     const saveToStorage = (newContacts: Contact[]) => {
-        localStorage.setItem('ghl_contacts', JSON.stringify(newContacts));
+        try {
+            localStorage.setItem('ghl_contacts', JSON.stringify(newContacts));
+        } catch (error) {
+            console.error('Failed to save contacts to localStorage:', error);
+            // Could add toast notification here
+        }
     };
 
     const addContact = (newContactData: any) => {
