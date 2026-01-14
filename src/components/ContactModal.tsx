@@ -19,7 +19,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, onSubmit, 
     const { fieldConfig, updateFieldConfig } = useContacts();
     const [isConfiguring, setIsConfiguring] = useState(false);
 
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<any>({
         firstName: '',
         lastName: '',
         emails: [''],
@@ -35,12 +35,21 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, onSubmit, 
             inboundCallsSms: false,
         },
         image: null as File | null,
+        // Custom fields
+        dateOfBirth: '',
+        marketingSource: '',
+        message: '',
+        budget: '',
+        marketingStrategy: '',
+        apptTime: '',
+        contactMethod: '',
+        questions: '',
     });
 
     useEffect(() => {
         if (initialData) {
             const [firstName, ...lastNameParts] = initialData.name.split(' ');
-            setFormData(prev => ({
+            setFormData((prev: any) => ({
                 ...prev,
                 firstName: firstName || '',
                 lastName: lastNameParts.join(' ') || '',
@@ -48,12 +57,21 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, onSubmit, 
                 phones: [initialData.phone || ''],
             }));
         } else {
-            setFormData(prev => ({
+            setFormData((prev: any) => ({
                 ...prev,
                 firstName: '',
                 lastName: '',
                 emails: [''],
                 phones: [''],
+                // Reset custom fields
+                dateOfBirth: '',
+                marketingSource: '',
+                message: '',
+                budget: '',
+                marketingStrategy: '',
+                apptTime: '',
+                contactMethod: '',
+                questions: '',
             }));
         }
     }, [initialData, isOpen]);
@@ -66,25 +84,34 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, onSubmit, 
     };
 
     const handleAddEmail = () => {
-        setFormData(prev => ({ ...prev, emails: [...prev.emails, ''] }));
+        setFormData((prev: any) => ({ ...prev, emails: [...prev.emails, ''] }));
     };
 
     const handleAddPhone = () => {
-        setFormData(prev => ({ ...prev, phones: [...prev.phones, ''] }));
+        setFormData((prev: any) => ({ ...prev, phones: [...prev.phones, ''] }));
     };
 
     const handleSubmit = (e: React.FormEvent, addAnother: boolean = false) => {
         e.preventDefault();
         const data = {
             name: `${formData.firstName} ${formData.lastName}`.trim(),
-            emails: formData.emails.filter(e => e),
-            phones: formData.phones.filter(p => p),
+            emails: formData.emails.filter((e: string) => e),
+            phones: formData.phones.filter((p: string) => p),
             contactType: formData.contactType,
             timeZone: formData.timeZone,
             dndAllChannels: formData.dndAllChannels,
             channels: Object.entries(formData.channels)
                 .filter(([_, v]) => v)
                 .map(([k, _]) => k),
+            // Include custom fields
+            dateOfBirth: formData.dateOfBirth,
+            marketingSource: formData.marketingSource,
+            message: formData.message,
+            budget: formData.budget,
+            marketingStrategy: formData.marketingStrategy,
+            apptTime: formData.apptTime,
+            contactMethod: formData.contactMethod,
+            questions: formData.questions,
         };
         onSubmit(data);
         if (!addAnother) {
@@ -106,6 +133,14 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, onSubmit, 
                     inboundCallsSms: false,
                 },
                 image: null,
+                dateOfBirth: '',
+                marketingSource: '',
+                message: '',
+                budget: '',
+                marketingStrategy: '',
+                apptTime: '',
+                contactMethod: '',
+                questions: '',
             });
         }
     };
@@ -130,7 +165,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, onSubmit, 
                             <div>
                                 <label className="cursor-pointer text-sm text-ghl-blue hover:underline font-medium">
                                     Upload Image
-                                    <input type="file" accept="image/*" className="hidden" onChange={e => setFormData(prev => ({ ...prev, image: e.target.files?.[0] || null }))} />
+                                    <input type="file" accept="image/*" className="hidden" onChange={e => setFormData((prev: any) => ({ ...prev, image: e.target.files?.[0] || null }))} />
                                 </label>
                             </div>
                         </div>
@@ -177,7 +212,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, onSubmit, 
             case 'email':
                 return (
                     <div key={field.id} className="col-span-2 space-y-2">
-                        {formData.emails.map((email, idx) => (
+                        {formData.emails.map((email: string, idx: number) => (
                             <div key={idx} className="flex items-center gap-2">
                                 <div className="flex-1">
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -199,7 +234,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, onSubmit, 
                                 {formData.emails.length > 1 && (
                                     <button
                                         type="button"
-                                        onClick={() => setFormData(prev => ({ ...prev, emails: prev.emails.filter((_, i) => i !== idx) }))}
+                                        onClick={() => setFormData((prev: any) => ({ ...prev, emails: prev.emails.filter((_: any, i: number) => i !== idx) }))}
                                         className="mt-6 text-gray-400 hover:text-red-500"
                                     >
                                         <Trash2 size={18} />
@@ -215,7 +250,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, onSubmit, 
             case 'phone':
                 return (
                     <div key={field.id} className="col-span-2 space-y-2">
-                        {formData.phones.map((phone, idx) => (
+                        {formData.phones.map((phone: string, idx: number) => (
                             <div key={idx} className="flex items-center gap-2">
                                 <div className="flex-1">
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -237,7 +272,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, onSubmit, 
                                 {formData.phones.length > 1 && (
                                     <button
                                         type="button"
-                                        onClick={() => setFormData(prev => ({ ...prev, phones: prev.phones.filter((_, i) => i !== idx) }))}
+                                        onClick={() => setFormData((prev: any) => ({ ...prev, phones: prev.phones.filter((_: any, i: number) => i !== idx) }))}
                                         className="mt-6 text-gray-400 hover:text-red-500"
                                     >
                                         <Trash2 size={18} />
@@ -327,8 +362,73 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, onSubmit, 
                         ))}
                     </div>
                 );
+            // Dynamic/Custom Fields handling based on type
             default:
-                return null;
+                if (field.type === 'date') {
+                    return (
+                        <div key={field.id} className="col-span-2">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                {field.label} {field.required && '*'}
+                            </label>
+                            <input
+                                type="date"
+                                required={field.required}
+                                className={commonClasses}
+                                value={formData[field.id] || ''}
+                                onChange={e => setFormData({ ...formData, [field.id]: e.target.value })}
+                            />
+                        </div>
+                    );
+                }
+                if (field.type === 'select') {
+                    return (
+                        <div key={field.id} className="col-span-2">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                {field.label} {field.required && '*'}
+                            </label>
+                            <select
+                                required={field.required}
+                                className={commonClasses}
+                                value={formData[field.id] || ''}
+                                onChange={e => setFormData({ ...formData, [field.id]: e.target.value })}
+                            >
+                                <option value="">Select</option>
+                                {field.options?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                            </select>
+                        </div>
+                    );
+                }
+                if (field.id === 'questions' || field.id === 'message') { // Textarea heuristics
+                    return (
+                        <div key={field.id} className="col-span-2">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                {field.label} {field.required && '*'}
+                            </label>
+                            <textarea
+                                required={field.required}
+                                className={commonClasses}
+                                rows={3}
+                                value={formData[field.id] || ''}
+                                onChange={e => setFormData({ ...formData, [field.id]: e.target.value })}
+                            />
+                        </div>
+                    );
+                }
+                // Default to text input
+                return (
+                    <div key={field.id} className="col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            {field.label} {field.required && '*'}
+                        </label>
+                        <input
+                            type="text"
+                            required={field.required}
+                            className={commonClasses}
+                            value={formData[field.id] || ''}
+                            onChange={e => setFormData({ ...formData, [field.id]: e.target.value })}
+                        />
+                    </div>
+                );
         }
     };
 

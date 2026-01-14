@@ -7,15 +7,26 @@ const ContactContext = createContext<ContactContextType | undefined>(undefined);
 import { type FieldConfig } from '../types/contact';
 
 const defaultFieldConfig: FieldConfig[] = [
+    // Standard Fields
     { id: 'image', label: 'Contact Image', type: 'file', required: false, visible: true, order: 0, width: 'full', isSystem: true },
     { id: 'firstName', label: 'First Name', type: 'text', required: true, visible: true, order: 1, width: 'half', isSystem: true },
     { id: 'lastName', label: 'Last Name', type: 'text', required: false, visible: true, order: 2, width: 'half', isSystem: true },
     { id: 'email', label: 'Email', type: 'email', required: false, visible: true, order: 3, width: 'full', isSystem: true },
     { id: 'phone', label: 'Phone', type: 'phone', required: false, visible: true, order: 4, width: 'full', isSystem: true },
     { id: 'contactType', label: 'Contact Type', type: 'select', required: false, visible: true, order: 5, width: 'full', options: ['Lead', 'Customer', 'Partner'], isSystem: true },
-    { id: 'timeZone', label: 'Time Zone', type: 'select', required: false, visible: true, order: 6, width: 'full', isSystem: true }, // Options populated in UI
+    { id: 'timeZone', label: 'Time Zone', type: 'select', required: false, visible: true, order: 6, width: 'full', isSystem: true },
     { id: 'dndAllChannels', label: 'DND All Channels', type: 'checkbox', required: false, visible: true, order: 7, width: 'full', isSystem: true },
-    { id: 'channels', label: 'Channels', type: 'checkbox', required: false, visible: true, order: 8, width: 'full', isSystem: true }, // Special UI for channels
+    { id: 'channels', label: 'Channels', type: 'checkbox', required: false, visible: true, order: 8, width: 'full', isSystem: true },
+
+    // Custom Fields (Message Group)
+    { id: 'dateOfBirth', label: 'Date of Birth', type: 'date', required: false, visible: false, order: 9, width: 'full' },
+    { id: 'marketingSource', label: 'How did you learn about our webinar?', type: 'text', required: false, visible: false, order: 10, width: 'full' },
+    { id: 'message', label: 'Your Message', type: 'text', required: false, visible: false, order: 11, width: 'full' },
+    { id: 'budget', label: 'Project Budget', type: 'text', required: false, visible: false, order: 12, width: 'full' },
+    { id: 'marketingStrategy', label: 'What marketing strategy piques your interest?', type: 'text', required: false, visible: false, order: 13, width: 'full' },
+    { id: 'apptTime', label: 'Proposed Appt Time', type: 'date', required: false, visible: false, order: 14, width: 'full' },
+    { id: 'contactMethod', label: 'How would you like to be contacted?', type: 'select', required: false, visible: false, order: 15, width: 'full', options: ['Email', 'Phone', 'SMS'] },
+    { id: 'questions', label: 'Please enter any questions you may have below so we can address them during the webinar.', type: 'text', required: false, visible: false, order: 16, width: 'full' },
 ];
 
 export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
