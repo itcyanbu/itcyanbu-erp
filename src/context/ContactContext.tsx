@@ -34,15 +34,20 @@ export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children })
     const [searchQuery, setSearchQuery] = useState('');
     const [fieldConfig, setFieldConfig] = useState<FieldConfig[]>(defaultFieldConfig);
 
+    const DATA_VERSION = '2'; // Increment to force data refresh
+
     useEffect(() => {
         // Load from localStorage or mock data
         const savedContacts = localStorage.getItem('ghl_contacts');
-        if (savedContacts) {
+        const savedVersion = localStorage.getItem('ghl_contacts_version');
+
+        if (savedContacts && savedVersion === DATA_VERSION) {
             setContacts(JSON.parse(savedContacts));
         } else {
             const mocks = generateMockContacts();
             setContacts(mocks);
             localStorage.setItem('ghl_contacts', JSON.stringify(mocks));
+            localStorage.setItem('ghl_contacts_version', DATA_VERSION);
         }
     }, []);
 

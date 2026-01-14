@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus, Filter, Trash2, Search, Columns, ListFilter, Users } from 'lucide-react';
 import ContactTable from '../components/ContactTable';
 import ContactModal from '../components/ContactModal';
@@ -18,6 +18,11 @@ const ContactsPage = () => {
     const [selectedContact, setSelectedContact] = useState<any>(null);
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
     const [localSearch, setLocalSearch] = useState('');
+
+    // Clear selection when changing views/filters to avoid confusion
+    useEffect(() => {
+        setSelectedIds(new Set());
+    }, [activeTab, activeFilter, searchQuery]);
 
     // Filter Logic
     const filteredContacts = contacts.filter(contact => {
@@ -65,23 +70,6 @@ const ContactsPage = () => {
         setIsModalOpen(true);
     };
 
-    const handleModalSubmit = (data: any) => {
-        // Logic handled in Modal usually, but if we need to call update:
-        // Checking ContactModal implementation: it calls onSubmit(data).
-        // Does it call addContact/updateContact?
-        // Wait, ContactModal just calls onSubmit. 
-        // Let's check logic:
-        // Actually ContactContext has addContact/updateContact.
-        // The modal was calling onSubmit.
-        // We need to implement the logic here.
-        // WAIT: Previous implementation of ContactModal handled submission? 
-        // No, `handleModalSubmit` in `ContactsPage` (line 46 in previous view) handled it.
-        // Yes: calls `updateContact` or `addContact`.
-
-        // However, I need to make sure I import them. I destructured them above.
-        // BUT `addContact` and `updateContact` were NOT in the destructure list in my proposed code above.
-        // Adding them now.
-    };
 
     // Need to get add/update from context
     const { addContact, updateContact } = useContacts();
