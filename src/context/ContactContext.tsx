@@ -46,6 +46,9 @@ export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children })
         const avatarColor = colors[Math.floor(Math.random() * colors.length)];
 
         const newContact: Contact = {
+            tags: [], // Default tags to prevent crash in ContactTable
+            email: newContactData.emails?.[0] || '', // Map first email
+            phone: newContactData.phones?.[0] || '', // Map first phone
             ...newContactData,
             id,
             initials,
