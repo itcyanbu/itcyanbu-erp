@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
-import { X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Settings, Plus, Trash2 } from 'lucide-react';
+import { useContacts } from '../context/ContactContext';
+import FieldConfigPanel from './FieldConfigPanel';
+import type { FieldConfig } from '../types/contact';
 
 interface ContactModalProps {
     isOpen: boolean;
@@ -13,119 +16,391 @@ interface ContactModalProps {
 }
 
 const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, onSubmit, initialData }) => {
+    const { fieldConfig, updateFieldConfig } = useContacts();
+    const [isConfiguring, setIsConfiguring] = useState(false);
+
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
-        email: '',
-        phone: '',
+        emails: [''],
+        phones: [''],
+        contactType: '',
+        timeZone: '',
+        dndAllChannels: false,
+        channels: {
+            email: false,
+            text: false,
+            callsVoicemail: false,
+            whatsapp: false,
+            inboundCallsSms: false,
+        },
+        image: null as File | null,
     });
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (initialData) {
             const [firstName, ...lastNameParts] = initialData.name.split(' ');
-            setFormData({
+            setFormData(prev => ({
+                ...prev,
                 firstName: firstName || '',
                 lastName: lastNameParts.join(' ') || '',
-                email: initialData.email || '',
-                phone: initialData.phone || '',
-            });
+                emails: [initialData.email || ''],
+                phones: [initialData.phone || ''],
+            }));
         } else {
-            setFormData({
+            setFormData(prev => ({
+                ...prev,
                 firstName: '',
                 lastName: '',
-                email: '',
-                phone: '',
-            });
+                emails: [''],
+                phones: [''],
+            }));
         }
     }, [initialData, isOpen]);
 
     if (!isOpen) return null;
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSaveConfig = (newConfig: FieldConfig[]) => {
+        updateFieldConfig(newConfig);
+        setIsConfiguring(false);
+    };
+
+    const handleAddEmail = () => {
+        setFormData(prev => ({ ...prev, emails: [...prev.emails, ''] }));
+    };
+
+    const handleAddPhone = () => {
+        setFormData(prev => ({ ...prev, phones: [...prev.phones, ''] }));
+    };
+
+    const handleSubmit = (e: React.FormEvent, addAnother: boolean = false) => {
         e.preventDefault();
-        onSubmit({
-            name: `${formData.firstName} ${formData.lastName}`,
-            email: formData.email,
-            phone: formData.phone,
-            tags: ['new']
-        });
-        setFormData({ firstName: '', lastName: '', email: '', phone: '' });
-        onClose();
+        const data = {
+            name: `${formData.firstName} ${formData.lastName}`.trim(),
+            emails: formData.emails.filter(e => e),
+            phones: formData.phones.filter(p => p),
+            contactType: formData.contactType,
+            timeZone: formData.timeZone,
+            dndAllChannels: formData.dndAllChannels,
+            channels: Object.entries(formData.channels)
+                .filter(([_, v]) => v)
+                .map(([k, _]) => k),
+        };
+        onSubmit(data);
+        if (!addAnother) {
+            onClose();
+        } else {
+            setFormData({
+                firstName: '',
+                lastName: '',
+                emails: [''],
+                phones: [''],
+                contactType: '',
+                timeZone: '',
+                dndAllChannels: false,
+                channels: {
+                    email: false,
+                    text: false,
+                    callsVoicemail: false,
+                    whatsapp: false,
+                    inboundCallsSms: false,
+                },
+                image: null,
+            });
+        }
+    };
+
+    const renderField = (field: FieldConfig) => {
+        if (!field.visible) return null;
+
+        const commonClasses = "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-ghl-blue focus:border-ghl-blue";
+
+        switch (field.id) {
+            case 'image':
+                return (
+                    <div key={field.id} className={`${field.width === 'half' ? 'col-span-1' : 'col-span-2'} flex items-center justify-between`}>
+                        <div className="flex items-center space-x-4">
+                            <div className="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 overflow-hidden">
+                                {formData.image ? (
+                                    <img src={URL.createObjectURL(formData.image)} alt="Contact" className="h-full w-full object-cover" />
+                                ) : (
+                                    <span className="text-xs">Photo</span>
+                                )}
+                            </div>
+                            <div>
+                                <label className="cursor-pointer text-sm text-ghl-blue hover:underline font-medium">
+                                    Upload Image
+                                    <input type="file" accept="image/*" className="hidden" onChange={e => setFormData(prev => ({ ...prev, image: e.target.files?.[0] || null }))} />
+                                </label>
+                            </div>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={() => setIsConfiguring(true)}
+                            className="text-sm text-ghl-blue hover:text-blue-700 flex items-center gap-1"
+                        >
+                            <Settings size={14} />
+                            Customize form
+                        </button>
+                    </div>
+                );
+            case 'firstName':
+                return (
+                    <div key={field.id} className={`${field.width === 'half' ? 'col-span-1' : 'col-span-2'}`}>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            {field.label} {field.required && '*'}
+                        </label>
+                        <input
+                            type="text"
+                            required={field.required}
+                            className={commonClasses}
+                            value={formData.firstName}
+                            onChange={e => setFormData({ ...formData, firstName: e.target.value })}
+                        />
+                    </div>
+                );
+            case 'lastName':
+                return (
+                    <div key={field.id} className={`${field.width === 'half' ? 'col-span-1' : 'col-span-2'}`}>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            {field.label} {field.required && '*'}
+                        </label>
+                        <input
+                            type="text"
+                            required={field.required}
+                            className={commonClasses}
+                            value={formData.lastName}
+                            onChange={e => setFormData({ ...formData, lastName: e.target.value })}
+                        />
+                    </div>
+                );
+            case 'email':
+                return (
+                    <div key={field.id} className="col-span-2 space-y-2">
+                        {formData.emails.map((email, idx) => (
+                            <div key={idx} className="flex items-center gap-2">
+                                <div className="flex-1">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        {field.label} {formData.emails.length > 1 && `#${idx + 1}`} {field.required && idx === 0 && '*'}
+                                    </label>
+                                    <input
+                                        type="email"
+                                        required={field.required && idx === 0}
+                                        className={commonClasses}
+                                        value={email}
+                                        onChange={e => {
+                                            const newEmails = [...formData.emails];
+                                            newEmails[idx] = e.target.value;
+                                            setFormData({ ...formData, emails: newEmails });
+                                        }}
+                                        placeholder="email@example.com"
+                                    />
+                                </div>
+                                {formData.emails.length > 1 && (
+                                    <button
+                                        type="button"
+                                        onClick={() => setFormData(prev => ({ ...prev, emails: prev.emails.filter((_, i) => i !== idx) }))}
+                                        className="mt-6 text-gray-400 hover:text-red-500"
+                                    >
+                                        <Trash2 size={18} />
+                                    </button>
+                                )}
+                            </div>
+                        ))}
+                        <button type="button" onClick={handleAddEmail} className="text-sm text-ghl-blue hover:underline flex items-center gap-1">
+                            <Plus size={14} /> Add Email
+                        </button>
+                    </div>
+                );
+            case 'phone':
+                return (
+                    <div key={field.id} className="col-span-2 space-y-2">
+                        {formData.phones.map((phone, idx) => (
+                            <div key={idx} className="flex items-center gap-2">
+                                <div className="flex-1">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        {field.label} {formData.phones.length > 1 && `#${idx + 1}`} {field.required && idx === 0 && '*'}
+                                    </label>
+                                    <input
+                                        type="tel"
+                                        required={field.required && idx === 0}
+                                        className={commonClasses}
+                                        value={phone}
+                                        onChange={e => {
+                                            const newPhones = [...formData.phones];
+                                            newPhones[idx] = e.target.value;
+                                            setFormData({ ...formData, phones: newPhones });
+                                        }}
+                                        placeholder="+1 234 567 8900"
+                                    />
+                                </div>
+                                {formData.phones.length > 1 && (
+                                    <button
+                                        type="button"
+                                        onClick={() => setFormData(prev => ({ ...prev, phones: prev.phones.filter((_, i) => i !== idx) }))}
+                                        className="mt-6 text-gray-400 hover:text-red-500"
+                                    >
+                                        <Trash2 size={18} />
+                                    </button>
+                                )}
+                            </div>
+                        ))}
+                        <button type="button" onClick={handleAddPhone} className="text-sm text-ghl-blue hover:underline flex items-center gap-1">
+                            <Plus size={14} /> Add Phone
+                        </button>
+                    </div>
+                );
+            case 'contactType':
+                return (
+                    <div key={field.id} className="col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            {field.label} {field.required && '*'}
+                        </label>
+                        <select
+                            required={field.required}
+                            className={commonClasses}
+                            value={formData.contactType}
+                            onChange={e => setFormData({ ...formData, contactType: e.target.value })}
+                        >
+                            <option value="">Select</option>
+                            {field.options?.map(opt => <option key={opt} value={opt.toLowerCase()}>{opt}</option>)}
+                        </select>
+                    </div>
+                );
+            case 'timeZone':
+                return (
+                    <div key={field.id} className="col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            {field.label} {field.required && '*'}
+                        </label>
+                        <select
+                            required={field.required}
+                            className={commonClasses}
+                            value={formData.timeZone}
+                            onChange={e => setFormData({ ...formData, timeZone: e.target.value })}
+                        >
+                            <option value="">Please Select</option>
+                            {[...Array(25)].map((_, i) => {
+                                const offset = i - 12;
+                                const str = `UTC${offset >= 0 ? '+' : ''}${offset}`;
+                                return <option key={str} value={str}>{str}</option>;
+                            })}
+                        </select>
+                    </div>
+                );
+            case 'dndAllChannels':
+                return (
+                    <div key={field.id} className="col-span-2 flex items-center">
+                        <input
+                            type="checkbox"
+                            id="dndAll"
+                            checked={formData.dndAllChannels}
+                            onChange={e => setFormData({ ...formData, dndAllChannels: e.target.checked })}
+                            className="mr-2 h-4 w-4 text-ghl-blue focus:ring-ghl-blue border-gray-300 rounded"
+                        />
+                        <label htmlFor="dndAll" className="text-sm font-medium text-gray-700">{field.label}</label>
+                    </div>
+                );
+            case 'channels':
+                return (
+                    <div key={field.id} className="col-span-2 space-y-2">
+                        <span className="block text-sm font-medium text-gray-700">{field.label}</span>
+                        {[
+                            { id: 'email', label: 'Email' },
+                            { id: 'text', label: 'Text Messages' },
+                            { id: 'callsVoicemail', label: 'Calls & Voicemail' },
+                            { id: 'whatsapp', label: 'WhatsApp' },
+                            { id: 'inboundCallsSms', label: 'Inbound Calls and SMS' },
+                        ].map(c => (
+                            <div key={c.id} className="flex items-center">
+                                <input
+                                    type="checkbox"
+                                    id={`ch-${c.id}`}
+                                    // @ts-ignore
+                                    checked={formData.channels[c.id]}
+                                    // @ts-ignore
+                                    onChange={e => setFormData({ ...formData, channels: { ...formData.channels, [c.id]: e.target.checked } })}
+                                    className="mr-2 h-4 w-4 text-ghl-blue focus:ring-ghl-blue border-gray-300 rounded"
+                                />
+                                <label htmlFor={`ch-${c.id}`} className="text-sm text-gray-700">{c.label}</label>
+                            </div>
+                        ))}
+                    </div>
+                );
+            default:
+                return null;
+        }
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-            <div className="bg-white rounded-lg shadow-xl w-full max-w-md overflow-hidden">
-                <div className="flex items-center justify-between px-6 py-4 border-b border-ghl-border">
-                    <h2 className="text-lg font-semibold text-ghl-text">
-                        {initialData ? 'Edit Contact' : 'Add New Contact'}
-                    </h2>
-                    <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
-                        <X size={20} />
-                    </button>
+        <div
+            className="fixed inset-0 z-50 overflow-hidden"
+            aria-labelledby="slide-over-title"
+            role="dialog"
+            aria-modal="true"
+        >
+            <div className="absolute inset-0 overflow-hidden">
+                {/* Backdrop */}
+                <div className="absolute inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={onClose} aria-hidden="true"></div>
+
+                <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
+                    <div className="pointer-events-auto w-screen max-w-md transform transition ease-in-out duration-500 sm:duration-700 translate-x-0">
+                        <div className="flex h-full flex-col bg-white shadow-xl">
+                            {isConfiguring ? (
+                                <FieldConfigPanel
+                                    currentConfig={fieldConfig}
+                                    onSave={handleSaveConfig}
+                                    onCancel={() => setIsConfiguring(false)}
+                                />
+                            ) : (
+                                <>
+                                    {/* Header */}
+                                    <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+                                        <h2 className="text-lg font-semibold text-gray-900" id="slide-over-title">
+                                            {initialData ? 'Edit Contact' : 'Add New Contact'}
+                                        </h2>
+                                        <button onClick={onClose} className="text-gray-400 hover:text-gray-500">
+                                            <span className="sr-only">Close panel</span>
+                                            <X size={24} />
+                                        </button>
+                                    </div>
+
+                                    {/* Content */}
+                                    <div className="relative flex-1 px-6 py-6 overflow-y-auto">
+                                        <form id="contact-form" onSubmit={e => handleSubmit(e, false)} className="grid grid-cols-2 gap-4">
+                                            {fieldConfig.filter(f => f.visible).sort((a, b) => a.order - b.order).map(field => renderField(field))}
+                                        </form>
+                                    </div>
+
+                                    {/* Footer */}
+                                    <div className="flex flex-shrink-0 justify-end gap-3 px-6 py-4 border-t border-gray-200">
+                                        <button
+                                            type="button"
+                                            onClick={onClose}
+                                            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ghl-blue"
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button
+                                            type="submit"
+                                            form="contact-form"
+                                            className="px-4 py-2 text-sm font-medium text-white bg-ghl-blue rounded-md hover:bg-blue-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ghl-blue"
+                                        >
+                                            Save
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={e => handleSubmit(e as any, true)}
+                                            className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-600"
+                                        >
+                                            Save and Add Another
+                                        </button>
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    </div>
                 </div>
-
-                <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
-                            <input
-                                type="text"
-                                required
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-ghl-blue focus:border-ghl-blue"
-                                value={formData.firstName}
-                                onChange={e => setFormData({ ...formData, firstName: e.target.value })}
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
-                            <input
-                                type="text"
-                                required
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-ghl-blue focus:border-ghl-blue"
-                                value={formData.lastName}
-                                onChange={e => setFormData({ ...formData, lastName: e.target.value })}
-                            />
-                        </div>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                        <input
-                            type="email"
-                            required
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-ghl-blue focus:border-ghl-blue"
-                            value={formData.email}
-                            onChange={e => setFormData({ ...formData, email: e.target.value })}
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                        <input
-                            type="tel"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-ghl-blue focus:border-ghl-blue"
-                            value={formData.phone}
-                            onChange={e => setFormData({ ...formData, phone: e.target.value })}
-                        />
-                    </div>
-
-                    <div className="flex items-center justify-end gap-3 mt-6">
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            type="submit"
-                            className="px-4 py-2 text-sm font-medium text-white bg-ghl-blue rounded-md hover:bg-blue-700 shadow-sm"
-                        >
-                            {initialData ? 'Save Changes' : 'Save Contact'}
-                        </button>
-                    </div>
-                </form>
             </div>
         </div>
     );
