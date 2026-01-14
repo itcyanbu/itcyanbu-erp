@@ -48,6 +48,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, onSubmit, 
     });
 
     useEffect(() => {
+        setIsSaving(false); // Reset saving state whenever modal opens/data changes
         if (initialData) {
             const [firstName, ...lastNameParts] = initialData.name.split(' ');
             setFormData((prev: any) => ({

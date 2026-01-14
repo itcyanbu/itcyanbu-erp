@@ -35,9 +35,20 @@ export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children })
     const [fieldConfig, setFieldConfig] = useState<FieldConfig[]>(defaultFieldConfig);
 
     useEffect(() => {
-        // Load mock data on init
-        setContacts(generateMockContacts());
+        // Load from localStorage or mock data
+        const savedContacts = localStorage.getItem('ghl_contacts');
+        if (savedContacts) {
+            setContacts(JSON.parse(savedContacts));
+        } else {
+            const mocks = generateMockContacts();
+            setContacts(mocks);
+            localStorage.setItem('ghl_contacts', JSON.stringify(mocks));
+        }
     }, []);
+
+    const saveToStorage = (newContacts: Contact[]) => {
+        localStorage.setItem('ghl_contacts', JSON.stringify(newContacts));
+    };
 
     const addContact = (newContactData: any) => {
         const initials = newContactData.name ? newContactData.name.split(' ').map((n: string) => n[0]).join('') : '??';
@@ -56,17 +67,29 @@ export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children })
             createdAt: new Date().toISOString()
         };
 
-        setContacts(prev => [newContact, ...prev]);
+        setContacts(prev => {
+            const updated = [newContact, ...prev];
+            saveToStorage(updated);
+            return updated;
+        });
     };
 
     const updateContact = (id: string, updatedData: Partial<Contact>) => {
-        setContacts(prev => prev.map(contact =>
-            contact.id === id ? { ...contact, ...updatedData } : contact
-        ));
+        setContacts(prev => {
+            const updated = prev.map(contact =>
+                contact.id === id ? { ...contact, ...updatedData } : contact
+            );
+            saveToStorage(updated);
+            return updated;
+        });
     };
 
     const deleteContact = (id: string) => {
-        setContacts(prev => prev.filter(c => c.id !== id));
+        setContacts(prev => {
+            const updated = prev.filter(c => c.id !== id);
+            saveToStorage(updated);
+            return updated;
+        });
     };
 
     const updateFieldConfig = (newConfig: FieldConfig[]) => {
