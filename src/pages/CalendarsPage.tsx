@@ -1,11 +1,19 @@
-import { Calendar, Clock, Plus } from 'lucide-react';
+import { useState } from 'react';
+import { Calendar, Clock, Plus, Settings } from 'lucide-react';
+import CalendarSettings from '../components/calendar/CalendarSettings';
 
 const CalendarsPage = () => {
+    const [viewMode, setViewMode] = useState<'calendar' | 'settings'>('calendar');
+
     const upcomingEvents = [
         { title: 'Client Meeting', time: '10:00 AM', duration: '1 hour', attendees: 3 },
         { title: 'Team Standup', time: '2:00 PM', duration: '30 min', attendees: 8 },
         { title: 'Product Demo', time: '4:00 PM', duration: '45 min', attendees: 5 },
     ];
+
+    if (viewMode === 'settings') {
+        return <CalendarSettings onBack={() => setViewMode('calendar')} />;
+    }
 
     return (
         <div className="flex-1 flex flex-col h-screen overflow-hidden bg-gray-50">
@@ -18,10 +26,19 @@ const CalendarsPage = () => {
                         </div>
                         <p className="text-gray-500">Manage your schedule and appointments</p>
                     </div>
-                    <button className="bg-ghl-blue text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
-                        <Plus size={18} />
-                        New Event
-                    </button>
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={() => setViewMode('settings')}
+                            className="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2"
+                        >
+                            <Settings size={18} />
+                            Calendar Settings
+                        </button>
+                        <button className="bg-ghl-blue text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
+                            <Plus size={18} />
+                            New Event
+                        </button>
+                    </div>
                 </div>
             </div>
 
