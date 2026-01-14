@@ -59,7 +59,7 @@ function App() {
           activeModule={activeModule}
           onModuleChange={setActiveModule}
         />
-        <div className="flex-1 flex flex-col min-w-0">
+        <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
           <Header />
           {renderModule()}
         </div>
