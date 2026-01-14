@@ -97,7 +97,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, onSubmit, 
         setIsSaving(true);
 
         // Simulate network request/processing time for better UX
-        await new Promise(resolve => setTimeout(resolve, 800));
+        await new Promise(resolve => setTimeout(resolve, 1000));
 
         const data = {
             name: `${formData.firstName} ${formData.lastName}`.trim(),
@@ -119,12 +119,14 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, onSubmit, 
             contactMethod: formData.contactMethod,
             questions: formData.questions,
         };
+
         onSubmit(data);
-        setIsSaving(false);
 
         if (!addAnother) {
+            // Keep isSaving true until the component unmounts/closes for smooth transition
             onClose();
         } else {
+            setIsSaving(false);
             setFormData({
                 firstName: '',
                 lastName: '',
