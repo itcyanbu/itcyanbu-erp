@@ -18,6 +18,7 @@ interface ContactModalProps {
 const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, onSubmit, initialData }) => {
     const { fieldConfig, updateFieldConfig } = useContacts();
     const [isConfiguring, setIsConfiguring] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
 
     const [formData, setFormData] = useState<any>({
         firstName: '',
@@ -91,8 +92,13 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, onSubmit, 
         setFormData((prev: any) => ({ ...prev, phones: [...prev.phones, ''] }));
     };
 
-    const handleSubmit = (e: React.FormEvent, addAnother: boolean = false) => {
+    const handleSubmit = async (e: React.FormEvent, addAnother: boolean = false) => {
         e.preventDefault();
+        setIsSaving(true);
+
+        // Simulate network request/processing time for better UX
+        await new Promise(resolve => setTimeout(resolve, 800));
+
         const data = {
             name: `${formData.firstName} ${formData.lastName}`.trim(),
             emails: formData.emails.filter((e: string) => e),
@@ -114,6 +120,8 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, onSubmit, 
             questions: formData.questions,
         };
         onSubmit(data);
+        setIsSaving(false);
+
         if (!addAnother) {
             onClose();
         } else {
@@ -477,23 +485,40 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, onSubmit, 
                                         <button
                                             type="button"
                                             onClick={onClose}
-                                            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ghl-blue"
+                                            disabled={isSaving}
+                                            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ghl-blue disabled:opacity-50"
                                         >
                                             Cancel
                                         </button>
                                         <button
                                             type="submit"
                                             form="contact-form"
-                                            className="px-4 py-2 text-sm font-medium text-white bg-ghl-blue rounded-md hover:bg-blue-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ghl-blue"
+                                            disabled={isSaving}
+                                            className="px-4 py-2 text-sm font-medium text-white bg-ghl-blue rounded-md hover:bg-blue-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ghl-blue disabled:opacity-70 flex items-center"
                                         >
-                                            Save
+                                            {isSaving && !formData._addAnother ? (
+                                                <>
+                                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                                                    Saving...
+                                                </>
+                                            ) : 'Save'}
                                         </button>
                                         <button
                                             type="button"
-                                            onClick={e => handleSubmit(e as any, true)}
-                                            className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-600"
+                                            disabled={isSaving}
+                                            onClick={e => {
+                                                // Quick hack to track which button triggered save for spinner
+                                                setFormData((prev: any) => ({ ...prev, _addAnother: true }));
+                                                handleSubmit(e as any, true).then(() => setFormData((prev: any) => ({ ...prev, _addAnother: false })));
+                                            }}
+                                            className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-600 disabled:opacity-70 flex items-center"
                                         >
-                                            Save and Add Another
+                                            {isSaving && formData._addAnother ? (
+                                                <>
+                                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                                                    Saving...
+                                                </>
+                                            ) : 'Save and Add Another'}
                                         </button>
                                     </div>
                                 </>
