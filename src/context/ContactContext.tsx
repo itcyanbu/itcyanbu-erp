@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useMemo, type ReactNode } from 'react';
 import type { Contact, ContactContextType } from '../types/contact';
 import { generateMockContacts } from '../mock/contacts';
 
@@ -70,8 +70,19 @@ export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children })
         setFieldConfig(newConfig);
     };
 
+    const value = useMemo(() => ({
+        contacts,
+        searchQuery,
+        fieldConfig,
+        setSearchQuery,
+        addContact,
+        updateContact,
+        deleteContact,
+        updateFieldConfig
+    }), [contacts, searchQuery, fieldConfig]);
+
     return (
-        <ContactContext.Provider value={{ contacts, searchQuery, fieldConfig, setSearchQuery, addContact, updateContact, deleteContact, updateFieldConfig }}>
+        <ContactContext.Provider value={value}>
             {children}
         </ContactContext.Provider>
     );
