@@ -1,9 +1,12 @@
 import { useState } from 'react';
-import { Calendar, Clock, Plus, Settings } from 'lucide-react';
+import { Calendar, Clock, Plus, Settings, LayoutGrid } from 'lucide-react';
 import CalendarSettings from '../components/calendar/CalendarSettings';
+import ServiceMenu from '../components/calendar/ServiceMenu';
+import { useCalendars } from '../context/CalendarContext';
 
 const CalendarsPage = () => {
-    const [viewMode, setViewMode] = useState<'calendar' | 'settings'>('calendar');
+    const { serviceMenuEnabled } = useCalendars();
+    const [viewMode, setViewMode] = useState<'calendar' | 'settings' | 'menu'>('calendar');
 
     const upcomingEvents = [
         { title: 'Client Meeting', time: '10:00 AM', duration: '1 hour', attendees: 3 },
@@ -13,6 +16,26 @@ const CalendarsPage = () => {
 
     if (viewMode === 'settings') {
         return <CalendarSettings onBack={() => setViewMode('calendar')} />;
+    }
+
+    if (viewMode === 'menu') {
+        return (
+            <div className="flex-1 flex flex-col overflow-hidden bg-gray-50">
+                <div className="px-8 py-4 bg-white border-b border-gray-200 flex items-center justify-between">
+                    <button
+                        onClick={() => setViewMode('calendar')}
+                        className="text-gray-500 hover:text-gray-700 font-medium text-sm flex items-center gap-2"
+                    >
+                        Back to Calendar
+                    </button>
+                    <h2 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Public Service Menu Preview</h2>
+                    <div className="w-20" /> {/* Spacer */}
+                </div>
+                <div className="flex-1 overflow-y-auto">
+                    <ServiceMenu />
+                </div>
+            </div>
+        );
     }
 
     return (
@@ -27,6 +50,15 @@ const CalendarsPage = () => {
                         <p className="text-gray-500">Manage your schedule and appointments</p>
                     </div>
                     <div className="flex items-center gap-3">
+                        {serviceMenuEnabled && (
+                            <button
+                                onClick={() => setViewMode('menu')}
+                                className="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2"
+                            >
+                                <LayoutGrid size={18} />
+                                Service Menu
+                            </button>
+                        )}
                         <button
                             onClick={() => setViewMode('settings')}
                             className="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2"

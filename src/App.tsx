@@ -3,6 +3,7 @@ import Header from './layout/Header';
 import Sidebar from './layout/Sidebar';
 import ContactsPage from './components/ContactsPage';
 import { ContactProvider } from './context/ContactContext';
+import { CalendarProvider } from './context/CalendarContext';
 import LoginPage from './pages/LoginPage';
 import LaunchpadPage from './pages/LaunchpadPage';
 import DashboardPage from './pages/DashboardPage';
@@ -53,17 +54,19 @@ function App() {
 
   return (
     <ContactProvider>
-      <div className="flex h-screen bg-ghl-bg font-sans text-ghl-text overflow-hidden">
-        <Sidebar
-          onLogout={handleLogout}
-          activeModule={activeModule}
-          onModuleChange={setActiveModule}
-        />
-        <div className="flex-1 flex flex-col min-w-0 overflow-hidden min-h-0">
-          <Header />
-          {renderModule()}
+      <CalendarProvider>
+        <div className="flex h-screen bg-ghl-bg font-sans text-ghl-text overflow-hidden">
+          <Sidebar
+            onLogout={handleLogout}
+            activeModule={activeModule}
+            onModuleChange={setActiveModule}
+          />
+          <div className="flex-1 flex flex-col min-w-0 overflow-hidden min-h-0">
+            <Header />
+            {renderModule()}
+          </div>
         </div>
-      </div>
+      </CalendarProvider>
     </ContactProvider>
   );
 }
