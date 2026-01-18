@@ -7,12 +7,21 @@ import {
     Users,
     Briefcase,
     CreditCard,
-    Megaphone,
     Workflow,
     Globe,
     Star,
     Settings,
-    ChevronLeft
+    ChevronLeft,
+    Search,
+    Zap,
+    Send,
+    Award,
+    BarChart3,
+    LayoutGrid,
+    Wrench,
+    ShieldAlert,
+    Video,
+    Facebook
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -21,8 +30,8 @@ interface SidebarProps {
     onModuleChange?: (module: string) => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ onLogout, activeModule = 'Contacts', onModuleChange }) => {
-    const menuItems = [
+const Sidebar: React.FC<SidebarProps> = ({ activeModule = 'Contacts', onModuleChange }) => {
+    const mainMenuItems = [
         { icon: Rocket, label: 'Launchpad' },
         { icon: LayoutDashboard, label: 'Dashboard' },
         { icon: MessageSquare, label: 'Conversations' },
@@ -30,53 +39,117 @@ const Sidebar: React.FC<SidebarProps> = ({ onLogout, activeModule = 'Contacts', 
         { icon: Users, label: 'Contacts' },
         { icon: Briefcase, label: 'Opportunities' },
         { icon: CreditCard, label: 'Payments' },
-        { icon: Megaphone, label: 'Marketing' },
+    ];
+
+    const secondaryMenuItems = [
+        { icon: Send, label: 'Marketing' },
         { icon: Workflow, label: 'Automation' },
         { icon: Globe, label: 'Sites' },
+        { icon: Award, label: 'Memberships' },
         { icon: Star, label: 'Reputation' },
-        { icon: Settings, label: 'Settings' },
+        { icon: BarChart3, label: 'Reporting' },
+        { icon: LayoutGrid, label: 'App Marketplace' },
+        { icon: Wrench, label: 'Affiliate Portal' },
+        { icon: ShieldAlert, label: 'Agency Analytics' },
+        { icon: Video, label: 'Media library' },
+        { icon: Facebook, label: "HighLevel's Facebook Group" },
+        { icon: Facebook, label: 'Facebook Group' },
     ];
 
     return (
-        <div className="w-64 h-screen bg-white border-r border-ghl-border flex flex-col shrink-0">
-            <div className="h-16 flex items-center justify-center border-b border-ghl-border">
-                {/* Placeholder Logo */}
-                <div className="text-xl font-bold text-ghl-blue">Agency</div>
+        <div className="w-64 h-screen bg-[#1F2937] text-gray-300 border-r border-gray-700 flex flex-col shrink-0 font-sans">
+            {/* Header Section */}
+            <div className="flex flex-col px-4 py-4 gap-3">
+                {/* Agency Selector */}
+                <div className="flex items-center justify-between bg-gray-800 rounded-lg p-2 cursor-pointer hover:bg-gray-700 transition">
+                    <div className="flex items-center gap-3 overflow-hidden">
+                        <div className="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center shrink-0">
+                            <Users size={16} className="text-gray-300" />
+                        </div>
+                        <div className="flex flex-col min-w-0">
+                            <span className="text-sm font-medium text-white truncate">Ai & IT Solutions</span>
+                        </div>
+                    </div>
+                    <div className="flex flex-col gap-0.5">
+                        <ChevronLeft size={10} className="rotate-90 text-gray-500" />
+                        <ChevronLeft size={10} className="-rotate-90 text-gray-500" />
+                    </div>
+                </div>
+
+                {/* Search Bar */}
+                <div className="flex items-center gap-2">
+                    <div className="flex-1 relative">
+                        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-500" size={14} />
+                        <input
+                            type="text"
+                            placeholder="Search"
+                            className="w-full bg-gray-800 text-sm text-gray-300 rounded-md py-1.5 pl-8 pr-10 focus:outline-none focus:ring-1 focus:ring-ghl-blue placeholder-gray-500"
+                        />
+                        <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                            <span className="bg-gray-700 text-gray-400 text-[10px] px-1.5 py-0.5 rounded border border-gray-600">⌘ K</span>
+                        </div>
+                    </div>
+                    <button className="p-1.5 bg-green-500/10 text-green-500 rounded-md hover:bg-green-500/20 transition-colors">
+                        <Zap size={16} fill="currentColor" />
+                    </button>
+                </div>
             </div>
 
-            <nav className="flex-1 overflow-y-auto py-4">
-                <ul>
-                    {menuItems.map((item, index) => (
-                        <li key={index} className="mb-1 px-3">
-                            <button
-                                onClick={() => onModuleChange?.(item.label)}
-                                className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors w-full text-left ${activeModule === item.label
-                                    ? 'bg-ghl-blue/10 text-ghl-blue'
-                                    : 'text-gray-500 hover:bg-gray-100'
-                                    }`}
-                            >
-                                <item.icon size={20} />
-                                <span>{item.label}</span>
-                            </button>
-                        </li>
-                    ))}
-                </ul>
+            {/* Scrollable Menu Items */}
+            <nav className="flex-1 overflow-y-auto px-2 py-2 space-y-1 custom-scrollbar">
+
+                {/* Main Section */}
+                {mainMenuItems.map((item, index) => (
+                    <button
+                        key={index}
+                        onClick={() => onModuleChange?.(item.label)}
+                        className={`group flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-all w-full text-left ${activeModule === item.label
+                            ? 'bg-ghl-blue text-white'
+                            : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                            }`}
+                    >
+                        <item.icon size={20} className={activeModule === item.label ? 'text-white' : 'text-gray-500 group-hover:text-white transition-colors'} />
+                        <span>{item.label}</span>
+                    </button>
+                ))}
+
+                {/* Divider */}
+                <div className="my-2 border-t border-gray-700/50 mx-2"></div>
+
+                {/* Secondary Section */}
+                {secondaryMenuItems.map((item, index) => (
+                    <button
+                        key={`sec-${index}`}
+                        onClick={() => onModuleChange?.(item.label)}
+                        className={`group flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-all w-full text-left ${activeModule === item.label
+                            ? 'bg-ghl-blue text-white'
+                            : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                            }`}
+                    >
+                        <item.icon size={20} className={activeModule === item.label ? 'text-white' : 'text-gray-500 group-hover:text-white transition-colors'} />
+                        <span>{item.label}</span>
+                    </button>
+                ))}
             </nav>
 
-            <div className="p-4 border-t border-ghl-border space-y-4">
+            {/* Footer Section */}
+            <div className="p-2 border-t border-gray-700 bg-[#1F2937]">
                 <button
-                    onClick={onLogout}
-                    className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-md w-full transition-colors"
+                    onClick={() => onModuleChange?.('Settings')}
+                    className={`group flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-all w-full text-left ${activeModule === 'Settings'
+                        ? 'bg-ghl-blue text-white'
+                        : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                        }`}
                 >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                    </svg>
-                    Logout
+                    <Settings size={20} className={activeModule === 'Settings' ? 'text-white' : 'text-gray-500 group-hover:text-white transition-colors'} />
+                    <span>Settings</span>
                 </button>
-                <button className="flex items-center gap-2 text-gray-400 hover:text-gray-600 text-sm">
-                    <ChevronLeft size={16} />
-                    Collapse
-                </button>
+
+                <div className="mt-2 flex justify-end px-2">
+                    <button className="bg-emerald-500/20 text-emerald-500 rounded-full p-1 hover:bg-emerald-500/30 transition">
+                        <ChevronLeft size={20} />
+                    </button>
+                </div>
             </div>
         </div>
     );
