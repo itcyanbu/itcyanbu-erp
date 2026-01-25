@@ -11,7 +11,10 @@ import {
     CheckCircle2,
     Circle,
     ChevronRight,
-    Send
+    Send,
+    ShieldCheck,
+    X,
+    Lock
 } from 'lucide-react';
 
 interface TaskItemProps {
@@ -84,6 +87,101 @@ const TaskItem: React.FC<TaskItemProps> = ({
     </div>
 );
 
+interface PermissionsModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    onSave: () => void;
+}
+
+const PermissionsModal: React.FC<PermissionsModalProps> = ({ isOpen, onClose, onSave }) => {
+    const [roles, setRoles] = useState([
+        { id: 'admin', name: 'Agency Admin', access: 'Full' },
+        { id: 'acc_admin', name: 'Account Admin', access: 'Edit' },
+        { id: 'staff', name: 'Standard Staff', access: 'View' },
+        { id: 'sales', name: 'Sales Representative', access: 'No Access' },
+    ]);
+
+    if (!isOpen) return null;
+
+    const accessLevels = ['Full', 'Edit', 'View', 'No Access'];
+
+    const updateRole = (roleId: string, level: string) => {
+        setRoles(prev => prev.map(r => r.id === roleId ? { ...r, access: level } : r));
+    };
+
+    return (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+                <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+                    <div className="flex items-center gap-3">
+                        <div className="p-2 bg-ghl-blue/10 text-ghl-blue rounded-lg">
+                            <ShieldCheck size={20} />
+                        </div>
+                        <h2 className="text-xl font-bold text-gray-900">Manage Dashboard Permissions</h2>
+                    </div>
+                    <button onClick={onClose} className="p-2 hover:bg-gray-200 rounded-full transition-colors">
+                        <X size={20} className="text-gray-500" />
+                    </button>
+                </div>
+
+                <div className="p-6">
+                    <p className="text-sm text-gray-500 mb-6 font-medium">
+                        Control team access to sensitive financial metrics and custom dashboard views.
+                    </p>
+
+                    <div className="space-y-4">
+                        {roles.map((role) => (
+                            <div key={role.id} className="p-4 rounded-xl border border-gray-100 bg-white hover:border-blue-100 transition-colors">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 bg-gray-50 rounded-lg">
+                                            <Users size={18} className="text-gray-600" />
+                                        </div>
+                                        <span className="font-semibold text-gray-900">{role.name}</span>
+                                    </div>
+                                    <div className="flex bg-gray-100 p-1 rounded-lg">
+                                        {accessLevels.map((level) => (
+                                            <button
+                                                key={level}
+                                                onClick={() => updateRole(role.id, level)}
+                                                className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${role.access === level
+                                                        ? 'bg-white text-ghl-blue shadow-sm'
+                                                        : 'text-gray-500 hover:text-gray-700'
+                                                    }`}
+                                            >
+                                                {level}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="mt-8 bg-blue-50 p-4 rounded-xl border border-blue-100 flex gap-3">
+                        <Lock size={18} className="text-blue-600 shrink-0" />
+                        <p className="text-xs text-blue-800 leading-relaxed font-medium">
+                            Setting a role to <span className="font-bold">"No Access"</span> will hide all revenue-related widgets and private dashboards from users with that role.
+                        </p>
+                    </div>
+                </div>
+
+                <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3">
+                    <button onClick={onClose} className="px-4 py-2 text-sm font-bold text-gray-600 hover:text-gray-800">
+                        Cancel
+                    </button>
+                    <button
+                        onClick={onSave}
+                        className="px-6 py-2 text-sm font-bold bg-ghl-blue text-white rounded-lg hover:bg-blue-600 shadow-md shadow-blue-500/20 active:scale-95 transition-all"
+                    >
+                        Save Permissions
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 const LaunchpadPage = () => {
     const [tasks, setTasks] = useState([
         { id: 1, title: 'Brand Identity & Logo', description: 'Upload your agency logo to personalize your client dashboard and emails.', icon: Upload, ctaLabel: 'Upload Logo', completed: false },
@@ -91,12 +189,14 @@ const LaunchpadPage = () => {
         { id: 3, title: 'Stripe Payment Integration', description: 'Connect your Stripe account to collect payments, automate billing, and manage invoices.', icon: CreditCard, ctaLabel: 'Connect Stripe', completed: false },
         { id: 4, title: 'Google My Business', description: 'Integrate your GMB account to manage reviews, messaging, and local SEO from one place.', icon: Globe, ctaLabel: 'Connect Google', completed: false },
         { id: 5, title: 'Facebook Social Integration', description: 'Connect Facebook to sync lead forms, manage ads, and automate social media responses.', icon: Facebook, ctaLabel: 'Connect Facebook', completed: false },
+        { id: 8, title: 'Secure Your Data: Dashboard Permissions', description: 'Control who can see sensitive revenue stats. Create custom dashboard views and restrict access for team members.', icon: ShieldCheck, ctaLabel: 'Manage Permissions', completed: false },
         { id: 6, title: 'Import & Engage Contacts', description: 'Upload your existing contact list and start an automated initial outreach campaign.', icon: Users, ctaLabel: 'Import Now', completed: false },
         { id: 7, title: 'Add Your First Team Member', description: 'Invite team members and assign permissions to help manage your growing agency.', icon: Users, ctaLabel: 'Invite User', completed: false },
     ]);
 
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
+    const [showPermissionsModal, setShowPermissionsModal] = useState(false);
 
     const toggleTask = (id: number) => {
         setTasks(prev => prev.map(t => t.id === id ? { ...t, completed: !t.completed } : t));
@@ -108,9 +208,17 @@ const LaunchpadPage = () => {
     const handleCta = (task: any) => {
         if (task.id === 2) {
             triggerToast('Download link sent to your registered phone number!');
+        } else if (task.id === 8) {
+            setShowPermissionsModal(true);
         } else {
             triggerToast(`${task.title} setup initiated...`);
         }
+    };
+
+    const handleSavePermissions = () => {
+        setShowPermissionsModal(false);
+        toggleTask(8);
+        triggerToast('Dashboard permissions updated successfully!');
     };
 
     const triggerToast = (msg: string) => {
@@ -171,6 +279,13 @@ const LaunchpadPage = () => {
                 </div>
             </div>
 
+            {/* Permissions Modal */}
+            <PermissionsModal
+                isOpen={showPermissionsModal}
+                onClose={() => setShowPermissionsModal(false)}
+                onSave={handleSavePermissions}
+            />
+
             {/* Custom Toast Notification */}
             {showToast && (
                 <div className="absolute bottom-8 right-8 flex items-center gap-3 bg-gray-900 text-white px-6 py-4 rounded-xl shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-300 z-50">
@@ -185,4 +300,3 @@ const LaunchpadPage = () => {
 };
 
 export default LaunchpadPage;
-
