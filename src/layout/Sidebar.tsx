@@ -89,9 +89,10 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule = 'Contacts', onModuleCh
             label: 'Ai Solutions',
             children: [
                 { icon: Camera, label: 'CCTV' },
-                { icon: ShieldCheck, label: 'Cyber Security' }
+                { icon: Brain, label: '3D vision & augmented intelligence' }
             ]
         },
+        { icon: ShieldCheck, label: 'Cyber Security' },
         { icon: Globe, label: 'Sites' },
         { icon: Award, label: 'Memberships' },
         { icon: Star, label: 'Reputation' },
@@ -100,7 +101,6 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule = 'Contacts', onModuleCh
         { icon: Wrench, label: 'Affiliate Portal' },
         { icon: ShieldAlert, label: 'Agency Analytics' },
         { icon: Video, label: 'Media library' },
-        { icon: Facebook, label: "HighLevel's Facebook Group" },
         { icon: Facebook, label: 'Facebook Group' },
     ];
 
@@ -147,6 +147,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule = 'Contacts', onModuleCh
                             <div className="flex flex-col min-w-0">
                                 <span className="text-sm font-medium text-white truncate">{profileName}</span>
                             </div>
+
                         </div>
                         <div className="flex flex-col gap-0.5">
                             <ChevronLeft size={10} className="rotate-90 text-gray-500" />
@@ -236,8 +237,8 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule = 'Contacts', onModuleCh
                                                 key={`child-${index}-${cIndex}`}
                                                 onClick={() => onModuleChange?.(child.label)}
                                                 className={`group flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-all w-full text-left ${activeModule === child.label
-                                                        ? 'text-white bg-gray-800'
-                                                        : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                                                    ? 'text-white bg-gray-800'
+                                                    : 'text-gray-400 hover:text-white hover:bg-gray-800'
                                                     }`}
                                             >
                                                 <child.icon size={16} />

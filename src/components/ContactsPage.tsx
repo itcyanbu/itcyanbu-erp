@@ -168,7 +168,7 @@ const ContactsPage = () => {
                             <button
                                 key={tab}
                                 onClick={() => setActiveFilter(tab)}
-                                className={`pb - 4 text - sm font - medium border - b - 2 transition - colors ${activeFilter === tab ? 'border-ghl-blue text-ghl-blue' : 'border-transparent text-gray-500 hover:text-gray-700'} `}
+                                className={`pb-4 text-xs font-medium border-b-2 transition-colors ${activeFilter === tab ? 'border-ghl-blue text-ghl-blue' : 'border-transparent text-gray-500 hover:text-gray-700'} `}
                             >
                                 {tab}
                             </button>

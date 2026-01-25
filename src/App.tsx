@@ -13,6 +13,8 @@ import OpportunitiesPage from './pages/OpportunitiesPage';
 import PaymentsPage from './pages/PaymentsPage';
 import SettingsPage from './pages/SettingsPage';
 
+import ThreeDVisionPage from './pages/ThreeDVisionPage';
+
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [activeModule, setActiveModule] = useState('Contacts');
@@ -43,6 +45,8 @@ function App() {
         return <PaymentsPage />;
       case 'Settings':
         return <SettingsPage />;
+      case '3D vision & augmented intelligence':
+        return <ThreeDVisionPage />;
       default:
         return <ContactsPage />;
     }
