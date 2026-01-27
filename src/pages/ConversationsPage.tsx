@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { MessageSquare, Search, Send, Mail, MessageCircle, Phone, Star, User, Tag, CheckCheck, Filter, MoreHorizontal, ChevronDown, Plus, Eye, ThumbsUp, ThumbsDown, Trash2, ArrowRight, Smile, Image } from 'lucide-react';
+import { MessageSquare, Search, Send, Mail, MessageCircle, Phone, Star, Tag, CheckCheck, Filter, MoreHorizontal, ChevronDown, Plus, Eye, ThumbsUp, ThumbsDown, Trash2, ArrowRight, Smile, Image } from 'lucide-react';
 import type { Conversation, Message, Channel } from '../types/conversations';
 import { mockConversations } from '../data/mockConversations';
 
@@ -10,7 +10,7 @@ const ConversationsPage = () => {
     const [filter, setFilter] = useState<'unread' | 'recents' | 'all' | 'starred'>('unread');
     const [newMessage, setNewMessage] = useState('');
     const [messageMode, setMessageMode] = useState<'reply' | 'internal'>('reply');
-    const [visibleChannels, setVisibleChannels] = useState<Set<Channel>>(new Set(['sms', 'email', 'whatsapp', 'chat', 'internal']));
+    const [visibleChannels] = useState<Set<Channel>>(new Set(['sms', 'email', 'whatsapp', 'chat', 'internal']));
 
     const filteredConversations = useMemo(() => {
         let filtered = conversations;
@@ -52,14 +52,7 @@ const ConversationsPage = () => {
         return date.toLocaleDateString();
     };
 
-    const toggleChannelVisibility = (channel: Channel) => {
-        setVisibleChannels(prev => {
-            const newSet = new Set(prev);
-            if (newSet.has(channel)) newSet.delete(channel);
-            else newSet.add(channel);
-            return newSet;
-        });
-    };
+
 
     const handleSendMessage = () => {
         if (!newMessage.trim() || !selectedConv) return;
