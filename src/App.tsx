@@ -12,6 +12,7 @@ import CalendarsPage from './pages/CalendarsPage';
 import OpportunitiesPage from './pages/OpportunitiesPage';
 import PaymentsPage from './pages/PaymentsPage';
 import SettingsPage from './pages/SettingsPage';
+import SitesPage from './pages/SitesPage';
 
 import ThreeDVisionPage from './pages/ThreeDVisionPage';
 
@@ -28,6 +29,7 @@ function App() {
   };
 
   const renderModule = () => {
+    console.log('App: activeModule is:', activeModule);
     switch (activeModule) {
       case 'Launchpad':
         return <LaunchpadPage />;
@@ -45,6 +47,8 @@ function App() {
         return <PaymentsPage />;
       case 'Settings':
         return <SettingsPage />;
+      case 'Sites':
+        return <SitesPage />;
       case '3D vision & augmented intelligence':
         return <ThreeDVisionPage />;
       default:

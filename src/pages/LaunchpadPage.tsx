@@ -75,8 +75,8 @@ const TaskItem: React.FC<TaskItemProps> = ({
                     onClick={onCtaClick}
                     disabled={isCompleted}
                     className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg transition-all ${isCompleted
-                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                            : 'bg-ghl-blue text-white hover:bg-blue-600 shadow-sm'
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        : 'bg-ghl-blue text-white hover:bg-blue-600 shadow-sm'
                         }`}
                 >
                     {ctaLabel}
@@ -145,8 +145,8 @@ const PermissionsModal: React.FC<PermissionsModalProps> = ({ isOpen, onClose, on
                                                 key={level}
                                                 onClick={() => updateRole(role.id, level)}
                                                 className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${role.access === level
-                                                        ? 'bg-white text-ghl-blue shadow-sm'
-                                                        : 'text-gray-500 hover:text-gray-700'
+                                                    ? 'bg-white text-ghl-blue shadow-sm'
+                                                    : 'text-gray-500 hover:text-gray-700'
                                                     }`}
                                             >
                                                 {level}
