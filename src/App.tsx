@@ -13,8 +13,9 @@ import OpportunitiesPage from './pages/OpportunitiesPage';
 import PaymentsPage from './pages/PaymentsPage';
 import SettingsPage from './pages/SettingsPage';
 import SitesPage from './pages/SitesPage';
+import AiSolutionsPage from './pages/AiSolutionsPage';
 
-import ThreeDVisionPage from './pages/ThreeDVisionPage';
+
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -49,8 +50,8 @@ function App() {
         return <SettingsPage />;
       case 'Sites':
         return <SitesPage />;
-      case '3D vision & augmented intelligence':
-        return <ThreeDVisionPage />;
+      case 'Ai Solutions':
+        return <AiSolutionsPage />;
       default:
         return <ContactsPage />;
     }

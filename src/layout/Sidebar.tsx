@@ -23,7 +23,6 @@ import {
     Video,
     Facebook,
     Brain,
-    Camera,
     ShieldCheck,
     Edit2,
     Save,
@@ -84,14 +83,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule = 'Contacts', onModuleCh
     const secondaryMenuItems = [
         { icon: Send, label: 'Marketing' },
         { icon: Workflow, label: 'Automation' },
-        {
-            icon: Brain,
-            label: 'Ai Solutions',
-            children: [
-                { icon: Camera, label: 'CCTV' },
-                { icon: Brain, label: '3D vision & augmented intelligence' }
-            ]
-        },
+        { icon: Brain, label: 'Ai Solutions' },
         { icon: ShieldCheck, label: 'Cyber Security' },
         { icon: Globe, label: 'Sites' },
         { icon: Award, label: 'Memberships' },
@@ -211,9 +203,9 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule = 'Contacts', onModuleCh
 
                 {/* Secondary Section */}
                 {secondaryMenuItems.map((item, index) => {
-                    const hasChildren = 'children' in item && item.children;
+                    const hasChildren = 'children' in item && (item as any).children;
                     const isExpanded = expandedMenus[item.label];
-                    const isActive = activeModule === item.label || (hasChildren && item.children.some((child: any) => child.label === activeModule));
+                    const isActive = activeModule === item.label || (hasChildren && (item as any).children.some((child: any) => child.label === activeModule));
 
                     if (hasChildren) {
                         return (
@@ -232,7 +224,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule = 'Contacts', onModuleCh
 
                                 {isExpanded && (
                                     <div className="ml-9 mt-1 space-y-1 border-l border-gray-700 pl-2">
-                                        {item.children.map((child: any, cIndex: number) => (
+                                        {(item as any).children.map((child: any, cIndex: number) => (
                                             <button
                                                 key={`child-${index}-${cIndex}`}
                                                 onClick={() => onModuleChange?.(child.label)}
