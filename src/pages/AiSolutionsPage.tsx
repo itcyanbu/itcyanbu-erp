@@ -72,12 +72,21 @@ const AiSolutionsPage = () => {
                         </div>
                         <h2 className="text-2xl font-bold text-gray-900 mb-2">Industry AI</h2>
                         <p className="text-gray-500 max-w-md mb-6">Advanced industrial automation and AI solutions.</p>
-                        <button
-                            onClick={() => window.open('https://solution-spark-x.lovable.app', '_blank')}
-                            className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition shadow-sm hover:shadow"
-                        >
-                            Launch 3D Vision Platform
-                        </button>
+
+                        <div className="flex flex-col sm:flex-row gap-4">
+                            <button
+                                onClick={() => window.open('https://solution-spark-x.lovable.app', '_blank')}
+                                className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition shadow-sm hover:shadow"
+                            >
+                                Launch 3D Vision Platform
+                            </button>
+                            <button
+                                onClick={() => window.open('https://arabish-bright.lovable.app', '_blank')}
+                                className="px-6 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition shadow-sm hover:shadow"
+                            >
+                                Launch Industry Automation
+                            </button>
+                        </div>
                     </div>
                 );
             case 'help':
