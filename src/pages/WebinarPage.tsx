@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Calendar, Clock, RotateCw, Info } from 'lucide-react';
+import { useState } from 'react';
+import { RotateCw, Info } from 'lucide-react';
 
 const WebinarPage = () => {
     const [isRecurring, setIsRecurring] = useState(false);
@@ -69,8 +69,8 @@ const WebinarPage = () => {
                                         key={freq}
                                         onClick={() => setFrequency(freq)}
                                         className={`px-4 py-3 rounded-lg border text-sm font-medium transition-all ${frequency === freq
-                                                ? 'border-blue-500 bg-blue-50 text-blue-700 ring-1 ring-blue-500'
-                                                : 'border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50'
+                                            ? 'border-blue-500 bg-blue-50 text-blue-700 ring-1 ring-blue-500'
+                                            : 'border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50'
                                             }`}
                                     >
                                         {freq}
@@ -114,8 +114,8 @@ const WebinarPage = () => {
                                                     key={day.key}
                                                     onClick={() => toggleDay(day.key)}
                                                     className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${selectedDays.includes(day.key)
-                                                            ? 'bg-blue-600 text-white'
-                                                            : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
+                                                        ? 'bg-blue-600 text-white'
+                                                        : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
                                                         }`}
                                                 >
                                                     {day.label[0]}
