@@ -14,6 +14,8 @@ import PaymentsPage from './pages/PaymentsPage';
 import SettingsPage from './pages/SettingsPage';
 import SitesPage from './pages/SitesPage';
 import AiSolutionsPage from './pages/AiSolutionsPage';
+import SuppliersServicesPage from './pages/SuppliersServicesPage';
+import WebinarPage from './pages/WebinarPage';
 
 
 
@@ -52,6 +54,10 @@ function App() {
         return <SitesPage />;
       case 'Ai Solutions':
         return <AiSolutionsPage />;
+      case 'Suppliers Services':
+        return <SuppliersServicesPage />;
+      case 'Webinar':
+        return <WebinarPage />;
       default:
         return <ContactsPage />;
     }

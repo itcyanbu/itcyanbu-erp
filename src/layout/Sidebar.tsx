@@ -28,7 +28,9 @@ import {
     Save,
     X,
     ChevronDown,
-    ChevronRight
+    ChevronRight,
+    Truck,
+    MonitorPlay
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -78,10 +80,12 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule = 'Contacts', onModuleCh
         { icon: Users, label: 'Contacts' },
         { icon: Briefcase, label: 'Opportunities' },
         { icon: CreditCard, label: 'Payments' },
+        { icon: Truck, label: 'Suppliers Services' },
     ];
 
     const secondaryMenuItems = [
         { icon: Send, label: 'Marketing' },
+        { icon: MonitorPlay, label: 'Webinar' },
         { icon: Workflow, label: 'Automation' },
         { icon: Brain, label: 'Ai Solutions' },
         { icon: ShieldCheck, label: 'Cyber Security' },
