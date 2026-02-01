@@ -1,0 +1,134 @@
+{
+  "common": {
+    "search": "Search",
+    "notifications": "Notifications",
+    "help": "Help",
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Logout",
+    "back": "Back",
+    "coming_soon": "Coming Soon",
+    "home": "Home",
+    "language": "Language",
+    "cancel": "Cancel",
+    "save": "Save",
+    "of": "of"
+  },
+  "sidebar": {
+    "launchpad": "Launchpad",
+    "dashboard": "Dashboard",
+    "conversations": "Conversations",
+    "calendars": "Calendars",
+    "contacts": "Contacts",
+    "opportunities": "Opportunities",
+    "payments": "Payments",
+    "marketing": "Marketing",
+    "automation": "Automation",
+    "sites": "Sites",
+    "memberships": "Memberships",
+    "reputation": "Reputation",
+    "reporting": "Reporting",
+    "marketplace": "App Marketplace",
+    "affiliate": "Affiliate Portal",
+    "agency_analytics": "Agency Analytics",
+    "media_library": "Media Library",
+    "facebook_group": "Facebook Group",
+    "ai_solutions": "AI Solutions"
+  },
+  "ai_solutions": {
+    "title": "AI Solutions",
+    "subtitle": "Manage your AI-powered surveillance and vision systems",
+    "getting_started": "Getting started with AI",
+    "cctv_ai": "CCTV Ai",
+    "industry_ai": "industry ai",
+    "ai_employee": "AI Employee",
+    "helps": "helps",
+    "vision_analysis": "CCTV AI Vision Analysis",
+    "real_time": "Real-time Monitoring"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Analytics and performance metrics",
+    "manage_permissions": "Manage Permissions",
+    "total_revenue": "Total Revenue",
+    "active_clients": "Active Clients",
+    "conversion_rate": "Conversion Rate",
+    "vs_last_month": "vs last month",
+    "revenue_overview": "Revenue Overview",
+    "chart_placeholder": "Chart visualization would appear here",
+    "top_campaigns": "Top Performing Campaigns",
+    "recent_conversions": "Recent Conversions",
+    "permissions_title": "Manage Dashboard Permissions",
+    "permissions_subtitle": "Control team access to sensitive financial metrics and custom dashboard views.",
+    "save_success": "Dashboard permissions updated successfully!",
+    "no_access_warning": "Setting a role to \"No Access\" will hide all revenue-related widgets and private dashboards from users with that role."
+  },
+  "launchpad": {
+    "title": "Agency Onboarding Checklist",
+    "subtitle": "Complete these critical steps to fully launch your agency platform and start scaling.",
+    "tasks_complete": "Tasks Complete",
+    "watch_tutorial": "Watch Tutorial"
+  },
+  "contacts": {
+    "toolbar": {
+      "add_contact": "Add Contact",
+      "pipeline_change": "Pipeline Change",
+      "add_to_workflow": "Add to Workflow",
+      "send_sms": "Send SMS",
+      "send_email": "Send Email",
+      "add_tag": "Add Tag",
+      "remove_tag": "Remove Tag",
+      "delete_contacts": "Delete Contacts",
+      "add_to_favorites": "Add to Favorites",
+      "export": "Export",
+      "import": "Import",
+      "direct_mail": "Direct Mail",
+      "assign_company": "Assign Company",
+      "whatsapp": "WhatsApp",
+      "duplicate_merge": "Duplicate/Merge",
+      "columns": "Columns",
+      "more_filters": "More Filters",
+      "action_triggered": "Action triggered: {{action}}"
+    },
+    "selection": {
+      "selected": "{{count}} selected",
+      "delete_selected": "Delete Selected",
+      "clear_selection": "Clear Selection"
+    },
+    "tabs": {
+      "smart_lists": "Smart Lists",
+      "bulk_actions": "Bulk Actions",
+      "restore": "Restore",
+      "tasks": "Tasks",
+      "companies": "Companies",
+      "manage_smart_lists": "Manage Smart Lists"
+    },
+    "bulk_actions": {
+      "name": "Action Name",
+      "status": "Status",
+      "created": "Created",
+      "completed": "Completed",
+      "user": "User"
+    },
+    "restore": {
+      "name": "Name",
+      "email": "Email",
+      "deleted_at": "Deleted At",
+      "actions": "Actions",
+      "restore_btn": "Restore"
+    },
+    "tasks": {
+      "description": "Description",
+      "due_date": "Due Date",
+      "assigned_to": "Assigned To",
+      "contact": "Contact",
+      "status": "Status"
+    },
+    "companies": {
+      "name": "Company Name",
+      "website": "Website",
+      "phone": "Phone",
+      "employees": "Employees"
+    }
+  }
+}

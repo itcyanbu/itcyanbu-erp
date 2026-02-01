@@ -1,19 +1,40 @@
 import { useState } from 'react';
-import { Video, HelpCircle, Box, FileText, Globe, Play, Users, Factory, ArrowLeft } from 'lucide-react';
+import { Video, HelpCircle, Box, FileText, Globe, Play, Users, Factory, ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const AiSolutionsPage = () => {
+    const { t } = useTranslation();
     const [currentView, setCurrentView] = useState('overview');
-    const [selectedImage, setSelectedImage] = useState<string | null>(null);
+    const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
     const [helpTab, setHelpTab] = useState('pdf');
 
     const solutions = [
-        { id: 'getting-started', label: 'Getting started with AI', icon: Play, color: 'text-purple-500', bg: 'bg-purple-50' },
-        { id: 'cctv-ai', label: 'CCTV Ai', icon: Video, color: 'text-blue-500', bg: 'bg-blue-50' },
-        { id: 'industry-ai', label: 'industry ai', icon: Factory, color: 'text-orange-500', bg: 'bg-orange-50' },
-        { id: 'ai-employee-1', label: 'AI Employee', icon: Users, color: 'text-green-500', bg: 'bg-green-50' },
-        { id: 'ai-employee-2', label: 'AI Employee', icon: Users, color: 'text-indigo-500', bg: 'bg-indigo-50' },
-        { id: 'help', label: 'helps', icon: HelpCircle, color: 'text-pink-500', bg: 'bg-pink-50' },
+        { id: 'getting-started', label: t('ai_solutions.getting_started'), icon: Play, color: 'text-purple-500', bg: 'bg-purple-50' },
+        { id: 'cctv-ai', label: t('ai_solutions.cctv_ai'), icon: Video, color: 'text-blue-500', bg: 'bg-blue-50' },
+        { id: 'industry-ai', label: t('ai_solutions.industry_ai'), icon: Factory, color: 'text-orange-500', bg: 'bg-orange-50' },
+        { id: 'ai-employee-1', label: t('ai_solutions.ai_employee'), icon: Users, color: 'text-green-500', bg: 'bg-green-50' },
+        { id: 'ai-employee-2', label: t('ai_solutions.ai_employee'), icon: Users, color: 'text-indigo-500', bg: 'bg-indigo-50' },
+        { id: 'help', label: t('ai_solutions.helps'), icon: HelpCircle, color: 'text-pink-500', bg: 'bg-pink-50' },
     ];
+
+    const cctvImages = [
+        { src: '/cctv/vision1.jpg', title: t('ai_solutions.vision_analysis') },
+        { src: '/cctv/vision2.jpg', title: t('ai_solutions.real_time') },
+    ];
+
+    const nextImage = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (selectedImageIndex !== null) {
+            setSelectedImageIndex((selectedImageIndex + 1) % cctvImages.length);
+        }
+    };
+
+    const prevImage = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (selectedImageIndex !== null) {
+            setSelectedImageIndex((selectedImageIndex - 1 + cctvImages.length) % cctvImages.length);
+        }
+    };
 
     const renderContent = () => {
         switch (currentView) {
@@ -31,7 +52,7 @@ const AiSolutionsPage = () => {
                                     <div className={`p-5 rounded-full mb-6 ${solution.bg} group-hover:scale-110 transition-transform duration-300`}>
                                         <Icon className={`w-10 h-10 ${solution.color}`} />
                                     </div>
-                                    <h3 className="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                    <h3 className="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors text-center">
                                         {solution.label}
                                     </h3>
                                 </button>
@@ -42,26 +63,18 @@ const AiSolutionsPage = () => {
             case 'cctv-ai':
                 return (
                     <div className="space-y-8 animate-in fade-in duration-300">
-                        <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">CCTV AI Vision Analysis</h3>
-                            <div className="rounded-lg overflow-hidden bg-gray-100 cursor-zoom-in" onClick={() => setSelectedImage('/cctv/vision1.jpg')}>
-                                <img
-                                    src="/cctv/vision1.jpg"
-                                    alt="CCTV AI Vision 1"
-                                    className="w-full h-auto object-contain hover:scale-[1.01] transition-transform duration-300"
-                                />
+                        {cctvImages.map((img, idx) => (
+                            <div key={idx} className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                                <h3 className="text-lg font-semibold text-gray-900 mb-4">{img.title}</h3>
+                                <div className="rounded-lg overflow-hidden bg-gray-100 cursor-zoom-in" onClick={() => setSelectedImageIndex(idx)}>
+                                    <img
+                                        src={img.src}
+                                        alt={img.title}
+                                        className="w-full h-auto object-contain hover:scale-[1.01] transition-transform duration-300"
+                                    />
+                                </div>
                             </div>
-                        </div>
-                        <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Real-time Monitoring</h3>
-                            <div className="rounded-lg overflow-hidden bg-gray-100 cursor-zoom-in" onClick={() => setSelectedImage('/cctv/vision2.jpg')}>
-                                <img
-                                    src="/cctv/vision2.jpg"
-                                    alt="CCTV AI Vision 2"
-                                    className="w-full h-auto object-contain hover:scale-[1.01] transition-transform duration-300"
-                                />
-                            </div>
-                        </div>
+                        ))}
                     </div>
                 );
             case 'industry-ai':
@@ -99,7 +112,7 @@ const AiSolutionsPage = () => {
                                     }`}
                             >
                                 <FileText size={14} />
-                                PDF Files
+                                {t('help_tab.pdf')}
                             </button>
                             <button
                                 onClick={() => setHelpTab('resources')}
@@ -107,7 +120,7 @@ const AiSolutionsPage = () => {
                                     }`}
                             >
                                 <Globe size={14} />
-                                Resources
+                                {t('help_tab.resources')}
                             </button>
                         </div>
 
@@ -160,14 +173,13 @@ const AiSolutionsPage = () => {
                     </div>
                 );
             default:
-                // Placeholder for 'getting-started' and 'ai-employee'
                 return (
                     <div className="flex flex-col items-center justify-center p-12 text-center animate-in fade-in duration-300 bg-white rounded-xl border border-gray-200 shadow-sm">
                         <div className="bg-gray-50 p-6 rounded-full mb-6">
                             <Box className="w-16 h-16 text-gray-400" />
                         </div>
-                        <h2 className="text-2xl font-bold text-gray-900 mb-2">Coming Soon</h2>
-                        <p className="text-gray-500">The {solutions.find(s => s.id === currentView)?.label || 'Requested'} module is currently under development.</p>
+                        <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('common.coming_soon')}</h2>
+                        <p className="text-gray-500">The module is currently under development.</p>
                     </div>
                 );
         }
@@ -181,15 +193,15 @@ const AiSolutionsPage = () => {
                         {currentView !== 'overview' && (
                             <button
                                 onClick={() => setCurrentView('overview')}
-                                className="p-2 hover:bg-gray-200 rounded-full transition-colors text-gray-500"
-                                title="Back to Solutions"
+                                className="p-2 hover:bg-gray-200 rounded-full transition-colors text-gray-500 rtl:rotate-180"
+                                title={t('common.back')}
                             >
                                 <ArrowLeft size={20} />
                             </button>
                         )}
-                        <h1 className="text-2xl font-bold text-gray-900">AI Solutions</h1>
+                        <h1 className="text-2xl font-bold text-gray-900">{t('ai_solutions.title')}</h1>
                     </div>
-                    <p className="text-gray-500 mt-1">Manage your AI-powered surveillance and vision systems</p>
+                    <p className="text-gray-500 mt-1">{t('ai_solutions.subtitle')}</p>
                 </div>
             </div>
 
@@ -198,25 +210,48 @@ const AiSolutionsPage = () => {
                 {renderContent()}
             </div>
 
-            {/* Lightbox Modal */}
-            {selectedImage && (
+            {/* Lightbox Modal with Slider Navigation */}
+            {selectedImageIndex !== null && (
                 <div
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4 animate-in fade-in duration-200"
-                    onClick={() => setSelectedImage(null)}
+                    className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4 animate-in fade-in duration-200"
+                    onClick={() => setSelectedImageIndex(null)}
                 >
-                    <div className="relative max-w-7xl w-full max-h-screen flex items-center justify-center">
-                        <img
-                            src={selectedImage}
-                            alt="CCTV Full View"
-                            className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
-                        />
+                    <div className="relative max-w-7xl w-full max-h-screen flex items-center justify-center group/modal">
+                        {/* Navigation Buttons */}
                         <button
-                            className="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors bg-black/50 p-2 rounded-full"
-                            onClick={() => setSelectedImage(null)}
+                            onClick={prevImage}
+                            className="absolute left-4 lg:left-8 z-[110] w-12 h-12 bg-slate-900/50 hover:bg-slate-900 text-green-500 rounded-full flex items-center justify-center transition-all border border-green-500/20 shadow-lg group-hover/modal:scale-110"
+                            title="Previous Image"
+                        >
+                            <ChevronLeft size={32} />
+                        </button>
+
+                        <img
+                            src={cctvImages[selectedImageIndex].src}
+                            alt={cctvImages[selectedImageIndex].title}
+                            className="max-w-full max-h-[90vh] object-contain rounded-xl shadow-2xl animate-in zoom-in-95 duration-300"
+                        />
+
+                        <button
+                            onClick={nextImage}
+                            className="absolute right-4 lg:right-8 z-[110] w-12 h-12 bg-slate-900/50 hover:bg-slate-900 text-green-500 rounded-full flex items-center justify-center transition-all border border-green-500/20 shadow-lg group-hover/modal:scale-110"
+                            title="Next Image"
+                        >
+                            <ChevronRight size={32} />
+                        </button>
+
+                        <button
+                            className="absolute top-4 right-4 z-[110] text-white hover:text-gray-300 transition-colors bg-black/50 p-2 rounded-full"
+                            onClick={() => setSelectedImageIndex(null)}
                         >
                             <span className="sr-only">Close</span>
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 18 18" /></svg>
                         </button>
+
+                        {/* Image Info */}
+                        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded-full text-sm font-medium backdrop-blur-sm border border-white/10">
+                            {selectedImageIndex + 1} / {cctvImages.length} : {cctvImages[selectedImageIndex].title}
+                        </div>
                     </div>
                 </div>
             )}

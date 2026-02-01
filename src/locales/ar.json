@@ -1,0 +1,134 @@
+{
+    "common": {
+        "search": "بحث",
+        "notifications": "التنبيهات",
+        "help": "مساعدة",
+        "profile": "الملف الشخصي",
+        "settings": "الإعدادات",
+        "logout": "تسجيل الخروج",
+        "back": "رجوع",
+        "coming_soon": "قريباً",
+        "home": "الرئيسية",
+        "language": "اللغة",
+        "cancel": "إلغاء",
+        "save": "حفظ",
+        "of": "من"
+    },
+    "sidebar": {
+        "launchpad": "منصة الانطلاق",
+        "dashboard": "لوحة التحكم",
+        "conversations": "المحادثات",
+        "calendars": "التقاويم",
+        "contacts": "جهات الاتصال",
+        "opportunities": "الفرص",
+        "payments": "المدفوعات",
+        "marketing": "التسويق",
+        "automation": "الأتمتة",
+        "sites": "المواقع",
+        "memberships": "العضويات",
+        "reputation": "السمعة",
+        "reporting": "التقارير",
+        "marketplace": "متجر التطبيقات",
+        "affiliate": "بوابة الشركاء",
+        "agency_analytics": "تحليلات الوكالة",
+        "media_library": "مكتبة الوسائط",
+        "facebook_group": "مجموعة فيسبوك",
+        "ai_solutions": "حلول الذكاء الاصطناعي"
+    },
+    "ai_solutions": {
+        "title": "حلول الذكاء الاصطناعي",
+        "subtitle": "إدارة أنظمة المراقبة والرؤية المددومة بالذكاء الاصطناعي",
+        "getting_started": "البدء مع الذكاء الاصطناعي",
+        "cctv_ai": "الذكاء الاصطناعي للكاميرات",
+        "industry_ai": "الذكاء الاصطناعي الصناعي",
+        "ai_employee": "الموظف الآلي",
+        "helps": "المساعدة",
+        "vision_analysis": "تحليل رؤية الذكاء الاصطناعي للكاميرات",
+        "real_time": "المراقبة في الوقت الحقيقي"
+    },
+    "dashboard": {
+        "title": "لوحة التحكم",
+        "subtitle": "التحليلات ومقاييس الأداء",
+        "manage_permissions": "إدارة التصاريح",
+        "total_revenue": "إجمالي الإيرادات",
+        "active_clients": "العملاء النشطون",
+        "conversion_rate": "معدل التحويل",
+        "vs_last_month": "مقارنة بالشهر الماضي",
+        "revenue_overview": "نظرة عامة على الإيرادات",
+        "chart_placeholder": "سيظهر الرسم البياني هنا",
+        "top_campaigns": "الحملات الأعلى أداءً",
+        "recent_conversions": "التحويلات الأخيرة",
+        "permissions_title": "إدارة تصاريح لوحة التحكم",
+        "permissions_subtitle": "التحكم في وصول الفريق إلى المقاييس المالية الحساسة وطرق عرض لوحة التحكم المخصصة.",
+        "save_success": "تم تحديث تصاريح لوحة التحكم بنجاح!",
+        "no_access_warning": "سيؤدي تعيين دور إلى \"لا يوجد وصول\" إلى إخفاء جميع الأدوات المتعلقة بالإيرادات ولوحات التحكم الخاصة من المستخدمين بهذا الدور."
+    },
+    "launchpad": {
+        "title": "قائمة مراجعة إعداد الوكالة",
+        "subtitle": "أكمل هذه الخطوات الهامة لإطلاق منصة وكالتك بالكامل وبدء التوسع.",
+        "tasks_complete": "مهام مكتملة",
+        "watch_tutorial": "مشاهدة الشرح"
+    },
+    "contacts": {
+        "toolbar": {
+            "add_contact": "إضافة جهة اتصال",
+            "pipeline_change": "تغيير المسار",
+            "add_to_workflow": "إضافة إلى سير العمل",
+            "send_sms": "إرسال رسالة نصية",
+            "send_email": "إرسال بريد إلكتروني",
+            "add_tag": "إضافة وسم",
+            "remove_tag": "إزالة وسم",
+            "delete_contacts": "حذف جهات الاتصال",
+            "add_to_favorites": "إضافة إلى المفضلة",
+            "export": "تصدير",
+            "import": "استيراد",
+            "direct_mail": "بريد مباشر",
+            "assign_company": "تعيين شركة",
+            "whatsapp": "واتساب",
+            "duplicate_merge": "تكرار/دمج",
+            "columns": "الأعمدة",
+            "more_filters": "مزيد من الفلاتر",
+            "action_triggered": "تم تفعيل الإجراء: {{action}}"
+        },
+        "selection": {
+            "selected": "{{count}} محدد",
+            "delete_selected": "حذف المحدد",
+            "clear_selection": "مسح التحديد"
+        },
+        "tabs": {
+            "smart_lists": "القوائم الذكية",
+            "bulk_actions": "الإجراءات الجماعية",
+            "restore": "استعادة",
+            "tasks": "المهام",
+            "companies": "الشركات",
+            "manage_smart_lists": "إدارة القوائم الذكية"
+        },
+        "bulk_actions": {
+            "name": "اسم الإجراء",
+            "status": "الحالة",
+            "created": "تم الإنشاء",
+            "completed": "تم الإكمال",
+            "user": "المستخدم"
+        },
+        "restore": {
+            "name": "الاسم",
+            "email": "البريد الإلكتروني",
+            "deleted_at": "تاريخ الحذف",
+            "actions": "الإجراءات",
+            "restore_btn": "استعادة"
+        },
+        "tasks": {
+            "description": "الوصف",
+            "due_date": "تاريخ الاستحقاق",
+            "assigned_to": "معين لـ",
+            "contact": "جهة الاتصال",
+            "status": "الحالة"
+        },
+        "companies": {
+            "name": "اسم الشركة",
+            "website": "الموقع الإلكتروني",
+            "phone": "الهاتف",
+            "employees": "الموظفين"
+        }
+    }
+}

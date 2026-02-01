@@ -37,9 +37,6 @@ function App() {
     setIsAuthenticated(true);
   };
 
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-  };
 
   const renderModule = () => {
     console.log('App: activeModule is:', activeModule);
@@ -62,7 +59,7 @@ function App() {
         return <SettingsPage />;
       case 'Sites':
         return <SitesPage />;
-      case 'Ai Solutions':
+      case 'AI Solutions':
         return <AiSolutionsPage />;
       case 'Marketing':
         return <MarketingPage />;
@@ -102,7 +99,6 @@ function App() {
       <CalendarProvider>
         <div className="flex h-screen bg-ghl-bg font-sans text-ghl-text overflow-hidden">
           <Sidebar
-            onLogout={handleLogout}
             activeModule={activeModule}
             onModuleChange={setActiveModule}
           />
