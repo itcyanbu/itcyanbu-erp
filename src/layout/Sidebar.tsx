@@ -20,6 +20,7 @@ import {
     Facebook,
     Play,
     Settings,
+    Brain,
 } from 'lucide-react';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
@@ -55,7 +56,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule = 'Contacts', onModuleCh
         { icon: LineChart, label: 'Agency Analytics', id: 'Agency Analytics', tKey: 'sidebar.agency_analytics' },
         { icon: Image, label: 'Media Library', id: 'Media Library', tKey: 'sidebar.media_library' },
         { icon: Facebook, label: 'Facebook Group', id: 'Facebook Group', tKey: 'sidebar.facebook_group' },
-        { icon: Play, label: 'AI Solutions', id: 'AI Solutions', tKey: 'sidebar.ai_solutions' }
+        { icon: Brain, label: 'AI Solutions', id: 'AI Solutions', tKey: 'sidebar.ai_solutions' }
     ];
 
     const toggleLanguage = () => {
@@ -65,8 +66,6 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule = 'Contacts', onModuleCh
 
     return (
         <div className="w-20 lg:w-64 h-full bg-[#1e293b] flex flex-col shrink-0 border-r border-[#334155] transition-all duration-300 relative">
-            {/* DEBUG BANNER: RED LINE ON LEFT */}
-            <div className="absolute top-0 bottom-0 left-0 w-1 bg-red-600 z-[9999]" title="DEBUG: LATEST" />
 
             {/* Top Profile Section */}
             <div className="p-4 border-b border-[#334155]">

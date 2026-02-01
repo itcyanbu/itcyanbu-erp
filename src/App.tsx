@@ -4,7 +4,9 @@ import Sidebar from './layout/Sidebar';
 import ContactsPage from './components/ContactsPage';
 import { ContactProvider } from './context/ContactContext';
 import { CalendarProvider } from './context/CalendarContext';
+import { EventProvider } from './context/EventContext';
 import LoginPage from './pages/LoginPage';
+// ... (omitting lines for brevity, but I need to make sure I don't break imports)
 import LaunchpadPage from './pages/LaunchpadPage';
 import DashboardPage from './pages/DashboardPage';
 import ConversationsPage from './pages/ConversationsPage';
@@ -97,16 +99,18 @@ function App() {
   return (
     <ContactProvider>
       <CalendarProvider>
-        <div className="flex h-screen bg-ghl-bg font-sans text-ghl-text overflow-hidden">
-          <Sidebar
-            activeModule={activeModule}
-            onModuleChange={setActiveModule}
-          />
-          <div className="flex-1 flex flex-col min-w-0 overflow-hidden min-h-0">
-            <Header />
-            {renderModule()}
+        <EventProvider>
+          <div className="flex h-screen bg-ghl-bg font-sans text-ghl-text overflow-hidden">
+            <Sidebar
+              activeModule={activeModule}
+              onModuleChange={setActiveModule}
+            />
+            <div className="flex-1 flex flex-col min-w-0 overflow-hidden min-h-0">
+              <Header />
+              {renderModule()}
+            </div>
           </div>
-        </div>
+        </EventProvider>
       </CalendarProvider>
     </ContactProvider>
   );
