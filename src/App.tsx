@@ -25,6 +25,7 @@ import AppMarketplacePage from './pages/AppMarketplacePage';
 import AffiliatePortalPage from './pages/AffiliatePortalPage';
 import AgencyAnalyticsPage from './pages/AgencyAnalyticsPage';
 import MediaLibraryPage from './pages/MediaLibraryPage';
+import FacebookGroupPage from './pages/FacebookGroupPage';
 
 
 
@@ -81,6 +82,8 @@ function App() {
         return <AgencyAnalyticsPage />;
       case 'Media library':
         return <MediaLibraryPage />;
+      case 'Facebook Group':
+        return <FacebookGroupPage />;
       case 'Suppliers Services':
         return <SuppliersServicesPage />;
       case 'Webinar':
