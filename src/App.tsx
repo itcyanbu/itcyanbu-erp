@@ -24,6 +24,7 @@ import ReportingPage from './pages/ReportingPage';
 import AppMarketplacePage from './pages/AppMarketplacePage';
 import AffiliatePortalPage from './pages/AffiliatePortalPage';
 import AgencyAnalyticsPage from './pages/AgencyAnalyticsPage';
+import MediaLibraryPage from './pages/MediaLibraryPage';
 
 
 
@@ -78,6 +79,8 @@ function App() {
         return <AffiliatePortalPage />;
       case 'Agency Analytics':
         return <AgencyAnalyticsPage />;
+      case 'Media library':
+        return <MediaLibraryPage />;
       case 'Suppliers Services':
         return <SuppliersServicesPage />;
       case 'Webinar':
