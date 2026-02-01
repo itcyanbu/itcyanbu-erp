@@ -18,6 +18,7 @@ import SuppliersServicesPage from './pages/SuppliersServicesPage';
 import WebinarPage from './pages/WebinarPage';
 import MarketingPage from './pages/MarketingPage';
 import AutomationPage from './pages/AutomationPage';
+import MembershipsPage from './pages/MembershipsPage';
 
 
 
@@ -60,6 +61,8 @@ function App() {
         return <MarketingPage />;
       case 'Automation':
         return <AutomationPage />;
+      case 'Memberships':
+        return <MembershipsPage />;
       case 'Suppliers Services':
         return <SuppliersServicesPage />;
       case 'Webinar':
