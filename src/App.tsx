@@ -17,6 +17,7 @@ import AiSolutionsPage from './pages/AiSolutionsPage';
 import SuppliersServicesPage from './pages/SuppliersServicesPage';
 import WebinarPage from './pages/WebinarPage';
 import MarketingPage from './pages/MarketingPage';
+import AutomationPage from './pages/AutomationPage';
 
 
 
@@ -57,6 +58,8 @@ function App() {
         return <AiSolutionsPage />;
       case 'Marketing':
         return <MarketingPage />;
+      case 'Automation':
+        return <AutomationPage />;
       case 'Suppliers Services':
         return <SuppliersServicesPage />;
       case 'Webinar':
