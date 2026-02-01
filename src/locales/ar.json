@@ -130,5 +130,17 @@
             "phone": "الهاتف",
             "employees": "الموظفين"
         }
+    },
+    "login": {
+        "signin": "تسجيل الدخول",
+        "to_account": "إلى حسابك",
+        "email_label": "البريد الإلكتروني",
+        "email_placeholder": "name@company.com",
+        "password_label": "كلمة المرور",
+        "password_placeholder": "••••••••",
+        "signin_button": "تسجيل الدخول",
+        "demo_mode": "وضع التجربة",
+        "no_account": "ليس لديك حساب؟",
+        "contact_admin": "اتصل بالمسؤول"
     }
 }

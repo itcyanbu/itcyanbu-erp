@@ -35,20 +35,20 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
                 </div>
 
                 <div className="text-center mb-8">
-                    <h1 className="text-2xl font-bold text-gray-900 mb-2">{t('login.signin', 'Sign in')}</h1>
-                    <p className="text-gray-500 text-sm">{t('login.to_account', 'to your account')}</p>
+                    <h1 className="text-2xl font-bold text-gray-900 mb-2">{t('login.signin')}</h1>
+                    <p className="text-gray-500 text-sm">{t('login.to_account')}</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Email Address
+                            {t('login.email_label')}
                         </label>
                         <input
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            placeholder="name@company.com"
+                            placeholder={t('login.email_placeholder')}
                             className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-gray-400"
                             required
                         />
@@ -56,13 +56,13 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Password
+                            {t('login.password_label')}
                         </label>
                         <input
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            placeholder="••••••••"
+                            placeholder={t('login.password_placeholder')}
                             className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-gray-400"
                             required
                         />
@@ -72,18 +72,18 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
                         type="submit"
                         className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 shadow-sm"
                     >
-                        Sign In
+                        {t('login.signin_button')}
                     </button>
                 </form>
 
                 <div className="mt-8 text-center">
                     <p className="text-sm text-gray-500">
-                        Demo Mode: <span className="font-semibold text-gray-700">demo@example.com</span> / <span className="font-semibold text-gray-700">demo</span>
+                        {t('login.demo_mode')}: <span className="font-semibold text-gray-700">demo@example.com</span> / <span className="font-semibold text-gray-700">demo</span>
                     </p>
                     <div className="mt-2">
-                        <span className="text-sm text-gray-500">Don't have an account? </span>
+                        <span className="text-sm text-gray-500">{t('login.no_account')} </span>
                         <a href="#" className="text-sm text-blue-600 hover:text-blue-700 font-medium hover:underline">
-                            Contact Admin
+                            {t('login.contact_admin')}
                         </a>
                     </div>
                 </div>

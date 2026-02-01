@@ -130,5 +130,17 @@
       "phone": "Phone",
       "employees": "Employees"
     }
+  },
+  "login": {
+    "signin": "Sign in",
+    "to_account": "to your account",
+    "email_label": "Email Address",
+    "email_placeholder": "name@company.com",
+    "password_label": "Password",
+    "password_placeholder": "••••••••",
+    "signin_button": "Sign In",
+    "demo_mode": "Demo Mode",
+    "no_account": "Don't have an account?",
+    "contact_admin": "Contact Admin"
   }
 }
