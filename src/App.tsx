@@ -19,6 +19,7 @@ import WebinarPage from './pages/WebinarPage';
 import MarketingPage from './pages/MarketingPage';
 import AutomationPage from './pages/AutomationPage';
 import MembershipsPage from './pages/MembershipsPage';
+import ReputationPage from './pages/ReputationPage';
 
 
 
@@ -63,6 +64,8 @@ function App() {
         return <AutomationPage />;
       case 'Memberships':
         return <MembershipsPage />;
+      case 'Reputation':
+        return <ReputationPage />;
       case 'Suppliers Services':
         return <SuppliersServicesPage />;
       case 'Webinar':
