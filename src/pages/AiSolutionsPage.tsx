@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Video, HelpCircle, Box, FileText, Globe, Play, Users, Factory, ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Video, HelpCircle, Box, FileText, Globe, Play, Users, Factory, ArrowLeft, ChevronLeft, ChevronRight, Settings, BookOpen } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 const AiSolutionsPage = () => {
     const { t } = useTranslation();
     const [currentView, setCurrentView] = useState('overview');
+    const [cctvSubView, setCctvSubView] = useState('overview');
     const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
     const [helpTab, setHelpTab] = useState('pdf');
 
@@ -21,6 +22,14 @@ const AiSolutionsPage = () => {
         { src: '/cctv/vision1.jpg', title: t('ai_solutions.vision_analysis') },
         { src: '/cctv/vision2.jpg', title: t('ai_solutions.real_time') },
     ];
+
+    const handleBack = () => {
+        if (currentView === 'cctv-ai' && cctvSubView !== 'overview') {
+            setCctvSubView('overview');
+        } else {
+            setCurrentView('overview');
+        }
+    };
 
     const nextImage = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -46,7 +55,10 @@ const AiSolutionsPage = () => {
                             return (
                                 <button
                                     key={idx}
-                                    onClick={() => setCurrentView(solution.id)}
+                                    onClick={() => {
+                                        setCurrentView(solution.id);
+                                        if (solution.id === 'cctv-ai') setCctvSubView('overview');
+                                    }}
                                     className="flex flex-col items-center justify-center p-8 bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md hover:border-blue-100 hover:-translate-y-1 transition-all duration-200 group h-full min-h-[200px]"
                                 >
                                     <div className={`p-5 rounded-full mb-6 ${solution.bg} group-hover:scale-110 transition-transform duration-300`}>
@@ -61,20 +73,60 @@ const AiSolutionsPage = () => {
                     </div>
                 );
             case 'cctv-ai':
-                return (
-                    <div className="space-y-8 animate-in fade-in duration-300">
-                        {cctvImages.map((img, idx) => (
-                            <div key={idx} className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-                                <h3 className="text-lg font-semibold text-gray-900 mb-4">{img.title}</h3>
-                                <div className="rounded-lg overflow-hidden bg-gray-100 cursor-zoom-in" onClick={() => setSelectedImageIndex(idx)}>
-                                    <img
-                                        src={img.src}
-                                        alt={img.title}
-                                        className="w-full h-auto object-contain hover:scale-[1.01] transition-transform duration-300"
-                                    />
+                if (cctvSubView === 'overview') {
+                    return (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-4xl mx-auto py-12 animate-in slide-in-from-bottom-4 duration-500">
+                            {[
+                                { id: 'services', label: t('ai_solutions.services'), icon: Settings, color: 'text-blue-600', bg: 'bg-blue-50' },
+                                { id: 'case-study', label: t('ai_solutions.case_study'), icon: BookOpen, color: 'text-indigo-600', bg: 'bg-indigo-50' }
+                            ].map((subView) => {
+                                const Icon = subView.icon;
+                                return (
+                                    <button
+                                        key={subView.id}
+                                        onClick={() => setCctvSubView(subView.id)}
+                                        className="flex flex-col items-center justify-center p-10 bg-white border border-gray-100 rounded-3xl shadow-lg hover:shadow-xl hover:border-blue-200 hover:-translate-y-2 transition-all duration-300 group"
+                                    >
+                                        <div className={`p-6 rounded-2xl mb-8 ${subView.bg} group-hover:scale-110 transition-transform duration-300 shadow-inner`}>
+                                            <Icon className={`w-14 h-14 ${subView.color}`} />
+                                        </div>
+                                        <h3 className="text-2xl font-extrabold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                            {subView.label}
+                                        </h3>
+                                        <div className="mt-4 w-12 h-1 bg-blue-100 rounded-full group-hover:w-24 group-hover:bg-blue-600 transition-all duration-300" />
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    );
+                }
+
+                if (cctvSubView === 'case-study') {
+                    return (
+                        <div className="space-y-8 animate-in fade-in duration-300">
+                            {cctvImages.map((img, idx) => (
+                                <div key={idx} className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                                    <h3 className="text-lg font-semibold text-gray-900 mb-4">{img.title}</h3>
+                                    <div className="rounded-lg overflow-hidden bg-gray-100 cursor-zoom-in" onClick={() => setSelectedImageIndex(idx)}>
+                                        <img
+                                            src={img.src}
+                                            alt={img.title}
+                                            className="w-full h-auto object-contain hover:scale-[1.01] transition-transform duration-300"
+                                        />
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
+                    );
+                }
+
+                return (
+                    <div className="flex flex-col items-center justify-center p-12 text-center animate-in fade-in duration-300 bg-white rounded-xl border border-gray-200 shadow-sm">
+                        <div className="bg-blue-50 p-6 rounded-full mb-6">
+                            <Settings className="w-16 h-16 text-blue-500" />
+                        </div>
+                        <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('ai_solutions.services')}</h2>
+                        <p className="text-gray-500">Comprehensive AI CCTV implementation services and maintenance.</p>
                     </div>
                 );
             case 'industry-ai':
@@ -192,7 +244,7 @@ const AiSolutionsPage = () => {
                     <div className="flex items-center gap-3">
                         {currentView !== 'overview' && (
                             <button
-                                onClick={() => setCurrentView('overview')}
+                                onClick={handleBack}
                                 className="p-2 hover:bg-gray-200 rounded-full transition-colors text-gray-500 rtl:rotate-180"
                                 title={t('common.back')}
                             >

@@ -44,7 +44,9 @@
     "ai_employee": "AI Employee",
     "helps": "helps",
     "vision_analysis": "CCTV AI Vision Analysis",
-    "real_time": "Real-time Monitoring"
+    "real_time": "Real-time Monitoring",
+    "services": "Services",
+    "case_study": "Case Study"
   },
   "dashboard": {
     "title": "Dashboard",
