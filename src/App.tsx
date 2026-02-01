@@ -16,6 +16,7 @@ import SitesPage from './pages/SitesPage';
 import AiSolutionsPage from './pages/AiSolutionsPage';
 import SuppliersServicesPage from './pages/SuppliersServicesPage';
 import WebinarPage from './pages/WebinarPage';
+import MarketingPage from './pages/MarketingPage';
 
 
 
@@ -54,6 +55,8 @@ function App() {
         return <SitesPage />;
       case 'Ai Solutions':
         return <AiSolutionsPage />;
+      case 'Marketing':
+        return <MarketingPage />;
       case 'Suppliers Services':
         return <SuppliersServicesPage />;
       case 'Webinar':
