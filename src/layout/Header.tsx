@@ -13,9 +13,6 @@ const Header = () => {
 
     return (
         <header className="h-16 bg-white border-b border-ghl-border flex items-center justify-between px-6 shrink-0 relative">
-            {/* DEBUG BANNER: RED LINE AT TOP */}
-            <div className="absolute top-0 left-0 right-0 h-1 bg-red-600 z-[9999]" />
-
             <div className="flex items-center gap-4 flex-1">
                 <div className="relative w-96">
                     <Search className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
