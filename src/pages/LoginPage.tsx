@@ -91,25 +91,33 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
                             </button>
                         </form>
 
-                        <div className="mt-8 text-center">
-                            <p className="text-sm text-gray-500">
+                        <div className="mt-8 text-center border-t border-gray-100 pt-6">
+                            <p className="text-sm text-gray-500 mb-4">
                                 {t('login.demo_mode')}: <span className="font-semibold text-gray-700">demo@example.com</span> / <span className="font-semibold text-gray-700">demo</span>
                             </p>
-                            <div className="mt-2 text-sm text-gray-500">
-                                <span>{t('login.no_account')} </span>
+                            <div className="flex flex-col gap-3">
+                                <div className="text-sm text-gray-500">
+                                    <span>{t('login.no_account')} </span>
+                                    <button
+                                        type="button"
+                                        onClick={() => setViewWithLog('request')}
+                                        className="text-blue-600 hover:text-blue-700 font-bold hover:underline transition-all cursor-pointer"
+                                    >
+                                        {t('login.contact_admin')}
+                                    </button>
+                                </div>
+                                {/* RAW FALLBACK BUTTON - NO TRANSLATION */}
                                 <button
-                                    type="button"
                                     onClick={() => setViewWithLog('request')}
-                                    className="text-blue-600 hover:text-blue-700 font-bold hover:underline transition-all cursor-pointer"
+                                    className="text-[10px] bg-gray-100 text-gray-600 px-2 py-1 rounded hover:bg-gray-200"
                                 >
-                                    {t('login.contact_admin')}
+                                    FALLBACK: Request Account (Click Here if Admin Button Fails)
                                 </button>
                             </div>
                         </div>
-                        <div className="mt-4 text-[10px] text-gray-400 text-center">App Version: v1.0.6-debug (View: {view})</div>
                     </>
                 ) : view === 'request' ? (
-                    <>
+                    <div className="bg-orange-50/30 p-4 rounded-xl border border-orange-100">
                         <div className="text-center mb-8">
                             <h1 className="text-2xl font-bold text-gray-900 mb-2">{t('login.request_title')}</h1>
                         </div>
@@ -122,7 +130,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
                                     type="text"
                                     value={reqData.name}
                                     onChange={(e) => setReqData({ ...reqData, name: e.target.value })}
-                                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-sm"
+                                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-sm"
                                 />
                             </div>
                             <div>
@@ -132,7 +140,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
                                     type="email"
                                     value={reqData.email}
                                     onChange={(e) => setReqData({ ...reqData, email: e.target.value })}
-                                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-sm"
+                                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-sm"
                                 />
                             </div>
                             <div>
@@ -142,7 +150,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
                                     type="text"
                                     value={reqData.business}
                                     onChange={(e) => setReqData({ ...reqData, business: e.target.value })}
-                                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-sm"
+                                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-sm"
                                 />
                             </div>
 
@@ -161,7 +169,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
                                 {t('login.back_to_login')}
                             </button>
                         </form>
-                    </>
+                    </div>
                 ) : (
                     <div className="text-center py-8">
                         <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -178,6 +186,17 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
                         </button>
                     </div>
                 )}
+
+                {/* PERSISTENT DEBUG FOOTER */}
+                <div className="mt-8 pt-4 border-t border-gray-100 text-[10px] space-y-1">
+                    <div className="flex justify-between text-gray-400">
+                        <span>VERSION: v1.0.7-FIX</span>
+                        <span>VIEW: {view}</span>
+                    </div>
+                    <div className="text-gray-300 text-center italic">
+                        If you see this, the latest code is active.
+                    </div>
+                </div>
             </div>
         </div>
     );
