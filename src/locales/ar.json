@@ -143,6 +143,34 @@
         "signin_button": "تسجيل الدخول",
         "demo_mode": "وضع التجربة",
         "no_account": "ليس لديك حساب؟",
-        "contact_admin": "اتصل بالمسؤول"
+        "contact_admin": "اتصل بالمسؤول",
+        "request_title": "طلب حساب جديد",
+        "full_name": "الاسم الكامل",
+        "business_name": "اسم العمل",
+        "submit_request": "إرسال الطلب",
+        "request_received": "شكرًا لك! تم استلام طلبك. سيتصل بك فريقنا قريبًا.",
+        "back_to_login": "العودة لتسجيل الدخول"
+    },
+    "calendars": {
+        "title": "التقاويم",
+        "subtitle": "إدارة الجدول الزمني والمواعيد",
+        "new_event": "حدث جديد",
+        "settings": "إعدادات التقويم",
+        "service_menu": "قائمة الخدمات",
+        "month_view": "شهر",
+        "week_view": "أسبوع",
+        "day_view": "يوم",
+        "event_title": "عنوان الحدث",
+        "start_time": "وقت البدء",
+        "duration": "المدة",
+        "save_event": "حفظ الحدث",
+        "cancel": "إلغاء",
+        "delete": "حذف",
+        "edit": "تعديل",
+        "upcoming": "جدول اليوم",
+        "no_events": "لا توجد أحداث مجدولة لليوم",
+        "select_calendar": "اختر التقويم",
+        "attendees": "حضور",
+        "confirmed": "تم التأكيد"
     }
 }

@@ -143,6 +143,34 @@
     "signin_button": "Sign In",
     "demo_mode": "Demo Mode",
     "no_account": "Don't have an account?",
-    "contact_admin": "Contact Admin"
+    "contact_admin": "Contact Admin",
+    "request_title": "Request an Account",
+    "full_name": "Full Name",
+    "business_name": "Business Name",
+    "submit_request": "Submit Request",
+    "request_received": "Thank you! Your request has been received. Our team will contact you shortly.",
+    "back_to_login": "Back to Login"
+  },
+  "calendars": {
+    "title": "Calendars",
+    "subtitle": "Manage your schedule and appointments",
+    "new_event": "New Event",
+    "settings": "Calendar Settings",
+    "service_menu": "Service Menu",
+    "month_view": "Month",
+    "week_view": "Week",
+    "day_view": "Day",
+    "event_title": "Event Title",
+    "start_time": "Start Time",
+    "duration": "Duration",
+    "save_event": "Save Event",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "upcoming": "Today's Schedule",
+    "no_events": "No events scheduled for today",
+    "select_calendar": "Select Calendar",
+    "attendees": "attendees",
+    "confirmed": "Confirmed"
   }
 }
