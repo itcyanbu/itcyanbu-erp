@@ -18,7 +18,6 @@ import {
     LineChart,
     Image,
     Facebook,
-    Play,
     Settings,
     Brain,
 } from 'lucide-react';
