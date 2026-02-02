@@ -172,7 +172,6 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
                         </button>
                     </div>
                 )}
-                <div className="mt-4 text-[10px] text-gray-300 text-center">v1.0.4-request-fix</div>
             </div>
         </div>
     );
