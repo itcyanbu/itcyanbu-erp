@@ -93,8 +93,9 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
                             <div className="mt-2 text-sm text-gray-500">
                                 <span>{t('login.no_account')} </span>
                                 <button
+                                    type="button"
                                     onClick={() => setView('request')}
-                                    className="text-blue-600 hover:text-blue-700 font-medium hover:underline"
+                                    className="text-blue-600 hover:text-blue-700 font-bold hover:underline transition-all cursor-pointer"
                                 >
                                     {t('login.contact_admin')}
                                 </button>
