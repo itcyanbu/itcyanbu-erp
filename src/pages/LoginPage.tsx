@@ -13,6 +13,11 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
     const [password, setPassword] = useState('demo');
     const [reqData, setReqData] = useState({ name: '', email: '', business: '' });
 
+    const setViewWithLog = (v: 'login' | 'request' | 'success') => {
+        console.log('Switching view to:', v);
+        setView(v);
+    };
+
     const toggleLanguage = () => {
         i18n.changeLanguage(i18n.language === 'ar' ? 'en' : 'ar');
     };
@@ -94,13 +99,14 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
                                 <span>{t('login.no_account')} </span>
                                 <button
                                     type="button"
-                                    onClick={() => setView('request')}
+                                    onClick={() => setViewWithLog('request')}
                                     className="text-blue-600 hover:text-blue-700 font-bold hover:underline transition-all cursor-pointer"
                                 >
                                     {t('login.contact_admin')}
                                 </button>
                             </div>
                         </div>
+                        <div className="mt-4 text-[10px] text-gray-400 text-center">App Version: v1.0.6-debug (View: {view})</div>
                     </>
                 ) : view === 'request' ? (
                     <>
