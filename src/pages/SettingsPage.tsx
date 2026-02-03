@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     User,
     Users,
@@ -98,10 +98,26 @@ const SettingsPage = () => {
         }
     });
 
+    // Load settings from localStorage on mount
+    useEffect(() => {
+        const savedSettings = localStorage.getItem('ghl_business_settings');
+        if (savedSettings) {
+            try {
+                setSettings(JSON.parse(savedSettings));
+            } catch (e) {
+                console.error('Failed to parse saved settings', e);
+            }
+        }
+    }, []);
+
     const handleSave = async (section: string) => {
         setLoadingStates(prev => ({ ...prev, [section]: true }));
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        // Simulate API call delay
+        await new Promise(resolve => setTimeout(resolve, 800));
+
+        // Persist all settings to localStorage
+        localStorage.setItem('ghl_business_settings', JSON.stringify(settings));
+
         setLoadingStates(prev => ({ ...prev, [section]: false }));
     };
 
