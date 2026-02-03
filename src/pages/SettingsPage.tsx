@@ -105,14 +105,21 @@ const SettingsPage = () => {
                         </div>
                     </div>
 
-                    <div className="col-span-full pt-4">
-                        <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
-                            API Key
-                            <HelpCircle size={14} className="text-gray-400 cursor-help" />
-                        </label>
-                        <div className="flex gap-2">
-                            <input type="text" readOnly value="6b89-4a7b-8c9d-1e2f3g4h5i6j" className="flex-1 px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500 font-mono text-sm" />
-                            <button className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 text-sm font-medium">Regenerate</button>
+                    <div className="col-span-full pt-4 space-y-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Branded Domain</label>
+                            <input type="text" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-ghl-blue outline-none" placeholder="links.example.com" />
+                            <p className="text-xs text-gray-500 mt-1">Used for system-generated links (calendars, forms, surveys, etc.)</p>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
+                                API Key
+                                <HelpCircle size={14} className="text-gray-400 cursor-help" />
+                            </label>
+                            <div className="flex gap-2">
+                                <input type="text" readOnly value="6b89-4a7b-8c9d-1e2f3g4h5i6j" className="flex-1 px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500 font-mono text-sm" />
+                                <button className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 text-sm font-medium">Regenerate</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -159,6 +166,25 @@ const SettingsPage = () => {
                             <option>(GMT+03:00) Riyadh</option>
                         </select>
                     </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Platform Language</label>
+                        <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-ghl-blue outline-none bg-white">
+                            <option>English</option>
+                            <option>Spanish</option>
+                            <option>French</option>
+                            <option>German</option>
+                            <option>Arabic</option>
+                        </select>
+                    </div>
+                    <div className="col-span-full">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Outbound Communication Language</label>
+                        <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-ghl-blue outline-none bg-white">
+                            <option>Default (English)</option>
+                            <option>Spanish</option>
+                            <option>Arabic</option>
+                        </select>
+                        <p className="text-xs text-gray-500 mt-1">Controls the language for Custom Fields and Custom Values in outgoing messages</p>
+                    </div>
                 </div>
             </BusinessProfileCard>
 
@@ -171,7 +197,9 @@ const SettingsPage = () => {
                         { label: 'Disable Contact Timezone', desc: 'Force all automated communication to use business timezone' },
                         { label: 'Validate Phone Numbers', desc: 'Validate phone numbers when the first SMS is sent' },
                         { label: 'Verify Email Address', desc: 'Verify email when the first email is sent to a new contact' },
+                        { label: 'Mark Emails as Unverified due to Hard Bounce', desc: 'Automatically skip email actions for hard-bouncing addresses' },
                         { label: 'Make SMS Compliant', desc: 'Add opt-out message (e.g., Reply STOP to unsubscribe)' },
+                        { label: 'Make Email Compliant', desc: 'Add an Unsubscribe Link in your emails automatically' },
                     ].map((item, i) => (
                         <div key={i} className="flex items-center justify-between py-3 border-b border-gray-50 last:border-0">
                             <div>
@@ -267,18 +295,56 @@ const SettingsPage = () => {
                             <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-ghl-blue"></div>
                         </label>
                     </div>
-                    <div className="pt-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Message</label>
-                        <textarea
-                            rows={3}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-ghl-blue outline-none resize-none text-sm"
-                            defaultValue="Hi, this is Ai & IT Solutions. Sorry we missed your call. How can we help you?"
-                        />
-                        <p className="text-xs text-gray-400 mt-2">Maximum 160 characters</p>
+                    <div className="pt-2 space-y-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Message</label>
+                            <textarea
+                                rows={3}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-ghl-blue outline-none resize-none text-sm"
+                                defaultValue="Hi, this is Ai & IT Solutions. Sorry we missed your call. How can we help you?"
+                            />
+                            <p className="text-xs text-gray-400 mt-2">Maximum 160 characters</p>
+                        </div>
+                        <div className="flex items-end gap-3 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                            <div className="flex-1">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Test Phone Number</label>
+                                <input type="tel" className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-sm" placeholder="+1 (555) 000-0000" />
+                            </div>
+                            <button className="px-4 py-2 border border-gray-300 rounded-md hover:bg-white text-sm font-medium transition-colors">
+                                Send Test
+                            </button>
+                        </div>
                     </div>
                     <button className="bg-ghl-blue text-white px-4 py-1.5 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">
                         Save Message
                     </button>
+                </div>
+            </BusinessProfileCard>
+
+            {/* Depreciated Features */}
+            <BusinessProfileCard title="Enable/Disable Depreciated Features">
+                <div className="space-y-4">
+                    <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                        <p className="text-xs text-amber-800">
+                            <strong>Note:</strong> Depreciated features are no longer updated or supported.
+                            Workflows have completely replaced Campaigns and Triggers as a superior option.
+                        </p>
+                    </div>
+                    {[
+                        { label: 'Campaigns', desc: 'Phasing out in favor of Workflows' },
+                        { label: 'Triggers', desc: 'Phasing out in favor of Workflows' },
+                    ].map((item, i) => (
+                        <div key={i} className="flex items-center justify-between py-2">
+                            <div>
+                                <h4 className="text-sm font-medium text-gray-900">{item.label}</h4>
+                                <p className="text-xs text-gray-500">{item.desc}</p>
+                            </div>
+                            <label className="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" className="sr-only peer" />
+                                <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-ghl-blue"></div>
+                            </label>
+                        </div>
+                    ))}
                 </div>
             </BusinessProfileCard>
 
