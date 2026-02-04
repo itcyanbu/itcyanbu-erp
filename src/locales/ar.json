@@ -46,7 +46,10 @@
         "vision_analysis": "تحليل رؤية الذكاء الاصطناعي للكاميرات",
         "real_time": "المراقبة في الوقت الحقيقي",
         "services": "الخدمات",
-        "case_study": "دراسة حالة"
+        "case_study": "دراسة حالة",
+        "launch_3d_vision": "تشغيل منصة الرؤية ثلاثية الأبعاد",
+        "launch_industry_automation": "تشغيل أتمتة الصناعة",
+        "launch_wonder_sphere": "تشغيل ونـدر سفـير"
     },
     "dashboard": {
         "title": "لوحة التحكم",

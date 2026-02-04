@@ -46,7 +46,10 @@
     "vision_analysis": "CCTV AI Vision Analysis",
     "real_time": "Real-time Monitoring",
     "services": "Services",
-    "case_study": "Case Study"
+    "case_study": "Case Study",
+    "launch_3d_vision": "Launch 3D Vision Platform",
+    "launch_industry_automation": "Launch Industry Automation",
+    "launch_wonder_sphere": "Launch Wonder Sphere Hub"
   },
   "dashboard": {
     "title": "Dashboard",

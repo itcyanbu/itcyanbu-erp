@@ -135,21 +135,27 @@ const AiSolutionsPage = () => {
                         <div className="bg-orange-50 p-6 rounded-full mb-6">
                             <Factory className="w-16 h-16 text-orange-500" />
                         </div>
-                        <h2 className="text-2xl font-bold text-gray-900 mb-2">Industry AI</h2>
+                        <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('ai_solutions.industry_ai')}</h2>
                         <p className="text-gray-500 max-w-md mb-6">Advanced industrial automation and AI solutions.</p>
 
-                        <div className="flex flex-col sm:flex-row gap-4">
+                        <div className="flex flex-col gap-4 w-full max-w-md">
                             <button
                                 onClick={() => window.open('https://solution-spark-x.lovable.app', '_blank')}
-                                className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition shadow-sm hover:shadow"
+                                className="w-full px-6 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5 active:translate-y-0"
                             >
-                                Launch 3D Vision Platform
+                                {t('ai_solutions.launch_3d_vision')}
                             </button>
                             <button
                                 onClick={() => window.open('https://arabish-bright.lovable.app', '_blank')}
-                                className="px-6 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition shadow-sm hover:shadow"
+                                className="w-full px-6 py-3 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5 active:translate-y-0"
                             >
-                                Launch Industry Automation
+                                {t('ai_solutions.launch_industry_automation')}
+                            </button>
+                            <button
+                                onClick={() => window.open('https://wonder-sphere-hub.lovable.app', '_blank')}
+                                className="w-full px-6 py-3 bg-purple-600 text-white font-semibold rounded-xl hover:bg-purple-700 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5 active:translate-y-0"
+                            >
+                                {t('ai_solutions.launch_wonder_sphere')}
                             </button>
                         </div>
                     </div>
