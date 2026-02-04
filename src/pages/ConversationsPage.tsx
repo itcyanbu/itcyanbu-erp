@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { MessageSquare, Search, Send, Mail, MessageCircle, Phone, Star, Tag, CheckCheck, Filter, MoreHorizontal, ChevronDown, Plus, Eye, ThumbsUp, ThumbsDown, Trash2, ArrowRight, Smile, Image } from 'lucide-react';
+import { MessageSquare, Search, Send, Mail, MessageCircle, Phone, Star, Tag, CheckCheck, Filter, MoreHorizontal, ChevronDown, Plus, Eye, ThumbsUp, ThumbsDown, Trash2, Smile, Image } from 'lucide-react';
 import type { Conversation, Message, Channel } from '../types/conversations';
 import { mockConversations } from '../data/mockConversations';
 
@@ -11,6 +11,10 @@ const ConversationsPage = () => {
     const [newMessage, setNewMessage] = useState('');
     const [messageMode, setMessageMode] = useState<'reply' | 'internal'>('reply');
     const [visibleChannels] = useState<Set<Channel>>(new Set(['sms', 'email', 'whatsapp', 'chat', 'internal']));
+    const [inboxType, setInboxType] = useState<'my' | 'team' | 'internal'>('my');
+    const [isLeftPanelCollapsed, setIsLeftPanelCollapsed] = useState(false);
+    const [isRightPanelCollapsed, setIsRightPanelCollapsed] = useState(false);
+    const [selectedConversations, setSelectedConversations] = useState<Set<string>>(new Set());
 
     const filteredConversations = useMemo(() => {
         let filtered = conversations;
@@ -113,14 +117,40 @@ const ConversationsPage = () => {
     return (
         <div className="flex bg-gray-50 h-[calc(100vh-64px)] overflow-hidden">
             {/* Left Sidebar: Team Inbox */}
-            <div className="w-80 flex flex-col border-r border-gray-200 bg-white">
+            <div className={`${isLeftPanelCollapsed ? 'w-0' : 'w-80'} flex flex-col border-r border-gray-200 bg-white transition-all duration-300 overflow-hidden`}>
                 <div className="p-4 border-b border-gray-200">
+                    {/* Inbox Switcher */}
+                    <div className="mb-4">
+                        <select
+                            value={inboxType}
+                            onChange={(e) => setInboxType(e.target.value as 'my' | 'team' | 'internal')}
+                            className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            <option value="my">My Inbox</option>
+                            <option value="team">Team Inbox</option>
+                            <option value="internal">Internal Chat</option>
+                        </select>
+                    </div>
+
                     <div className="flex items-center justify-between mb-4">
-                        <h2 className="font-semibold text-gray-900">Team Inbox</h2>
-                        <div className="flex gap-2">
-                            <button className="p-1.5 text-gray-500 hover:bg-gray-100 rounded"><CheckCheck size={16} /></button>
-                            <button className="p-1.5 text-gray-500 hover:bg-gray-100 rounded"><Filter size={16} /></button>
-                            <button className="p-1.5 text-gray-500 hover:bg-gray-100 rounded"><ArrowRight size={16} /></button>
+                        <h2 className="font-semibold text-gray-900 text-sm">
+                            {selectedConversations.size > 0 ? `${selectedConversations.size} selected` : 'Messages'}
+                        </h2>
+                        <div className="flex gap-1">
+                            {selectedConversations.size > 0 && (
+                                <>
+                                    <button
+                                        onClick={() => setSelectedConversations(new Set())}
+                                        className="p-1.5 text-gray-500 hover:bg-gray-100 rounded"
+                                        title="Mark as Read"
+                                    >
+                                        <CheckCheck size={16} />
+                                    </button>
+                                    <button className="p-1.5 text-gray-500 hover:bg-gray-100 rounded" title="Star"><Star size={16} /></button>
+                                    <button className="p-1.5 text-red-500 hover:bg-red-50 rounded" title="Delete"><Trash2 size={16} /></button>
+                                </>
+                            )}
+                            <button className="p-1.5 text-gray-500 hover:bg-gray-100 rounded" title="Filter"><Filter size={16} /></button>
                         </div>
                     </div>
 
@@ -156,36 +186,64 @@ const ConversationsPage = () => {
                     {filteredConversations.map((conv) => (
                         <div
                             key={conv.id}
-                            onClick={() => handleSelectConv(conv)}
                             className={`p-3 border-b border-gray-100 cursor-pointer hover:bg-gray-50 ${selectedConv?.id === conv.id ? 'bg-blue-50 border-l-2 border-l-blue-500' : ''}`}
                         >
                             <div className="flex items-start gap-3">
-                                <div className="w-10 h-10 rounded-full bg-gray-200 flex-shrink-0 flex items-center justify-center text-sm font-medium text-gray-600">
-                                    {conv.contact.name.slice(0, 2).toUpperCase()}
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex justify-between items-baseline mb-1">
-                                        <h3 className={`text-sm truncate ${conv.unreadCount > 0 ? 'font-bold text-gray-900' : 'text-gray-700'}`}>
-                                            {conv.contact.name}
-                                        </h3>
-                                        <span className="text-xs text-gray-400">{formatTime(conv.lastUpdated)}</span>
+                                {/* Checkbox */}
+                                <input
+                                    type="checkbox"
+                                    checked={selectedConversations.has(conv.id)}
+                                    onChange={(e) => {
+                                        e.stopPropagation();
+                                        const newSet = new Set(selectedConversations);
+                                        if (e.target.checked) {
+                                            newSet.add(conv.id);
+                                        } else {
+                                            newSet.delete(conv.id);
+                                        }
+                                        setSelectedConversations(newSet);
+                                    }}
+                                    className="mt-2 w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                                />
+                                <div
+                                    onClick={() => handleSelectConv(conv)}
+                                    className="flex items-start gap-3 flex-1 min-w-0"
+                                >
+                                    <div className="w-10 h-10 rounded-full bg-gray-200 flex-shrink-0 flex items-center justify-center text-sm font-medium text-gray-600">
+                                        {conv.contact.name.slice(0, 2).toUpperCase()}
                                     </div>
-                                    <div className="flex items-center gap-1 mb-1">
-                                        {getChannelIcon(conv.channel, 12)}
-                                        <p className={`text-xs truncate ${conv.unreadCount > 0 ? 'text-gray-800 font-medium' : 'text-gray-500'}`}>
-                                            {conv.lastMessage.body}
-                                        </p>
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex justify-between items-baseline mb-1">
+                                            <h3 className={`text-sm truncate ${conv.unreadCount > 0 ? 'font-bold text-gray-900' : 'text-gray-700'}`}>
+                                                {conv.contact.name}
+                                            </h3>
+                                            <span className="text-xs text-gray-400">{formatTime(conv.lastUpdated)}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1 mb-1">
+                                            {getChannelIcon(conv.channel, 12)}
+                                            <p className={`text-xs truncate ${conv.unreadCount > 0 ? 'text-gray-800 font-medium' : 'text-gray-500'}`}>
+                                                {conv.lastMessage.body}
+                                            </p>
+                                        </div>
                                     </div>
+                                    {conv.unreadCount > 0 && (
+                                        <span className="bg-gray-500 text-white text-[10px] px-1.5 py-0.5 rounded-full">
+                                            {conv.unreadCount}
+                                        </span>
+                                    )}
                                 </div>
-                                {conv.unreadCount > 0 && (
-                                    <span className="bg-gray-500 text-white text-[10px] px-1.5 py-0.5 rounded-full">
-                                        {conv.unreadCount}
-                                    </span>
-                                )}
                             </div>
                         </div>
                     ))}
                 </div>
+
+                {/* Collapse Button for Left Panel */}
+                <button
+                    onClick={() => setIsLeftPanelCollapsed(!isLeftPanelCollapsed)}
+                    className="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-12 bg-white border border-gray-200 rounded-r-md flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-50 z-10 shadow-sm"
+                >
+                    {isLeftPanelCollapsed ? '→' : '←'}
+                </button>
             </div>
 
             {/* Middle Panel: Message History */}
@@ -320,7 +378,7 @@ const ConversationsPage = () => {
 
             {/* Right Sidebar: Contact Details */}
             {selectedConv && (
-                <div className="w-80 bg-gray-50 border-l border-gray-200 flex flex-col h-full overflow-hidden">
+                <div className={`${isRightPanelCollapsed ? 'w-0' : 'w-80'} bg-gray-50 border-l border-gray-200 flex flex-col h-full overflow-hidden transition-all duration-300 relative`}>
                     <div className="p-4 border-b border-gray-200 bg-white flex items-center justify-between">
                         <h3 className="font-semibold text-gray-800">Contact Details</h3>
                         <button className="text-gray-400 hover:text-gray-600"><MoreHorizontal size={18} /></button>
@@ -407,6 +465,14 @@ const ConversationsPage = () => {
 
                         </div>
                     </div>
+
+                    {/* Collapse Button for Right Panel */}
+                    <button
+                        onClick={() => setIsRightPanelCollapsed(!isRightPanelCollapsed)}
+                        className="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-12 bg-white border border-gray-200 rounded-l-md flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-50 z-10 shadow-sm"
+                    >
+                        {isRightPanelCollapsed ? '←' : '→'}
+                    </button>
                 </div>
             )}
         </div>
