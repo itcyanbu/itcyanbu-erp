@@ -1,22 +1,17 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Languages } from 'lucide-react';
+import { Languages, Eye, EyeOff, Info, ChevronDown } from 'lucide-react';
 
 interface LoginPageProps {
     onLogin: () => void;
 }
 
 const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
-    const { t, i18n } = useTranslation();
-    const [view, setView] = useState<'login' | 'request' | 'success'>('login');
+    const { i18n } = useTranslation();
     const [email, setEmail] = useState('demo@example.com');
     const [password, setPassword] = useState('demo');
-    const [reqData, setReqData] = useState({ name: '', email: '', business: '' });
-
-    const setViewWithLog = (v: 'login' | 'request' | 'success') => {
-        console.log('Switching view to:', v);
-        setView(v);
-    };
+    const [showPassword, setShowPassword] = useState(false);
+    const [rememberMe, setRememberMe] = useState(true);
 
     const toggleLanguage = () => {
         i18n.changeLanguage(i18n.language === 'ar' ? 'en' : 'ar');
@@ -27,175 +22,131 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
         onLogin();
     };
 
-    const handleRequest = (e: React.FormEvent) => {
-        e.preventDefault();
-        // In a real app, this would send data to a backend
-        console.log('Account Request:', reqData);
-        setView('success');
-    };
-
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4 font-sans">
-            <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200 w-full max-w-md">
-                <div className="flex justify-end mb-4">
+        <div className="min-h-screen flex items-center justify-center bg-[#f8f9fa] p-4 font-sans">
+            <div className="bg-white p-8 md:p-12 rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] w-full max-w-[480px]">
+                {/* Logo Section */}
+                <div className="flex items-center justify-center gap-2 mb-12">
+                    <div className="w-10 h-10 bg-[#007bff] rounded-lg flex items-center justify-center shadow-sm">
+                        <svg viewBox="0 0 24 24" className="w-6 h-6 text-white fill-current">
+                            <path d="M21 5l-7 7-4-4L3 15v4l7-7 4 4 7-7V5z" />
+                            {/* Simplified Bird Icon path */}
+                        </svg>
+                    </div>
+                    <span className="text-[28px] font-bold text-[#333] tracking-tight">itcyanbu</span>
+                </div>
+
+                <div className="flex items-center justify-between mb-8">
+                    <h1 className="text-[24px] font-bold text-[#1a1a1a]">Log in</h1>
+                    <div className="relative">
+                        <button
+                            onClick={toggleLanguage}
+                            className="flex items-center gap-2 px-3 py-1.5 text-gray-600 hover:bg-gray-50 rounded-full text-sm font-medium transition-all border border-gray-100"
+                        >
+                            <Languages size={16} className="text-blue-500" />
+                            {i18n.language === 'ar' ? 'العربية' : 'English'}
+                            <ChevronDown size={14} className="text-gray-400" />
+                        </button>
+                    </div>
+                </div>
+
+                <form onSubmit={handleLogin} className="space-y-5">
+                    <div className="relative">
+                        <input
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="Please enter an email address."
+                            className="w-full px-5 py-4 bg-[#f8f9fa] border border-transparent rounded-[16px] text-[15px] text-gray-900 focus:outline-none focus:bg-white focus:ring-1 focus:ring-blue-500 transition-all placeholder:text-gray-400 shadow-inner"
+                            required
+                        />
+                    </div>
+
+                    <div className="relative flex items-center">
+                        <input
+                            type={showPassword ? "text" : "password"}
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="Please enter your password"
+                            className="w-full px-5 py-4 bg-[#f8f9fa] border border-transparent rounded-[16px] text-[15px] text-gray-900 focus:outline-none focus:bg-white focus:ring-1 focus:ring-blue-500 transition-all placeholder:text-gray-400 shadow-inner pr-[90px]"
+                            required
+                        />
+                        <div className="absolute right-4 flex items-center gap-3">
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="text-gray-400 hover:text-gray-600 transition-colors"
+                            >
+                                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
+                            <div className="w-[1px] h-4 bg-gray-200" />
+                            <button type="button" className="text-gray-400 hover:text-gray-600 transition-colors">
+                                <Info size={18} />
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-1">
+                        <label className="flex items-center gap-2 cursor-pointer group">
+                            <div className="relative">
+                                <input
+                                    type="checkbox"
+                                    checked={rememberMe}
+                                    onChange={(e) => setRememberMe(e.target.checked)}
+                                    className="sr-only peer"
+                                />
+                                <div className="w-5 h-5 border-2 border-gray-200 rounded-md bg-white peer-checked:bg-blue-600 peer-checked:border-blue-600 transition-all shadow-sm" />
+                                <svg
+                                    className="absolute inset-0 w-3 h-3 m-auto text-white opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                    strokeWidth="4"
+                                >
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+                            <span className="text-[14px] text-gray-600 font-medium">Remember me</span>
+                        </label>
+                        <button type="button" className="text-[14px] text-blue-600 font-medium hover:underline">
+                            Forgot password?
+                        </button>
+                    </div>
+
                     <button
-                        onClick={toggleLanguage}
-                        className="flex items-center gap-2 px-3 py-1.5 text-blue-600 hover:bg-blue-50 rounded-lg text-xs font-bold transition-all border border-blue-100"
+                        type="submit"
+                        className="w-full bg-[#007bff] hover:bg-[#0069d9] text-white font-bold py-4 px-6 rounded-[16px] transition-all duration-200 shadow-[0_4px_15px_rgba(0,123,255,0.2)] text-[16px] mt-4"
                     >
-                        <Languages size={14} />
-                        {i18n.language === 'ar' ? 'English' : 'العربية'}
+                        Log in
+                    </button>
+                </form>
+
+                <div className="relative my-8 text-center">
+                    <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-gray-100"></div>
+                    </div>
+                    <span className="relative px-4 bg-white text-gray-400 text-xs font-medium uppercase tracking-wider">or</span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 mb-8">
+                    <button className="flex items-center justify-center gap-2 px-4 py-3 border border-gray-200 rounded-[14px] hover:bg-gray-50 transition-all shadow-sm">
+                        <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" alt="Google" className="w-5 h-5 shadow-sm rounded-full" />
+                        <span className="text-[14px] font-semibold text-gray-700">Google</span>
+                    </button>
+                    <button className="flex items-center justify-center gap-2 px-4 py-3 border border-gray-200 rounded-[14px] hover:bg-gray-50 transition-all shadow-sm">
+                        <div className="w-5 h-5 bg-gray-100 rounded-sm flex items-center justify-center">
+                            <svg viewBox="0 0 24 24" className="w-4 h-4 text-gray-400 fill-current">
+                                <path d="M17 1H7c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-2-2-2zm-5 21c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm5-4H7V4h10v14z" />
+                            </svg>
+                        </div>
+                        <span className="text-[14px] font-semibold text-gray-700">Phone number</span>
                     </button>
                 </div>
 
-                {view === 'login' ? (
-                    <>
-                        <div className="text-center mb-8">
-                            <h1 className="text-2xl font-bold text-gray-900 mb-2">{t('login.signin')}</h1>
-                            <p className="text-gray-500 text-sm">{t('login.to_account')}</p>
-                        </div>
-
-                        <form onSubmit={handleLogin} className="space-y-6">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    {t('login.email_label')}
-                                </label>
-                                <input
-                                    type="email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    placeholder={t('login.email_placeholder')}
-                                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-gray-400"
-                                    required
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    {t('login.password_label')}
-                                </label>
-                                <input
-                                    type="password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    placeholder={t('login.password_placeholder')}
-                                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-gray-400"
-                                    required
-                                />
-                            </div>
-
-                            <button
-                                type="submit"
-                                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 shadow-sm"
-                            >
-                                {t('login.signin_button')}
-                            </button>
-                        </form>
-
-                        <div className="mt-8 text-center border-t border-gray-100 pt-6">
-                            <p className="text-sm text-gray-500 mb-4">
-                                {t('login.demo_mode')}: <span className="font-semibold text-gray-700">demo@example.com</span> / <span className="font-semibold text-gray-700">demo</span>
-                            </p>
-                            <div className="flex flex-col gap-3">
-                                <div className="text-sm text-gray-500">
-                                    <span>{t('login.no_account')} </span>
-                                    <button
-                                        type="button"
-                                        onClick={() => setViewWithLog('request')}
-                                        className="text-blue-600 hover:text-blue-700 font-bold hover:underline transition-all cursor-pointer"
-                                    >
-                                        {t('login.contact_admin')}
-                                    </button>
-                                </div>
-                                {/* RAW FALLBACK BUTTON - NO TRANSLATION */}
-                                <button
-                                    onClick={() => setViewWithLog('request')}
-                                    className="text-[10px] bg-gray-100 text-gray-600 px-2 py-1 rounded hover:bg-gray-200"
-                                >
-                                    FALLBACK: Request Account (Click Here if Admin Button Fails)
-                                </button>
-                            </div>
-                        </div>
-                    </>
-                ) : view === 'request' ? (
-                    <div className="bg-orange-50/30 p-4 rounded-xl border border-orange-100">
-                        <div className="text-center mb-8">
-                            <h1 className="text-2xl font-bold text-gray-900 mb-2">{t('login.request_title')}</h1>
-                        </div>
-
-                        <form onSubmit={handleRequest} className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">{t('login.full_name')}</label>
-                                <input
-                                    required
-                                    type="text"
-                                    value={reqData.name}
-                                    onChange={(e) => setReqData({ ...reqData, name: e.target.value })}
-                                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-sm"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">{t('login.email_label')}</label>
-                                <input
-                                    required
-                                    type="email"
-                                    value={reqData.email}
-                                    onChange={(e) => setReqData({ ...reqData, email: e.target.value })}
-                                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-sm"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">{t('login.business_name')}</label>
-                                <input
-                                    required
-                                    type="text"
-                                    value={reqData.business}
-                                    onChange={(e) => setReqData({ ...reqData, business: e.target.value })}
-                                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-sm"
-                                />
-                            </div>
-
-                            <button
-                                type="submit"
-                                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors"
-                            >
-                                {t('login.submit_request')}
-                            </button>
-
-                            <button
-                                type="button"
-                                onClick={() => setView('login')}
-                                className="w-full text-sm text-blue-600 hover:underline"
-                            >
-                                {t('login.back_to_login')}
-                            </button>
-                        </form>
-                    </div>
-                ) : (
-                    <div className="text-center py-8">
-                        <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                            </svg>
-                        </div>
-                        <p className="text-gray-900 font-medium mb-4">{t('login.request_received')}</p>
-                        <button
-                            onClick={() => setView('login')}
-                            className="bg-blue-600 text-white px-6 py-2 rounded-lg text-sm hover:bg-blue-700"
-                        >
-                            {t('login.back_to_login')}
-                        </button>
-                    </div>
-                )}
-
-                {/* PERSISTENT DEBUG FOOTER */}
-                <div className="mt-8 pt-4 border-t border-gray-100 text-[10px] space-y-1">
-                    <div className="flex justify-between text-gray-400">
-                        <span>VERSION: v1.0.7-FIX</span>
-                        <span>VIEW: {view}</span>
-                    </div>
-                    <div className="text-gray-300 text-center italic">
-                        If you see this, the latest code is active.
-                    </div>
+                <div className="text-center pt-2">
+                    <p className="text-[14px] text-gray-500 font-medium">
+                        Don't have a itcyanbu account? <button type="button" className="text-blue-600 font-bold hover:underline">Sign up now</button>
+                    </p>
                 </div>
             </div>
         </div>
