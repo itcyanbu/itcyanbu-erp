@@ -1,5 +1,4 @@
-
-import { Search, Bell, HelpCircle, Languages } from 'lucide-react';
+import { Search, Bell, HelpCircle, Languages, Phone, Zap, Megaphone } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 const Header = () => {
@@ -24,30 +23,46 @@ const Header = () => {
                 </div>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
                 <button
                     onClick={toggleLanguage}
                     id="language-switcher-header"
-                    className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition-all shadow-md"
+                    className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition-all shadow-md mr-2"
                 >
                     <Languages size={14} />
                     {i18n.language === 'ar' ? 'English' : 'العربية'}
                 </button>
+
+                {/* Action Icons Group */}
+                <div className="flex items-center gap-2 mr-4">
+                    <button className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center text-white hover:bg-emerald-600 transition-colors shadow-sm">
+                        <Phone size={20} />
+                    </button>
+                    <button className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white hover:bg-blue-600 transition-colors shadow-sm">
+                        <Zap size={20} />
+                    </button>
+                    <button className="w-10 h-10 rounded-full bg-[#5f8b8b] flex items-center justify-center text-white hover:opacity-90 transition-opacity shadow-sm">
+                        <Megaphone size={20} />
+                    </button>
+                    <button className="relative w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center text-white hover:bg-orange-600 transition-colors shadow-sm">
+                        <Bell size={20} />
+                        <span className="absolute top-2 right-2 w-2 h-2 bg-white rounded-full"></span>
+                    </button>
+                </div>
+
                 <a
                     href="https://glow-guide-help-hub.lovable.app/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-gray-500 hover:text-gray-700"
+                    className="text-gray-400 hover:text-gray-600 mr-2"
                     title={t('common.help')}
                 >
-                    <HelpCircle size={20} />
+                    <HelpCircle size={22} />
                 </a>
-                <button className="relative text-gray-500 hover:text-gray-700">
-                    <Bell size={20} />
-                    <span className="absolute top-0 right-0 rtl:right-auto rtl:left-0 w-2 h-2 bg-red-500 rounded-full"></span>
-                </button>
-                <div className="w-10 h-10 rounded-full border border-gray-100 overflow-hidden shadow-sm flex items-center justify-center bg-gray-50">
-                    <img src="/itc-logo.jpg" alt="ITC Logo" className="w-full h-full object-cover" />
+
+                {/* Avatar */}
+                <div className="w-11 h-11 rounded-full bg-[#b28fff] flex items-center justify-center text-white font-bold text-lg shadow-sm cursor-pointer border-2 border-[#d8c5ff] hover:opacity-90 transition-opacity">
+                    MM
                 </div>
             </div>
         </header>
