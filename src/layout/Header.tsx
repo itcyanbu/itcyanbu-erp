@@ -27,26 +27,26 @@ const Header = () => {
                 <button
                     onClick={toggleLanguage}
                     id="language-switcher-header"
-                    className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition-all shadow-md mr-2"
+                    className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition-all shadow-md mr-1"
                 >
                     <Languages size={14} />
                     {i18n.language === 'ar' ? 'English' : 'العربية'}
                 </button>
 
                 {/* Action Icons Group */}
-                <div className="flex items-center gap-2 mr-4">
-                    <button className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center text-white hover:bg-emerald-600 transition-colors shadow-sm">
-                        <Phone size={20} />
+                <div className="flex items-center gap-3 mr-1">
+                    <button className="w-12 h-12 rounded-full bg-emerald-500 flex items-center justify-center text-white hover:bg-emerald-600 transition-colors shadow-sm">
+                        <Phone size={24} />
                     </button>
-                    <button className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white hover:bg-blue-600 transition-colors shadow-sm">
-                        <Zap size={20} />
+                    <button className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-white hover:bg-blue-600 transition-colors shadow-sm">
+                        <Zap size={24} />
                     </button>
-                    <button className="w-10 h-10 rounded-full bg-[#5f8b8b] flex items-center justify-center text-white hover:opacity-90 transition-opacity shadow-sm">
-                        <Megaphone size={20} />
+                    <button className="w-12 h-12 rounded-full bg-[#5f8b8b] flex items-center justify-center text-white hover:opacity-90 transition-opacity shadow-sm">
+                        <Megaphone size={24} />
                     </button>
-                    <button className="relative w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center text-white hover:bg-orange-600 transition-colors shadow-sm">
-                        <Bell size={20} />
-                        <span className="absolute top-2 right-2 w-2 h-2 bg-white rounded-full"></span>
+                    <button className="relative w-12 h-12 rounded-full bg-orange-500 flex items-center justify-center text-white hover:bg-orange-600 transition-colors shadow-sm">
+                        <Bell size={24} />
+                        <span className="absolute top-2.5 right-2.5 w-3 h-3 bg-white border-2 border-orange-500 rounded-full shadow-sm"></span>
                     </button>
                 </div>
 
@@ -54,14 +54,14 @@ const Header = () => {
                     href="https://glow-guide-help-hub.lovable.app/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-gray-400 hover:text-gray-600 mr-2"
+                    className="w-12 h-12 rounded-full bg-transparent flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-50 transition-all mr-1"
                     title={t('common.help')}
                 >
-                    <HelpCircle size={22} />
+                    <HelpCircle size={28} />
                 </a>
 
                 {/* Avatar */}
-                <div className="w-11 h-11 rounded-full bg-[#b28fff] flex items-center justify-center text-white font-bold text-lg shadow-sm cursor-pointer border-2 border-[#d8c5ff] hover:opacity-90 transition-opacity">
+                <div className="w-12 h-12 rounded-full bg-[#b2b2ff] flex items-center justify-center text-white font-bold text-xl shadow-sm cursor-pointer border-2 border-[#d8d8ff] hover:opacity-90 transition-opacity ml-1">
                     MM
                 </div>
             </div>
