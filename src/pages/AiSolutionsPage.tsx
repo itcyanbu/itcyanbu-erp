@@ -126,7 +126,7 @@ const AiSolutionsPage = () => {
                             <Settings className="w-16 h-16 text-blue-500" />
                         </div>
                         <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('ai_solutions.services')}</h2>
-                        <p className="text-gray-500">Comprehensive AI CCTV implementation services and maintenance.</p>
+                        <p className="text-gray-500">{t('ai_solutions.cctv_services_desc')}</p>
                     </div>
                 );
             case 'industry-ai':
@@ -136,7 +136,7 @@ const AiSolutionsPage = () => {
                             <Factory className="w-16 h-16 text-orange-500" />
                         </div>
                         <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('ai_solutions.industry_ai')}</h2>
-                        <p className="text-gray-500 max-w-md mb-6">Advanced industrial automation and AI solutions.</p>
+                        <p className="text-gray-500 max-w-md mb-6">{t('ai_solutions.industry_ai_desc')}</p>
 
                         <div className="flex flex-col gap-4 w-full max-w-md">
                             <button
@@ -208,7 +208,7 @@ const AiSolutionsPage = () => {
                                                 <p className="text-sm font-semibold text-gray-900 truncate" title={file}>
                                                     {file.replace('.pdf', '')}
                                                 </p>
-                                                <p className="text-xs text-gray-500 uppercase tracking-wider font-bold">PDF Document</p>
+                                                <p className="text-xs text-gray-500 uppercase tracking-wider font-bold">{t('help_tab.pdf')} Document</p>
                                             </div>
                                             <div className="p-2 text-gray-400 group-hover:text-ghl-blue">
                                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
@@ -223,8 +223,8 @@ const AiSolutionsPage = () => {
                                     <div className="bg-emerald-50 p-6 rounded-full mb-6">
                                         <Globe className="w-12 h-12 text-emerald-500" />
                                     </div>
-                                    <h3 className="text-xl font-bold text-gray-900 mb-2">Resource Library</h3>
-                                    <p className="text-gray-500">Additional tools and links will appear here.</p>
+                                    <h3 className="text-xl font-bold text-gray-900 mb-2">{t('ai_solutions.resource_library')}</h3>
+                                    <p className="text-gray-500">{t('ai_solutions.resource_library_desc')}</p>
                                 </div>
                             )}
                         </div>
@@ -237,7 +237,7 @@ const AiSolutionsPage = () => {
                             <Box className="w-16 h-16 text-gray-400" />
                         </div>
                         <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('common.coming_soon')}</h2>
-                        <p className="text-gray-500">The module is currently under development.</p>
+                        <p className="text-gray-500">{t('ai_solutions.coming_soon_desc')}</p>
                     </div>
                 );
         }

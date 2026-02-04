@@ -49,7 +49,12 @@
         "case_study": "دراسة حالة",
         "launch_3d_vision": "تشغيل منصة الرؤية ثلاثية الأبعاد",
         "launch_industry_automation": "تشغيل أتمتة الصناعة",
-        "launch_wonder_sphere": "تشغيل ونـدر سفـير"
+        "launch_wonder_sphere": "تشغيل ونـدر سفـير",
+        "cctv_services_desc": "خدمات شاملة لتشغيل وصيانة أنظمة المراقبة المدعومة بالذكاء الاصطناعي.",
+        "industry_ai_desc": "حلول متقدمة للأتمتة الصناعية والذكاء الاصطناعي.",
+        "resource_library": "مكتبة المصادر",
+        "resource_library_desc": "ستظهر هنا أدوات وروابط إضافية.",
+        "coming_soon_desc": "هذا القسم قيد التطوير حالياً."
     },
     "dashboard": {
         "title": "لوحة التحكم",
