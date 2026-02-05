@@ -10,6 +10,7 @@ import ContactModal from '../components/ContactModal';
 import { useContacts } from '../context/ContactContext';
 import ModulePlaceholder from '../components/ModulePlaceholder';
 import ContactDetailSlideOver from '../components/ContactDetailSlideOver';
+import DialerModal from './DialerModal';
 
 const ContactsPage = () => {
     const { contacts, searchQuery, deleteContact, setSearchQuery, addContact, updateContact } = useContacts();
@@ -20,6 +21,7 @@ const ContactsPage = () => {
     const [activeTab, setActiveTab] = useState('Smart Lists');
     const [activeFilter, setActiveFilter] = useState('All');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isDialerOpen, setIsDialerOpen] = useState(false);
     const [editingContact, setEditingContact] = useState<any>(null);
     const [selectedContact, setSelectedContact] = useState<any>(null);
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -27,6 +29,9 @@ const ContactsPage = () => {
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
     const [activeActionModal, setActiveActionModal] = useState<string | null>(null);
+
+    // ... (rest of state items preserved implicitly by only replacing up to line 30ish if I could, but I need to replace the header block later too)
+    // Actually, I'll replace the top block to add import and state, then the bottom block to render modal.
 
     // Mock Data for Tabs
     const [bulkActions] = useState([
@@ -329,10 +334,10 @@ const ContactsPage = () => {
                 <div className="flex items-center gap-3 rtl:flex-row-reverse transition-all">
                     <div className="flex items-center gap-2 mr-4 rtl:mr-0 rtl:ml-4">
                         {[
-                            { icon: Phone, color: '#10b981' },
-                            { icon: Zap, color: '#3b82f6' },
-                            { icon: Megaphone, color: '#528a8d' },
-                            { icon: Bell, color: '#f97316' },
+                            { icon: Phone, color: '#10b981', onClick: () => setIsDialerOpen(true) },
+                            { icon: Zap, color: '#3b82f6', onClick: () => triggerToast('Features coming soon!') },
+                            { icon: Megaphone, color: '#528a8d', onClick: () => triggerToast('Announcements coming soon!') },
+                            { icon: Bell, color: '#f97316', onClick: () => triggerToast('Notifications coming soon!') },
                             { icon: HelpCircle, color: '#3b82f6', link: 'https://glow-guide-help-hub.lovable.app/' }
                         ].map((btn, idx) => {
                             const Icon = btn.icon;
@@ -353,6 +358,7 @@ const ContactsPage = () => {
                             return (
                                 <button
                                     key={idx}
+                                    onClick={btn.onClick}
                                     className="w-8 h-8 rounded-full flex items-center justify-center text-white shadow-sm hover:opacity-90 transition-opacity"
                                     style={{ backgroundColor: btn.color }}
                                 >
@@ -555,6 +561,8 @@ const ContactsPage = () => {
                     <span className="font-medium">{toastMessage}</span>
                 </div>
             )}
+
+            <DialerModal isOpen={isDialerOpen} onClose={() => setIsDialerOpen(false)} />
         </div>
     );
 };

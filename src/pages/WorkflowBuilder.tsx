@@ -1,4 +1,3 @@
-import React from 'react';
 import { ArrowLeft, Play, Save, Settings, Plus, MousePointer2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
