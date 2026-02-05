@@ -15,9 +15,14 @@ import TemplatesTab from '../components/marketing/TemplatesTab';
 import TriggerLinksTab from '../components/marketing/TriggerLinksTab';
 import AffiliateManagerTab from '../components/marketing/AffiliateManagerTab';
 
+import MarketingActionModal from '../components/marketing/MarketingActionModal';
+
+type ModalType = 'social-post' | 'email-campaign' | 'template' | 'trigger-link';
+
 const MarketingPage = () => {
     const [activeTab, setActiveTab] = useState('Social Planner');
     const [isCreateDropdownOpen, setIsCreateDropdownOpen] = useState(false);
+    const [modalType, setModalType] = useState<ModalType | null>(null);
 
     const tabs = [
         { id: 'Social Planner', label: 'Social Planner', icon: LayoutGrid },
@@ -29,17 +34,22 @@ const MarketingPage = () => {
 
     const renderTabContent = () => {
         switch (activeTab) {
-            case 'Social Planner': return <SocialPlannerTab />;
-            case 'Emails': return <EmailsTab />;
-            case 'Templates': return <TemplatesTab />;
-            case 'Trigger Links': return <TriggerLinksTab />;
+            case 'Social Planner': return <SocialPlannerTab onCreate={() => setModalType('social-post')} />;
+            case 'Emails': return <EmailsTab onCreate={() => setModalType('email-campaign')} />;
+            case 'Templates': return <TemplatesTab onCreate={() => setModalType('template')} />;
+            case 'Trigger Links': return <TriggerLinksTab onCreate={() => setModalType('trigger-link')} />;
             case 'Affiliate Manager': return <AffiliateManagerTab />;
-            default: return <SocialPlannerTab />;
+            default: return <SocialPlannerTab onCreate={() => setModalType('social-post')} />;
         }
     };
 
     return (
         <div className="h-full flex flex-col bg-gray-50 overflow-hidden" onClick={() => isCreateDropdownOpen && setIsCreateDropdownOpen(false)}>
+            <MarketingActionModal
+                isOpen={!!modalType}
+                onClose={() => setModalType(null)}
+                type={modalType}
+            />
             {/* Header */}
             <header className="px-8 py-6 bg-white border-b border-gray-200 shrink-0">
                 <div className="flex items-center justify-between mb-6">
@@ -61,19 +71,31 @@ const MarketingPage = () => {
 
                         {isCreateDropdownOpen && (
                             <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 p-2 z-50 animate-in fade-in zoom-in-95 duration-200">
-                                <button className="w-full text-left px-3 py-2.5 hover:bg-gray-50 rounded-lg flex items-center gap-3 text-sm text-gray-700 font-medium transition-colors">
+                                <button
+                                    onClick={() => setModalType('social-post')}
+                                    className="w-full text-left px-3 py-2.5 hover:bg-gray-50 rounded-lg flex items-center gap-3 text-sm text-gray-700 font-medium transition-colors"
+                                >
                                     <PenTool size={16} className="text-pink-500" />
                                     Social Post
                                 </button>
-                                <button className="w-full text-left px-3 py-2.5 hover:bg-gray-50 rounded-lg flex items-center gap-3 text-sm text-gray-700 font-medium transition-colors">
+                                <button
+                                    onClick={() => setModalType('email-campaign')}
+                                    className="w-full text-left px-3 py-2.5 hover:bg-gray-50 rounded-lg flex items-center gap-3 text-sm text-gray-700 font-medium transition-colors"
+                                >
                                     <Mail size={16} className="text-blue-500" />
                                     Email Campaign
                                 </button>
-                                <button className="w-full text-left px-3 py-2.5 hover:bg-gray-50 rounded-lg flex items-center gap-3 text-sm text-gray-700 font-medium transition-colors">
+                                <button
+                                    onClick={() => setModalType('template')}
+                                    className="w-full text-left px-3 py-2.5 hover:bg-gray-50 rounded-lg flex items-center gap-3 text-sm text-gray-700 font-medium transition-colors"
+                                >
                                     <FileText size={16} className="text-orange-500" />
                                     Template
                                 </button>
-                                <button className="w-full text-left px-3 py-2.5 hover:bg-gray-50 rounded-lg flex items-center gap-3 text-sm text-gray-700 font-medium transition-colors">
+                                <button
+                                    onClick={() => setModalType('trigger-link')}
+                                    className="w-full text-left px-3 py-2.5 hover:bg-gray-50 rounded-lg flex items-center gap-3 text-sm text-gray-700 font-medium transition-colors"
+                                >
                                     <LinkIcon size={16} className="text-green-500" />
                                     Trigger Link
                                 </button>

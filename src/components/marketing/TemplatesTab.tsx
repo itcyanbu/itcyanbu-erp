@@ -1,6 +1,10 @@
 import { FileText, MessageSquare, Plus, Search, MoreVertical } from 'lucide-react';
 
-const TemplatesTab = () => {
+interface TemplatesTabProps {
+    onCreate?: () => void;
+}
+
+const TemplatesTab = ({ onCreate }: TemplatesTabProps) => {
     const templates = [
         { id: 1, name: 'Welcome Email - General', type: 'Email', lastUpdated: '2 days ago', uses: 124 },
         { id: 2, name: 'Appointment Reminder', type: 'SMS', lastUpdated: '1 week ago', uses: 856 },
@@ -26,7 +30,10 @@ const TemplatesTab = () => {
                     <button className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50">
                         Filter by Type
                     </button>
-                    <button className="px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 flex items-center gap-2">
+                    <button
+                        onClick={onCreate}
+                        className="px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 flex items-center gap-2"
+                    >
                         <Plus size={16} />
                         Add Template
                     </button>

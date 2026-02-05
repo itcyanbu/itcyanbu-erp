@@ -1,7 +1,11 @@
 import { Link, Copy, Plus, Trash2, Edit2 } from 'lucide-react';
 import { useState } from 'react';
 
-const TriggerLinksTab = () => {
+interface TriggerLinksTabProps {
+    onCreate?: () => void;
+}
+
+const TriggerLinksTab = ({ onCreate }: TriggerLinksTabProps) => {
     const [links] = useState([
         { id: 1, name: 'Summer Promo', url: 'https://mysite.com/promo/summer', clicks: 145, lastClicked: '2 mins ago' },
         { id: 2, name: 'Webinar Registration', url: 'https://mysite.com/webinar/register', clicks: 89, lastClicked: '1 hour ago' },
@@ -20,7 +24,10 @@ const TriggerLinksTab = () => {
                     <h2 className="text-lg font-semibold text-gray-900">Trigger Links</h2>
                     <p className="text-sm text-gray-500">Track clicks and fire automations when these links are clicked.</p>
                 </div>
-                <button className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 flex items-center gap-2 shadow-sm shadow-blue-200">
+                <button
+                    onClick={onCreate}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 flex items-center gap-2 shadow-sm shadow-blue-200"
+                >
                     <Plus size={16} />
                     Add Link
                 </button>

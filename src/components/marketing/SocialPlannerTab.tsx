@@ -1,6 +1,10 @@
-import { Facebook, Instagram, Linkedin, Twitter, Calendar as CalendarIcon, MoreVertical, LayoutGrid } from 'lucide-react';
+import { Facebook, Instagram, Linkedin, Twitter, Calendar as CalendarIcon, MoreVertical, LayoutGrid, Plus } from 'lucide-react';
 
-const SocialPlannerTab = () => {
+interface SocialPlannerTabProps {
+    onCreate?: () => void;
+}
+
+const SocialPlannerTab = ({ onCreate }: SocialPlannerTabProps) => {
     const socialAccounts = [
         { name: 'Facebook', icon: Facebook, color: 'text-blue-600', bg: 'bg-blue-50', status: 'Connected' },
         { name: 'Instagram', icon: Instagram, color: 'text-pink-600', bg: 'bg-pink-50', status: 'Connected' },
@@ -28,10 +32,16 @@ const SocialPlannerTab = () => {
                     <p className="text-3xl font-bold text-gray-900 mt-2">15</p>
                     <span className="text-blue-500 text-sm font-medium mt-1 inline-flex items-center gap-1">Next post in 2h</span>
                 </div>
-                <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm transition-all hover:shadow-md">
-                    <h3 className="text-gray-500 text-sm font-medium">Failed</h3>
-                    <p className="text-3xl font-bold text-gray-900 mt-2">2</p>
-                    <span className="text-red-500 text-sm font-medium mt-1 inline-flex items-center gap-1">Needs attention</span>
+                {/* Action Card for quick create */}
+                <div className="bg-blue-50 p-6 rounded-xl border border-blue-100 shadow-sm flex flex-col items-center justify-center text-center">
+                    <button
+                        onClick={onCreate}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 flex items-center gap-2 shadow-sm shadow-blue-200 transition-all transform hover:scale-105"
+                    >
+                        <Plus size={16} />
+                        Create New Post
+                    </button>
+                    <p className="text-xs text-blue-600 mt-2">Schedule content for your platforms</p>
                 </div>
             </div>
 

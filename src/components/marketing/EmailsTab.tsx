@@ -1,6 +1,10 @@
-import { Mail, Send, Eye, MousePointerClick, MoreHorizontal } from 'lucide-react';
+import { Mail, Send, Eye, MousePointerClick, MoreHorizontal, Plus } from 'lucide-react';
 
-const EmailsTab = () => {
+interface EmailsTabProps {
+    onCreate?: () => void;
+}
+
+const EmailsTab = ({ onCreate }: EmailsTabProps) => {
     const campaigns = [
         { id: 1, name: 'February Newsletter', status: 'Sent', sent: '1.2k', openRate: '45%', clickRate: '12%', date: 'Feb 1, 2026' },
         { id: 2, name: 'Product Launch Announcement', status: 'Draft', sent: '-', openRate: '-', clickRate: '-', date: 'Last edited 2h ago' },
@@ -34,9 +38,18 @@ const EmailsTab = () => {
             <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
                 <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                     <h2 className="text-lg font-semibold text-gray-900">Recent Campaigns</h2>
-                    <button className="text-sm font-medium text-blue-600 hover:text-blue-700 flex items-center gap-1">
-                        View All
-                    </button>
+                    <div className="flex gap-2">
+                        <button
+                            onClick={onCreate}
+                            className="px-3 py-1.5 bg-blue-600 text-white rounded-md text-xs font-medium hover:bg-blue-700 flex items-center gap-1"
+                        >
+                            <Plus size={14} />
+                            Create Campaign
+                        </button>
+                        <button className="text-sm font-medium text-blue-600 hover:text-blue-700 flex items-center gap-1">
+                            View All
+                        </button>
+                    </div>
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-left text-sm">
