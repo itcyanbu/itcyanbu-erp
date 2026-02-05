@@ -1,6 +1,5 @@
-import { Search, Bell, HelpCircle, Languages, LogOut } from 'lucide-react';
+import { Search, Bell, HelpCircle, Languages } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const Header = () => {
@@ -49,28 +48,30 @@ const Header = () => {
                     <span className="absolute top-0 right-0 rtl:right-auto rtl:left-0 w-2 h-2 bg-red-500 rounded-full"></span>
                 </button>
 
-                <div className="flex items-center gap-3 pl-2 border-l border-gray-200">
-                    {user ? (
-                        <button
-                            onClick={signOut}
-                            className="text-gray-500 hover:text-red-600 transition-colors"
-                            title="Sign Out"
-                        >
-                            <LogOut size={20} />
-                        </button>
-                    ) : (
-                        <Link
-                            to="/login"
-                            className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors whitespace-nowrap"
-                        >
-                            Sign In
-                        </Link>
-                    )}
-                </div>
-
-                <div className="w-10 h-10 rounded-full border border-gray-100 overflow-hidden shadow-sm flex items-center justify-center bg-gray-50">
-                    <img src="/itc-logo.jpg" alt="ITC Logo" className="w-full h-full object-cover" />
-                </div>
+                {/* Auth Button */}
+                {user ? (
+                    <div className="flex items-center gap-2">
+                        <div className="hidden md:block text-right">
+                            <p className="text-xs font-bold text-gray-900">{user.email?.split('@')[0]}</p>
+                            <button
+                                onClick={signOut}
+                                className="text-[10px] text-red-600 hover:text-red-700 font-medium"
+                            >
+                                Sign Out
+                            </button>
+                        </div>
+                        <div className="w-10 h-10 rounded-full border border-gray-100 overflow-hidden shadow-sm flex items-center justify-center bg-gray-50 text-xl">
+                            {user.email?.[0].toUpperCase()}
+                        </div>
+                    </div>
+                ) : (
+                    <button
+                        onClick={() => window.location.href = '/login'}
+                        className="px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors shadow-sm"
+                    >
+                        Sign In
+                    </button>
+                )}
             </div>
         </header>
     );
