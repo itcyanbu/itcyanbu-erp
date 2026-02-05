@@ -55,28 +55,20 @@ const LoginPage = () => {
         }
     };
 
-    if (!isSupabaseEnabled) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50">
-                <div className="bg-white p-8 rounded-3xl shadow-sm max-w-[480px] w-full text-center">
-                    <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <span className="text-3xl">⚠️</span>
-                    </div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-2">Setup Required</h2>
-                    <p className="text-gray-600 mb-6">
-                        Supabase is not configured. Please verify your variables.
-                    </p>
-                    <a href="/SUPABASE_SETUP.md" className="text-blue-600 font-medium hover:underline">
-                        View Setup Guide
-                    </a>
-                </div>
-            </div>
-        );
-    }
+    // Bypass Supabase check to allow UI to render (Demo Mode support)
+    // if (!isSupabaseEnabled) { ... }
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4 font-sans">
             <div className="bg-white p-8 md:p-10 rounded-[32px] shadow-sm max-w-[480px] w-full">
+
+                {/* Config Warning */}
+                {!isSupabaseEnabled && (
+                    <div className="mb-6 p-3 bg-orange-50 border border-orange-100 rounded-lg text-xs text-orange-600 flex items-center gap-2">
+                        <Info size={14} className="shrink-0" />
+                        <span>Demo Mode: Supabase keys missing. Login simulation only.</span>
+                    </div>
+                )}
 
                 {/* Header */}
                 <div className="flex justify-between items-start mb-8">
