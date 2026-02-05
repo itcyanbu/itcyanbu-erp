@@ -31,6 +31,7 @@ import AgencyAnalyticsPage from './pages/AgencyAnalyticsPage';
 import MediaLibraryPage from './pages/MediaLibraryPage';
 import FacebookGroupPage from './pages/FacebookGroupPage';
 import { Loader2 } from 'lucide-react';
+import WorkflowBuilder from './pages/WorkflowBuilder';
 
 function App() {
   const [activeModule, setActiveModule] = useState('Contacts');
@@ -105,6 +106,12 @@ function App() {
       />
       <Route path="/auth/callback" element={<AuthCallback />} />
       <Route
+        path="/automation/builder"
+        element={
+          !user && isSupabaseEnabled ? <Navigate to="/login" replace /> : <WorkflowBuilder />
+        }
+      />
+      <Route
         path="/*"
         element={
           !user && isSupabaseEnabled ? (
@@ -120,9 +127,6 @@ function App() {
                     />
                     <div className="flex-1 flex flex-col min-w-0 overflow-hidden min-h-0 relative">
                       <Header />
-
-
-
                       {renderModule()}
                     </div>
                   </div>
