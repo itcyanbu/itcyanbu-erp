@@ -186,5 +186,31 @@
         "select_calendar": "اختر التقويم",
         "attendees": "حضور",
         "confirmed": "تم التأكيد"
+    },
+    "payments": {
+        "title": "المدفوعات",
+        "subtitle": "إدارة الفواتير والمعاملات",
+        "recent_payments": "المدفوعات الأخيرة",
+        "revenue": "إجمالي الإيرادات",
+        "pending": "المدفوعات المعلقة",
+        "this_month": "هذا الشهر",
+        "export": "تصدير",
+        "invoice_id": "رقم الفاتورة",
+        "client": "العميل",
+        "amount": "المبلغ",
+        "status": "الحالة",
+        "date": "التاريخ",
+        "paid": "تم الدفع",
+        "pending_status": "قيد الانتظار",
+        "tabs": {
+            "invoices": "الفواتير",
+            "transactions": "المعاملات",
+            "subscriptions": "الاشتراكات",
+            "coupons": "القسائم",
+            "payment_links": "روابط الدفع",
+            "proposals": "المقترحات والتقديرات",
+            "products": "المنتجات",
+            "settings": "الإعدادات"
+        }
     }
 }

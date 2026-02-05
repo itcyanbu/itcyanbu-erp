@@ -186,5 +186,31 @@
     "select_calendar": "Select Calendar",
     "attendees": "attendees",
     "confirmed": "Confirmed"
+  },
+  "payments": {
+    "title": "Payments",
+    "subtitle": "Manage invoices and transactions",
+    "recent_payments": "Recent Payments",
+    "revenue": "Total Revenue",
+    "pending": "Pending Payments",
+    "this_month": "This Month",
+    "export": "Export",
+    "invoice_id": "Invoice ID",
+    "client": "Client",
+    "amount": "Amount",
+    "status": "Status",
+    "date": "Date",
+    "paid": "Paid",
+    "pending_status": "Pending",
+    "tabs": {
+      "invoices": "Invoices",
+      "transactions": "Transactions",
+      "subscriptions": "Subscriptions",
+      "coupons": "Coupons",
+      "payment_links": "Payment Links",
+      "proposals": "Proposals & Estimates",
+      "products": "Products",
+      "settings": "Settings"
+    }
   }
 }
