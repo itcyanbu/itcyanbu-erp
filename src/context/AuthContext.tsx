@@ -47,7 +47,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const signIn = async (email: string, password: string) => {
         if (!supabase) {
-            return { error: new Error('Supabase not configured') };
+            // Mock Login for Demo Mode
+            const mockUser: any = {
+                id: 'mock-user-123',
+                email: email,
+                role: 'authenticated',
+                aud: 'authenticated',
+                created_at: new Date().toISOString(),
+                app_metadata: {},
+                user_metadata: {}
+            };
+            setUser(mockUser);
+            return { error: null };
         }
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         return { error };
@@ -55,7 +66,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const signUp = async (email: string, password: string, metadata?: any) => {
         if (!supabase) {
-            return { error: new Error('Supabase not configured') };
+            // Mock Signup for Demo Mode
+            const mockUser: any = {
+                id: 'mock-user-123',
+                email: email,
+                role: 'authenticated',
+                aud: 'authenticated',
+                created_at: new Date().toISOString(),
+                app_metadata: {},
+                user_metadata: metadata || {}
+            };
+            setUser(mockUser);
+            return { error: null };
         }
         const { error } = await supabase.auth.signUp({
             email,
