@@ -220,5 +220,19 @@
     "new_recurring_invoice": "New Recurring Invoice",
     "import_invoices": "Import Invoices using CSV",
     "type": "Type"
+  },
+  "marketing": {
+    "title": "Marketing",
+    "description": "Manage your social media, emails, and affiliate campaigns.",
+    "create_new": "Create New",
+    "social_planner": "Social Planner",
+    "emails": "Emails",
+    "templates": "Templates",
+    "trigger_links": "Trigger Links",
+    "affiliate_manager": "Affiliate Manager",
+    "social_post": "Social Post",
+    "email_campaign": "Email Campaign",
+    "template": "Template",
+    "trigger_link": "Trigger Link"
   }
 }

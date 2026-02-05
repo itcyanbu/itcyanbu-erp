@@ -220,5 +220,19 @@
         "new_recurring_invoice": "فاتورة متكررة جديدة",
         "import_invoices": "استيراد الفواتير باستخدام CSV",
         "type": "النوع"
+    },
+    "marketing": {
+        "title": "التسويق",
+        "description": "إدارة وسائل التواصل الاجتماعي ورسائل البريد الإلكتروني وحملات التسويق بالعمولة.",
+        "create_new": "إنشاء جديد",
+        "social_planner": "مخطط التواصل الاجتماعي",
+        "emails": "رسائل البريد الإلكتروني",
+        "templates": "القوالب",
+        "trigger_links": "روابط التشغيل",
+        "affiliate_manager": "مدير التسويق بالعمولة",
+        "social_post": "منشور اجتماعي",
+        "email_campaign": "حملة بريد إلكتروني",
+        "template": "قالب",
+        "trigger_link": "رابط تشغيل"
     }
 }
