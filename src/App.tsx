@@ -121,13 +121,21 @@ function App() {
                     <div className="flex-1 flex flex-col min-w-0 overflow-hidden min-h-0 relative">
                       <Header />
 
-                      {/* User info if signed in */}
                       {user && (
-                        <div className="absolute top-16 right-4 z-50 bg-green-50 border border-green-200 text-green-800 px-4 py-2 rounded-lg shadow-md flex items-center gap-3">
-                          <span className="text-sm">✅ Signed in as <strong>{user.email}</strong></span>
+                        <div className="fixed bottom-4 right-4 z-[100] bg-green-50 border border-green-200 text-green-900 px-4 py-3 rounded-xl shadow-lg flex items-center gap-4 animate-in fade-in slide-in-from-bottom-4 duration-300">
+                          <div className="flex items-center gap-3">
+                            <div className="bg-green-400 text-white p-0.5 rounded shadow-sm">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                              </svg>
+                            </div>
+                            <span className="font-medium text-sm">
+                              Signed in as <span className="font-bold">{user.email}</span>
+                            </span>
+                          </div>
                           <button
                             onClick={signOut}
-                            className="text-xs px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+                            className="bg-green-600 hover:bg-green-700 text-white text-xs font-bold py-1.5 px-3 rounded-lg transition-colors shadow-sm"
                           >
                             Sign Out
                           </button>
