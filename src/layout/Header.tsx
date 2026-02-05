@@ -1,17 +1,25 @@
-import { Search, Languages } from 'lucide-react';
+import { Search, Languages, Bell, HelpCircle, LogOut } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../context/AuthContext';
 
 const Header = () => {
     const { t, i18n } = useTranslation();
+    const { user, signOut } = useAuth();
+    const isRtl = i18n.language === 'ar';
 
     const toggleLanguage = () => {
         const newLang = i18n.language === 'ar' ? 'en' : 'ar';
-        console.log('Header: Toggling language to', newLang);
         i18n.changeLanguage(newLang);
     };
 
+    const getInitials = (email: string) => {
+        return email ? email.substring(0, 2).toUpperCase() : 'U';
+    };
+
+    const displayName = user?.email?.split('@')[0] || 'User';
+
     return (
-        <header className="h-16 bg-white border-b border-ghl-border flex items-center justify-between px-6 shrink-0 relative">
+        <header className="h-16 bg-white border-b border-ghl-border flex items-center justify-between px-6 shrink-0 relative z-20">
             <div className="flex items-center gap-4 flex-1">
                 <div className="relative w-96">
                     <Search className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
@@ -23,8 +31,8 @@ const Header = () => {
                 </div>
             </div>
 
-            <div className="flex items-center gap-3">
-                {/* Language Switcher - Keeping it accessible */}
+            <div className="flex items-center gap-4">
+                {/* Language Switcher */}
                 <button
                     onClick={toggleLanguage}
                     className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
@@ -33,8 +41,33 @@ const Header = () => {
                     <Languages size={20} />
                 </button>
 
-                {/* HighLevel Style Icons - Removed per user request */}
-                {/* Icons are handled in page-specific headers (e.g. ContactsPage) */}
+                {/* Help & Notifications */}
+                <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors relative">
+                    <HelpCircle size={20} />
+                </button>
+                <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors relative">
+                    <Bell size={20} />
+                    <span className="absolute top-1.5 right-2 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
+                </button>
+
+                {/* Vertical Divider */}
+                <div className="h-6 w-px bg-gray-200 mx-1"></div>
+
+                {/* User Profile */}
+                <div className="flex items-center gap-3">
+                    <div className="text-right hidden md:block">
+                        <div className="text-sm font-bold text-gray-900 leading-none mb-1">{displayName}</div>
+                        <button
+                            onClick={() => signOut()}
+                            className="text-xs text-red-600 hover:text-red-700 font-medium flex items-center gap-1 justify-end w-full"
+                        >
+                            {t('common.sign_out') || 'Sign Out'}
+                        </button>
+                    </div>
+                    <div className="w-9 h-9 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-600 font-bold shadow-sm">
+                        {getInitials(user?.email || '')}
+                    </div>
+                </div>
             </div>
         </header>
     );
