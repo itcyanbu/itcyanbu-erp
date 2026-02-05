@@ -73,7 +73,6 @@ export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children })
     const [contacts, setContacts] = useState<Contact[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [fieldConfig, setFieldConfig] = useState<FieldConfig[]>(defaultFieldConfig);
-    const [loading, setLoading] = useState(true);
     const [synced, setSynced] = useState(false);
     const { user, isSupabaseEnabled } = useAuth();
 
@@ -92,8 +91,6 @@ export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children })
     }, [user, isSupabaseEnabled, synced]);
 
     const loadContacts = async () => {
-        setLoading(true);
-
         if (user && isSupabaseEnabled) {
             // Load from Supabase
             const { data, error } = await contactsService.getAll();
@@ -112,8 +109,6 @@ export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children })
             // Load from localStorage or mock data
             loadFromLocalStorage();
         }
-
-        setLoading(false);
     };
 
     const loadFromLocalStorage = () => {
@@ -154,7 +149,7 @@ export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children })
             console.log(`Migrating ${localContacts.length} contacts to Supabase...`);
             const dbContacts = localContacts.map(mapAppContactToDbContact);
 
-            const { data, error } = await contactsService.bulkCreate(dbContacts);
+            const { error } = await contactsService.bulkCreate(dbContacts);
 
             if (error) {
                 console.error('Failed to migrate contacts:', error);

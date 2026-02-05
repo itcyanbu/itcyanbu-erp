@@ -179,7 +179,7 @@ export const CalendarProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             console.log(`Migrating ${localCalendars.length} calendars to Supabase...`);
             const dbCalendars = localCalendars.map(mapAppCalendarToDbCalendar);
 
-            const { data, error } = await calendarsService.bulkCreate(dbCalendars);
+            const { error } = await calendarsService.bulkCreate(dbCalendars);
 
             if (error) {
                 console.error('Failed to migrate calendars:', error);

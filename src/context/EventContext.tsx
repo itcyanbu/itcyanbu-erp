@@ -121,7 +121,7 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             console.log(`Migrating ${localAppointments.length} appointments to Supabase...`);
             const dbAppointments = localAppointments.map(mapAppAppointmentToDbAppointment);
 
-            const { data, error } = await appointmentsService.bulkCreate(dbAppointments);
+            const { error } = await appointmentsService.bulkCreate(dbAppointments);
 
             if (error) {
                 console.error('Failed to migrate appointments:', error);

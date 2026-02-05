@@ -35,7 +35,7 @@ import { X } from 'lucide-react';
 function App() {
   const [activeModule, setActiveModule] = useState('Contacts');
   const [showAuthPrompt, setShowAuthPrompt] = useState(true);
-  const { user, signOut, loading, isSupabaseEnabled } = useAuth();
+  const { user, signOut, isSupabaseEnabled } = useAuth();
 
   const renderModule = () => {
     console.log('App: activeModule is:', activeModule);

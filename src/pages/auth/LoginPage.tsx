@@ -1,11 +1,9 @@
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { useTranslation } from 'react-i18next';
 import { Mail, Lock, Loader2 } from 'lucide-react';
 
 const LoginPage = () => {
     const { signIn, signUp, signInWithGoogle, isSupabaseEnabled } = useAuth();
-    const { t } = useTranslation();
 
     const [isSignUp, setIsSignUp] = useState(false);
     const [email, setEmail] = useState('');
