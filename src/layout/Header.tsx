@@ -1,8 +1,11 @@
-import { Search, Bell, HelpCircle, Languages } from 'lucide-react';
+import { Search, Bell, HelpCircle, Languages, LogOut } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const Header = () => {
     const { t, i18n } = useTranslation();
+    const { user, signOut } = useAuth();
 
     const toggleLanguage = () => {
         const newLang = i18n.language === 'ar' ? 'en' : 'ar';
@@ -45,6 +48,26 @@ const Header = () => {
                     <Bell size={20} />
                     <span className="absolute top-0 right-0 rtl:right-auto rtl:left-0 w-2 h-2 bg-red-500 rounded-full"></span>
                 </button>
+
+                <div className="flex items-center gap-3 pl-2 border-l border-gray-200">
+                    {user ? (
+                        <button
+                            onClick={signOut}
+                            className="text-gray-500 hover:text-red-600 transition-colors"
+                            title="Sign Out"
+                        >
+                            <LogOut size={20} />
+                        </button>
+                    ) : (
+                        <Link
+                            to="/login"
+                            className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors whitespace-nowrap"
+                        >
+                            Sign In
+                        </Link>
+                    )}
+                </div>
+
                 <div className="w-10 h-10 rounded-full border border-gray-100 overflow-hidden shadow-sm flex items-center justify-center bg-gray-50">
                     <img src="/itc-logo.jpg" alt="ITC Logo" className="w-full h-full object-cover" />
                 </div>
