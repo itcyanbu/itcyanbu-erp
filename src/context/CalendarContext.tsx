@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { calendarsService } from '../lib/supabaseService';
+import { useAuth } from './AuthContext';
 
 export interface Service {
     id: string;
@@ -47,86 +49,269 @@ interface CalendarContextType {
 
 const CalendarContext = createContext<CalendarContextType | undefined>(undefined);
 
+// Helper to map DB calendar to App calendar
+const mapDbCalendarToAppCalendar = (dbCalendar: any): Calendar => {
+    const settings = dbCalendar.settings || {};
+    return {
+        id: dbCalendar.id,
+        name: dbCalendar.name,
+        description: dbCalendar.description || '',
+        type: settings.type || 'simple',
+        staffIds: settings.staffIds || [],
+        groupId: settings.groupId,
+        locationType: settings.locationType,
+        locationValue: settings.locationValue,
+        duration: settings.duration || 30,
+        color: dbCalendar.color || '#3b82f6',
+        availability: settings.availability
+    };
+};
+
+// Helper to map App calendar to DB calendar
+const mapAppCalendarToDbCalendar = (appCalendar: any): any => {
+    return {
+        name: appCalendar.name,
+        description: appCalendar.description || null,
+        color: appCalendar.color || '#3b82f6',
+        is_active: true,
+        settings: {
+            type: appCalendar.type,
+            staffIds: appCalendar.staffIds,
+            groupId: appCalendar.groupId,
+            locationType: appCalendar.locationType,
+            locationValue: appCalendar.locationValue,
+            duration: appCalendar.duration,
+            availability: appCalendar.availability
+        }
+    };
+};
+
 export const CalendarProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [calendars, setCalendars] = useState<Calendar[]>(() => {
+    const [calendars, setCalendars] = useState<Calendar[]>([]);
+    const [groups, setGroups] = useState<ServiceGroup[]>([]);
+    const [serviceMenuEnabled, setServiceMenuEnabledState] = useState(false);
+    const [synced, setSynced] = useState(false);
+    const { user, isSupabaseEnabled } = useAuth();
+
+    // Load calendars on mount
+    useEffect(() => {
+        loadCalendars();
+        loadGroups();
+        loadServiceMenuState();
+    }, [user]);
+
+    // Data migration: sync localStorage to Supabase on first authentication
+    useEffect(() => {
+        if (user && isSupabaseEnabled && !synced) {
+            migrateLocalDataToSupabase();
+        }
+    }, [user, isSupabaseEnabled, synced]);
+
+    const loadCalendars = async () => {
+        if (user && isSupabaseEnabled) {
+            // Load from Supabase
+            const { data, error } = await calendarsService.getAll();
+
+            if (error) {
+                console.error('Failed to load calendars from Supabase:', error);
+                loadCalendarsFromLocalStorage();
+            } else if (data) {
+                const appCalendars = data.map(mapDbCalendarToAppCalendar);
+                setCalendars(appCalendars);
+                // Cache in localStorage
+                localStorage.setItem('ghl_calendars', JSON.stringify(appCalendars));
+            }
+        } else {
+            loadCalendarsFromLocalStorage();
+        }
+    };
+
+    const loadCalendarsFromLocalStorage = () => {
         try {
             const saved = localStorage.getItem('ghl_calendars');
-            return saved ? JSON.parse(saved) : [];
+            setCalendars(saved ? JSON.parse(saved) : []);
         } catch (e) {
             console.error('Failed to parse calendars', e);
-            return [];
+            setCalendars([]);
         }
-    });
-    const [groups, setGroups] = useState<ServiceGroup[]>(() => {
+    };
+
+    const loadGroups = () => {
         try {
             const saved = localStorage.getItem('ghl_calendar_groups');
-            return saved ? JSON.parse(saved) : [];
+            setGroups(saved ? JSON.parse(saved) : []);
         } catch (e) {
             console.error('Failed to parse groups', e);
-            return [];
+            setGroups([]);
         }
-    });
-    const [serviceMenuEnabled, setServiceMenuEnabledState] = useState(() => {
+    };
+
+    const loadServiceMenuState = () => {
         try {
             const saved = localStorage.getItem('ghl_calendar_service_menu');
-            return saved ? JSON.parse(saved) : false;
+            setServiceMenuEnabledState(saved ? JSON.parse(saved) : false);
         } catch (e) {
             console.error('Failed to parse service menu status', e);
-            return false;
+            setServiceMenuEnabledState(false);
         }
-    });
+    };
 
-    // Sync to localStorage whenever state changes
-    useEffect(() => {
-        localStorage.setItem('ghl_calendars', JSON.stringify(calendars));
-    }, [calendars]);
+    const migrateLocalDataToSupabase = async () => {
+        const savedCalendars = localStorage.getItem('ghl_calendars');
+        if (!savedCalendars) {
+            setSynced(true);
+            return;
+        }
 
-    useEffect(() => {
-        localStorage.setItem('ghl_calendar_groups', JSON.stringify(groups));
-    }, [groups]);
+        try {
+            const localCalendars: Calendar[] = JSON.parse(savedCalendars);
+
+            // Check if Supabase already has calendars
+            const { data: existingCalendars } = await calendarsService.getAll();
+
+            if (existingCalendars && existingCalendars.length > 0) {
+                console.log('Supabase already has calendars, skipping migration');
+                setSynced(true);
+                return;
+            }
+
+            // Migrate local calendars to Supabase
+            console.log(`Migrating ${localCalendars.length} calendars to Supabase...`);
+            const dbCalendars = localCalendars.map(mapAppCalendarToDbCalendar);
+
+            const { data, error } = await calendarsService.bulkCreate(dbCalendars);
+
+            if (error) {
+                console.error('Failed to migrate calendars:', error);
+            } else {
+                console.log('✅ Successfully migrated calendars to Supabase');
+                await loadCalendars();
+            }
+        } catch (err) {
+            console.error('Error during calendar migration:', err);
+        } finally {
+            setSynced(true);
+        }
+    };
 
     const setServiceMenuEnabled = (enabled: boolean) => {
         setServiceMenuEnabledState(enabled);
         localStorage.setItem('ghl_calendar_service_menu', JSON.stringify(enabled));
     };
 
-    const addCalendar = (calendar: Omit<Calendar, 'id'>) => {
-        const id = Math.random().toString(36).substr(2, 9);
-        const newCalendar = { ...calendar, id };
-        setCalendars(prev => [...prev, newCalendar]);
-    };
+    const addCalendar = async (calendar: Omit<Calendar, 'id'>) => {
+        if (user && isSupabaseEnabled) {
+            // Save to Supabase
+            const dbCalendar = mapAppCalendarToDbCalendar(calendar);
+            const { data, error } = await calendarsService.create(dbCalendar);
 
-    const updateCalendar = (id: string, updates: Partial<Calendar>) => {
-        setCalendars(prev => prev.map(c => {
-            if (c.id === id) {
-                // Handle group changes if necessary
-                if (updates.groupId && updates.groupId !== c.groupId) {
-                    // This is complex, but for now we'll just update the calendar itself
-                    // and let the groups be derived if needed, or update groups too
-                }
-                return { ...c, ...updates };
+            if (error) {
+                console.error('Failed to create calendar in Supabase:', error);
+                // Fallback to local
+                const localCalendar = { ...calendar, id: Math.random().toString(36).substr(2, 9) };
+                setCalendars(prev => {
+                    const updated = [...prev, localCalendar];
+                    localStorage.setItem('ghl_calendars', JSON.stringify(updated));
+                    return updated;
+                });
+            } else if (data) {
+                const appCalendar = mapDbCalendarToAppCalendar(data);
+                setCalendars(prev => {
+                    const updated = [...prev, appCalendar];
+                    localStorage.setItem('ghl_calendars', JSON.stringify(updated));
+                    return updated;
+                });
             }
-            return c;
-        }));
+        } else {
+            // Local-only mode
+            const localCalendar = { ...calendar, id: Math.random().toString(36).substr(2, 9) };
+            setCalendars(prev => {
+                const updated = [...prev, localCalendar];
+                localStorage.setItem('ghl_calendars', JSON.stringify(updated));
+                return updated;
+            });
+        }
     };
 
-    const deleteCalendar = (id: string) => {
-        setCalendars(prev => prev.filter(c => c.id !== id));
+    const updateCalendar = async (id: string, updates: Partial<Calendar>) => {
+        if (user && isSupabaseEnabled) {
+            // Update in Supabase
+            const dbUpdates = mapAppCalendarToDbCalendar(updates);
+            const { data, error } = await calendarsService.update(id, dbUpdates);
+
+            if (error) {
+                console.error('Failed to update calendar in Supabase:', error);
+                // Fallback to local update
+                setCalendars(prev => {
+                    const updated = prev.map(c => c.id === id ? { ...c, ...updates } : c);
+                    localStorage.setItem('ghl_calendars', JSON.stringify(updated));
+                    return updated;
+                });
+            } else if (data) {
+                const appCalendar = mapDbCalendarToAppCalendar(data);
+                setCalendars(prev => {
+                    const updated = prev.map(c => c.id === id ? appCalendar : c);
+                    localStorage.setItem('ghl_calendars', JSON.stringify(updated));
+                    return updated;
+                });
+            }
+        } else {
+            // Local-only mode
+            setCalendars(prev => {
+                const updated = prev.map(c => c.id === id ? { ...c, ...updates } : c);
+                localStorage.setItem('ghl_calendars', JSON.stringify(updated));
+                return updated;
+            });
+        }
+    };
+
+    const deleteCalendar = async (id: string) => {
+        if (user && isSupabaseEnabled) {
+            // Delete from Supabase
+            const { error } = await calendarsService.delete(id);
+
+            if (error) {
+                console.error('Failed to delete calendar from Supabase:', error);
+            }
+        }
+
+        // Remove from local state
+        setCalendars(prev => {
+            const updated = prev.filter(c => c.id !== id);
+            localStorage.setItem('ghl_calendars', JSON.stringify(updated));
+            return updated;
+        });
     };
 
     const addGroup = (group: Omit<ServiceGroup, 'id'>) => {
         const newGroup = { ...group, id: Math.random().toString(36).substr(2, 9) };
-        setGroups(prev => [...prev, newGroup]);
+        setGroups(prev => {
+            const updated = [...prev, newGroup];
+            localStorage.setItem('ghl_calendar_groups', JSON.stringify(updated));
+            return updated;
+        });
     };
 
     const updateGroup = (id: string, updates: Partial<ServiceGroup>) => {
-        setGroups(prev => prev.map(g => g.id === id ? { ...g, ...updates } : g));
+        setGroups(prev => {
+            const updated = prev.map(g => g.id === id ? { ...g, ...updates } : g);
+            localStorage.setItem('ghl_calendar_groups', JSON.stringify(updated));
+            return updated;
+        });
     };
 
     const deleteGroup = (id: string) => {
-        setGroups(prev => prev.filter(g => g.id !== id));
+        setGroups(prev => {
+            const updated = prev.filter(g => g.id !== id);
+            localStorage.setItem('ghl_calendar_groups', JSON.stringify(updated));
+            return updated;
+        });
         // Remove groupId from any calendars in this group
-        setCalendars(prev => prev.map(c => c.groupId === id ? { ...c, groupId: undefined } : c));
+        setCalendars(prev => {
+            const updated = prev.map(c => c.groupId === id ? { ...c, groupId: undefined } : c);
+            localStorage.setItem('ghl_calendars', JSON.stringify(updated));
+            return updated;
+        });
     };
 
     return (

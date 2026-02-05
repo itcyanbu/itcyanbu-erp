@@ -1,12 +1,14 @@
 import { useState } from 'react';
+import { Routes, Route } from 'react-router-dom';
 import Header from './layout/Header';
 import Sidebar from './layout/Sidebar';
 import ContactsPage from './components/ContactsPage';
 import { ContactProvider } from './context/ContactContext';
 import { CalendarProvider } from './context/CalendarContext';
 import { EventProvider } from './context/EventContext';
-import LoginPage from './pages/LoginPage';
-// ... (omitting lines for brevity, but I need to make sure I don't break imports)
+import { useAuth } from './context/AuthContext';
+import LoginPage from './pages/auth/LoginPage';
+import AuthCallback from './pages/auth/AuthCallback';
 import LaunchpadPage from './pages/LaunchpadPage';
 import DashboardPage from './pages/DashboardPage';
 import ConversationsPage from './pages/ConversationsPage';
@@ -28,17 +30,12 @@ import AffiliatePortalPage from './pages/AffiliatePortalPage';
 import AgencyAnalyticsPage from './pages/AgencyAnalyticsPage';
 import MediaLibraryPage from './pages/MediaLibraryPage';
 import FacebookGroupPage from './pages/FacebookGroupPage';
-
-
+import { X } from 'lucide-react';
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [activeModule, setActiveModule] = useState('Contacts');
-
-  const handleLogin = () => {
-    setIsAuthenticated(true);
-  };
-
+  const [showAuthPrompt, setShowAuthPrompt] = useState(true);
+  const { user, signOut, loading, isSupabaseEnabled } = useAuth();
 
   const renderModule = () => {
     console.log('App: activeModule is:', activeModule);
@@ -92,27 +89,74 @@ function App() {
     }
   };
 
-  if (!isAuthenticated) {
-    return <LoginPage onLogin={handleLogin} />;
-  }
-
+  // Routes for auth pages
   return (
-    <ContactProvider>
-      <CalendarProvider>
-        <EventProvider>
-          <div className="flex h-screen bg-ghl-bg font-sans text-ghl-text overflow-hidden">
-            <Sidebar
-              activeModule={activeModule}
-              onModuleChange={setActiveModule}
-            />
-            <div className="flex-1 flex flex-col min-w-0 overflow-hidden min-h-0">
-              <Header />
-              {renderModule()}
-            </div>
-          </div>
-        </EventProvider>
-      </CalendarProvider>
-    </ContactProvider>
+    <Routes>
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/auth/callback" element={<AuthCallback />} />
+      <Route
+        path="/*"
+        element={
+          <ContactProvider>
+            <CalendarProvider>
+              <EventProvider>
+                <div className="flex h-screen bg-ghl-bg font-sans text-ghl-text overflow-hidden">
+                  <Sidebar
+                    activeModule={activeModule}
+                    onModuleChange={setActiveModule}
+                  />
+                  <div className="flex-1 flex flex-col min-w-0 overflow-hidden min-h-0 relative">
+                    <Header />
+
+                    {/* Gradual Migration: Show prompt if using localStorage AND Supabase is configured */}
+                    {isSupabaseEnabled && !user && showAuthPrompt && (
+                      <div className="absolute top-16 left-1/2 -translate-x-1/2 z-50 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-4 rounded-xl shadow-2xl max-w-2xl mx-auto flex items-center gap-4 animate-in slide-in-from-top">
+                        <div className="flex-1">
+                          <h3 className="font-bold text-lg mb-1">🚀 Save Your Data to the Cloud!</h3>
+                          <p className="text-sm text-blue-100">
+                            Sign in to sync your contacts and data across all your devices. Continue without signing in to use local storage only.
+                          </p>
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => window.location.href = '/login'}
+                            className="px-4 py-2 bg-white text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-colors whitespace-nowrap"
+                          >
+                            Sign In
+                          </button>
+                          <button
+                            onClick={() => setShowAuthPrompt(false)}
+                            className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                            title="Close"
+                          >
+                            <X size={20} />
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* User info if signed in */}
+                    {user && (
+                      <div className="absolute top-16 right-4 z-50 bg-green-50 border border-green-200 text-green-800 px-4 py-2 rounded-lg shadow-md flex items-center gap-3">
+                        <span className="text-sm">✅ Signed in as <strong>{user.email}</strong></span>
+                        <button
+                          onClick={signOut}
+                          className="text-xs px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+                        >
+                          Sign Out
+                        </button>
+                      </div>
+                    )}
+
+                    {renderModule()}
+                  </div>
+                </div>
+              </EventProvider>
+            </CalendarProvider>
+          </ContactProvider>
+        }
+      />
+    </Routes>
   );
 }
 
