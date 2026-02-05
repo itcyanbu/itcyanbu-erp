@@ -5,7 +5,6 @@ import { useAuth } from '../context/AuthContext';
 const Header = () => {
     const { t, i18n } = useTranslation();
     const { user, signOut } = useAuth();
-    const isRtl = i18n.language === 'ar';
 
     const toggleLanguage = () => {
         const newLang = i18n.language === 'ar' ? 'en' : 'ar';
@@ -55,12 +54,13 @@ const Header = () => {
 
                 {/* User Profile */}
                 <div className="flex items-center gap-3">
-                    <div className="text-right hidden md:block">
+                    <div className="text-right block">
                         <div className="text-sm font-bold text-gray-900 leading-none mb-1">{displayName}</div>
                         <button
                             onClick={() => signOut()}
                             className="text-xs text-red-600 hover:text-red-700 font-medium flex items-center gap-1 justify-end w-full"
                         >
+                            <LogOut size={12} />
                             {t('common.sign_out') || 'Sign Out'}
                         </button>
                     </div>
