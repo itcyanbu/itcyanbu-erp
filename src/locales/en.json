@@ -211,6 +211,9 @@
       "proposals": "Proposals & Estimates",
       "products": "Products",
       "settings": "Settings"
-    }
+    },
+    "recent_invoices": "Recent Invoices",
+    "transaction_id": "Transaction ID",
+    "description": "Description"
   }
 }

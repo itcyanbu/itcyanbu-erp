@@ -30,11 +30,10 @@ import AffiliatePortalPage from './pages/AffiliatePortalPage';
 import AgencyAnalyticsPage from './pages/AgencyAnalyticsPage';
 import MediaLibraryPage from './pages/MediaLibraryPage';
 import FacebookGroupPage from './pages/FacebookGroupPage';
-import { X, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
 function App() {
   const [activeModule, setActiveModule] = useState('Contacts');
-  const [showAuthPrompt, setShowAuthPrompt] = useState(true);
   const { user, signOut, isSupabaseEnabled, loading } = useAuth();
 
   if (loading) {

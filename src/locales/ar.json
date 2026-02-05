@@ -211,6 +211,9 @@
             "proposals": "المقترحات والتقديرات",
             "products": "المنتجات",
             "settings": "الإعدادات"
-        }
+        },
+        "recent_invoices": "الفواتير الأخيرة",
+        "transaction_id": "رقم المعاملة",
+        "description": "الوصف"
     }
 }
