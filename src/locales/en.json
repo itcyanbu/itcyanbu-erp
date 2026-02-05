@@ -214,6 +214,11 @@
     },
     "recent_invoices": "Recent Invoices",
     "transaction_id": "Transaction ID",
-    "description": "Description"
+    "description": "Description",
+    "new": "New",
+    "new_invoice": "New Invoice",
+    "new_recurring_invoice": "New Recurring Invoice",
+    "import_invoices": "Import Invoices using CSV",
+    "type": "Type"
   }
 }

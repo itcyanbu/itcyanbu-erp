@@ -214,6 +214,11 @@
         },
         "recent_invoices": "الفواتير الأخيرة",
         "transaction_id": "رقم المعاملة",
-        "description": "الوصف"
+        "description": "الوصف",
+        "new": "جديد",
+        "new_invoice": "فاتورة جديدة",
+        "new_recurring_invoice": "فاتورة متكررة جديدة",
+        "import_invoices": "استيراد الفواتير باستخدام CSV",
+        "type": "النوع"
     }
 }
