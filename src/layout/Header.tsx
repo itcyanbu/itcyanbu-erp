@@ -57,7 +57,10 @@ const Header = () => {
                     <div className="text-right block">
                         <div className="text-sm font-bold text-gray-900 leading-none mb-1">{displayName}</div>
                         <button
-                            onClick={() => signOut()}
+                            onClick={async () => {
+                                await signOut();
+                                window.location.href = '/login';
+                            }}
                             className="text-xs text-red-600 hover:text-red-700 font-medium flex items-center gap-1 justify-end w-full"
                         >
                             <LogOut size={12} />
