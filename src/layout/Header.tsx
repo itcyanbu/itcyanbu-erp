@@ -55,8 +55,6 @@ const Header = () => {
                     {/* Notifications - Orange */}
                     <button className="w-10 h-10 rounded-full bg-[#FA792F] hover:bg-[#e06824] text-white flex items-center justify-center transition-colors shadow-sm relative">
                         <Bell size={20} className="fill-current" />
-                        {/* Notification Dot */}
-                        <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 border-2 border-white rounded-full"></span>
                     </button>
 
                     {/* Help - Blue */}
