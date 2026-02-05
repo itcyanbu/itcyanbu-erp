@@ -38,23 +38,23 @@ const Header = () => {
                 {/* HighLevel Style Icons */}
                 <div className="flex items-center gap-3">
                     {/* Phone - Green */}
-                    <button className="w-10 h-10 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white flex items-center justify-center transition-colors shadow-sm">
-                        <Phone size={20} />
+                    <button className="w-10 h-10 rounded-full bg-[#3FB584] hover:bg-[#369e73] text-white flex items-center justify-center transition-colors shadow-sm">
+                        <Phone size={20} className="fill-current" strokeWidth={2.5} />
                     </button>
 
                     {/* Quick Actions - Blue */}
-                    <button className="w-10 h-10 rounded-full bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center transition-colors shadow-sm">
-                        <Zap size={20} fill="currentColor" />
+                    <button className="w-10 h-10 rounded-full bg-[#467EFF] hover:bg-[#3b6de0] text-white flex items-center justify-center transition-colors shadow-sm">
+                        <Zap size={20} className="fill-current" />
                     </button>
 
                     {/* Announcements - Teal/Slate */}
-                    <button className="w-10 h-10 rounded-full bg-[#407B80] hover:bg-[#34666a] text-white flex items-center justify-center transition-colors shadow-sm">
-                        <Megaphone size={20} />
+                    <button className="w-10 h-10 rounded-full bg-[#417D81] hover:bg-[#36686b] text-white flex items-center justify-center transition-colors shadow-sm">
+                        <Megaphone size={20} className="fill-current" />
                     </button>
 
                     {/* Notifications - Orange */}
-                    <button className="w-10 h-10 rounded-full bg-orange-500 hover:bg-orange-600 text-white flex items-center justify-center transition-colors shadow-sm relative">
-                        <Bell size={20} />
+                    <button className="w-10 h-10 rounded-full bg-[#FA792F] hover:bg-[#e06824] text-white flex items-center justify-center transition-colors shadow-sm relative">
+                        <Bell size={20} className="fill-current" />
                         {/* Notification Dot */}
                         <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 border-2 border-white rounded-full"></span>
                     </button>
@@ -64,15 +64,15 @@ const Header = () => {
                         href="https://glow-guide-help-hub.lovable.app/"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="w-10 h-10 rounded-full bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center transition-colors shadow-sm"
+                        className="w-10 h-10 rounded-full bg-[#467EFF] hover:bg-[#3b6de0] text-white flex items-center justify-center transition-colors shadow-sm"
                     >
-                        <HelpCircle size={22} />
+                        <HelpCircle size={22} strokeWidth={2.5} />
                     </a>
 
                     {/* Profile - Purple */}
                     <div className="relative group">
-                        <button className="w-12 h-12 rounded-full bg-[#Cfa1ff] hover:bg-[#c490ff] text-white font-bold text-xl flex items-center justify-center transition-colors shadow-sm">
-                            {user?.email ? user.email.substring(0, 2).toUpperCase() : 'MM'}
+                        <button className="w-12 h-12 rounded-full bg-[#Cfa1ff] hover:bg-[#c490ff] text-white font-bold text-xl flex items-center justify-center transition-colors shadow-sm tracking-wider">
+                            IT
                         </button>
 
                         {/* Dropdown for Sign Out */}
