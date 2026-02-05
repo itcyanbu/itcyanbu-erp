@@ -44,7 +44,7 @@ const Header = () => {
 
                     {/* Quick Actions - Blue */}
                     <button className="w-10 h-10 rounded-full bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center transition-colors shadow-sm">
-                        <Zap size={20} fill="currentColor" />
+                        <Zap size={20} />
                     </button>
 
                     {/* Announcements - Teal/Slate */}
