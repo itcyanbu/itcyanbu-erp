@@ -67,16 +67,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const signUp = async (email: string, password: string, metadata?: any) => {
         if (!supabase) {
             // Mock Signup for Demo Mode
-            const mockUser: any = {
-                id: 'mock-user-123',
-                email: email,
-                role: 'authenticated',
-                aud: 'authenticated',
-                created_at: new Date().toISOString(),
-                app_metadata: {},
-                user_metadata: metadata || {}
-            };
-            setUser(mockUser);
+            // Don't auto-login. Simulate waiting for email verification.
             return { error: null };
         }
         const { error } = await supabase.auth.signUp({
