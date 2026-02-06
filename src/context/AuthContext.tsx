@@ -48,8 +48,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const signIn = async (email: string, password: string) => {
         if (!supabase) {
             // Mock Login for Demo Mode
+            const mockId = btoa(email).replace(/[^a-zA-Z0-9]/g, '').slice(0, 15);
             const mockUser: any = {
-                id: 'mock-user-123',
+                id: `mock-user-${mockId}`,
                 email: email,
                 role: 'authenticated',
                 aud: 'authenticated',
@@ -83,9 +84,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const signInWithGoogle = async () => {
         if (!supabase) {
             // Mock Google Login for Demo Mode
+            const email = 'demo@gmail.com';
+            const mockId = btoa(email).replace(/[^a-zA-Z0-9]/g, '').slice(0, 15);
             const mockUser: any = {
-                id: 'mock-google-user-456',
-                email: 'demo@gmail.com',
+                id: `mock-google-${mockId}`,
+                email: email,
                 role: 'authenticated',
                 aud: 'authenticated',
                 created_at: new Date().toISOString(),
@@ -108,8 +111,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
 
     const signOut = async () => {
-        if (!supabase) return;
-        await supabase.auth.signOut();
+        if (supabase) {
+            await supabase.auth.signOut();
+        }
+        setUser(null);
+        setSession(null);
     };
 
     const value = {
