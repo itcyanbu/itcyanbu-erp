@@ -91,7 +91,21 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const signInWithGoogle = async () => {
         if (!supabase) {
-            return { error: new Error('Supabase not configured') };
+            // Mock Google Login for Demo Mode
+            const mockUser: any = {
+                id: 'mock-google-user-456',
+                email: 'demo@gmail.com',
+                role: 'authenticated',
+                aud: 'authenticated',
+                created_at: new Date().toISOString(),
+                app_metadata: { provider: 'google' },
+                user_metadata: {
+                    full_name: 'Demo User',
+                    avatar_url: 'https://lh3.googleusercontent.com/a/default-user=s96-c'
+                }
+            };
+            setUser(mockUser);
+            return { error: null };
         }
         const { error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
