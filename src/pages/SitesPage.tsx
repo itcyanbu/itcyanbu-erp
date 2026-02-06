@@ -20,6 +20,12 @@ const SitesPage = () => {
     const [surveys, setSurveys] = useState<SiteItem[]>(mockSurveys);
     const [chatWidgets, setChatWidgets] = useState<SiteItem[]>(mockChatWidgets);
     const [wordPressSites, setWordPressSites] = useState<SiteItem[]>(mockWordPress);
+    const [mediaItems, setMediaItems] = useState<any[]>([
+        { id: '1', name: 'hero-image.jpg' },
+        { id: '2', name: 'logo-dark.png' },
+        { id: '3', name: 'banner-ads.png' },
+        { id: '4', name: 'testimonial-1.jpg' }
+    ]);
 
     // Modal State
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -59,6 +65,9 @@ const SitesPage = () => {
                 break;
             case 'Chat Widget':
                 setChatWidgets([{ ...newItemBase, stats: 'Default Theme' }, ...chatWidgets]);
+                break;
+            case 'Media File':
+                setMediaItems([{ id: Date.now().toString(), name: name || 'uploaded-file.jpg' }, ...mediaItems]);
                 break;
             default:
                 break;
@@ -145,15 +154,19 @@ const SitesPage = () => {
                     <div className="flex flex-col h-full bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                         <div className="flex items-center justify-between mb-6">
                             <h3 className="text-lg font-semibold text-gray-900">Media Library</h3>
-                            <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium flex items-center gap-2">
+                            <button
+                                onClick={() => openCreateModal('Media File')}
+                                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium flex items-center gap-2"
+                            >
                                 <Tv size={16} />
                                 Upload File
                             </button>
                         </div>
                         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-                                <div key={i} className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center border border-gray-200 hover:border-blue-500 cursor-pointer transition-colors group relative">
-                                    <Tv className="text-gray-400 group-hover:text-blue-500" size={32} />
+                            {mediaItems.map((item) => (
+                                <div key={item.id} className="aspect-square bg-gray-100 rounded-lg flex flex-col items-center justify-center border border-gray-200 hover:border-blue-500 cursor-pointer transition-colors group relative p-4">
+                                    <Tv className="text-gray-400 group-hover:text-blue-500 mb-2" size={32} />
+                                    <div className="text-xs text-gray-500 font-medium truncate w-full text-center">{item.name}</div>
                                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors rounded-lg" />
                                 </div>
                             ))}
