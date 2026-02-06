@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { X, Plus, LayoutTemplate, Share2, Globe, Link } from 'lucide-react';
 
 interface CreateSiteModalProps {
@@ -67,6 +67,7 @@ const CreateSiteModal = ({ isOpen, onClose, onCreate, type }: CreateSiteModalPro
 
     const handleClose = () => {
         setName('');
+        setImportUrl('');
         setWpMode('create');
         setStep('type-selection');
         onClose();
