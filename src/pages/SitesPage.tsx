@@ -46,28 +46,28 @@ const SitesPage = () => {
 
         switch (createType) {
             case 'Funnel':
-                setFunnels([{ ...newItemBase, steps: 0, type: 'Sales' } as Funnel, ...funnels]);
+                setFunnels(prev => [{ ...newItemBase, steps: 0, type: 'Sales' } as Funnel, ...prev]);
                 break;
             case 'Website':
-                setWebsites([{ ...newItemBase, stats: '0 Pages', type: 'Business' }, ...websites]);
+                setWebsites(prev => [{ ...newItemBase, stats: '0 Pages', type: 'Business' }, ...prev]);
                 break;
             case 'Blog':
-                setBlogs([{ ...newItemBase, stats: '0 Posts', type: 'General' }, ...blogs]);
+                setBlogs(prev => [{ ...newItemBase, stats: '0 Posts', type: 'General' }, ...prev]);
                 break;
             case 'WordPress Site':
-                setWordPressSites([{ ...newItemBase, stats: 'v6.4', type: 'Managed' }, ...wordPressSites]);
+                setWordPressSites(prev => [{ ...newItemBase, stats: 'v6.4', type: 'Managed' }, ...prev]);
                 break;
             case 'Form':
-                setForms([{ ...newItemBase, stats: '0 Submissions' }, ...forms]);
+                setForms(prev => [{ ...newItemBase, stats: '0 Submissions' }, ...prev]);
                 break;
             case 'Survey':
-                setSurveys([{ ...newItemBase, stats: '0 Responses' }, ...surveys]);
+                setSurveys(prev => [{ ...newItemBase, stats: '0 Responses' }, ...prev]);
                 break;
             case 'Chat Widget':
-                setChatWidgets([{ ...newItemBase, stats: 'Default Theme' }, ...chatWidgets]);
+                setChatWidgets(prev => [{ ...newItemBase, stats: 'Default Theme' }, ...prev]);
                 break;
             case 'Media File':
-                setMediaItems([{ id: Date.now().toString(), name: name || 'uploaded-file.jpg' }, ...mediaItems]);
+                setMediaItems(prev => [{ id: Date.now().toString(), name: name || 'uploaded-file.jpg' }, ...prev]);
                 break;
             default:
                 break;

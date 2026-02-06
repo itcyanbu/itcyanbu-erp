@@ -54,14 +54,22 @@ const CreateSiteModal = ({ isOpen, onClose, onCreate, type }: CreateSiteModalPro
         setStep('details');
     };
 
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (name.trim()) {
-            let finalName = name;
-            if (wpMode === 'migrate') finalName = `${name} (Migrated)`;
-            if (wpMode === 'import') finalName = `${name} (Imported)`;
-            onCreate(finalName);
-            handleClose();
+        if (name.trim() && !isSubmitting) {
+            setIsSubmitting(true);
+            try {
+                let finalName = name;
+                if (wpMode === 'migrate') finalName = `${name} (Migrated)`;
+                if (wpMode === 'import') finalName = `${name} (Imported)`;
+                onCreate(finalName);
+                handleClose();
+            } catch (err) {
+                console.error('Failed to create:', err);
+                setIsSubmitting(false);
+            }
         }
     };
 
@@ -210,10 +218,17 @@ const CreateSiteModal = ({ isOpen, onClose, onCreate, type }: CreateSiteModalPro
                             </button>
                             <button
                                 type="submit"
-                                disabled={!name.trim()}
-                                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
+                                disabled={!name.trim() || isSubmitting}
+                                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm flex items-center gap-2"
                             >
-                                {wpMode === 'migrate' ? 'Start Migration' : `Create ${type}`}
+                                {isSubmitting ? (
+                                    <>
+                                        <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                                        Creating...
+                                    </>
+                                ) : (
+                                    wpMode === 'migrate' ? 'Start Migration' : `Create ${type}`
+                                )}
                             </button>
                         </div>
                     </form>
