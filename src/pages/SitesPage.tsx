@@ -108,7 +108,17 @@ const SitesPage = () => {
         <div className="flex flex-col h-full bg-gray-50">
             {/* Header / Sub-navigation */}
             <div className="bg-white border-b border-gray-200 px-6 pt-4">
-                <h1 className="text-2xl font-semibold text-gray-900 mb-4">Sites</h1>
+                <div className="flex items-center justify-between mb-4">
+                    <h1 className="text-2xl font-semibold text-gray-900">Sites</h1>
+                    <a
+                        href="https://help.gohighlevel.com/support/home"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1"
+                    >
+                        Need Help?
+                    </a>
+                </div>
                 <div className="flex items-center gap-6 overflow-x-auto custom-scrollbar no-scrollbar-buttons">
                     {tabs.map(tab => (
                         <button

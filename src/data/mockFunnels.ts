@@ -4,48 +4,72 @@ export interface Funnel {
     steps: number;
     status: 'Active' | 'Draft' | 'Archived';
     lastUpdated: string;
-    type: 'Sales' | 'Webinar' | 'Lead Magnet' | 'Product Launch';
+    type: 'Sales' | 'Webinar' | 'Lead Magnet' | 'Product Launch' | 'Appointment';
 }
 
 export const mockFunnels: Funnel[] = [
     {
         id: '1',
-        name: 'High Ticket Coaching Application',
-        steps: 4,
+        name: 'Free Teeth Whitening Voucher',
+        steps: 2,
         status: 'Active',
-        lastUpdated: '2 hours ago',
-        type: 'Sales'
+        lastUpdated: '1 hour ago',
+        type: 'Lead Magnet'
     },
     {
         id: '2',
-        name: 'Free E-book Opt-in',
-        steps: 2,
+        name: 'Home Buyers Guide 2024',
+        steps: 3,
         status: 'Active',
-        lastUpdated: '1 day ago',
+        lastUpdated: '4 hours ago',
         type: 'Lead Magnet'
     },
     {
         id: '3',
-        name: 'Webinar Registration',
-        steps: 3,
-        status: 'Draft',
-        lastUpdated: '3 days ago',
+        name: 'Webinar: Financial Freedom Strategies',
+        steps: 4,
+        status: 'Active',
+        lastUpdated: '1 day ago',
         type: 'Webinar'
     },
     {
         id: '4',
-        name: 'Holiday Promo Sale',
-        steps: 5,
-        status: 'Archived',
-        lastUpdated: '1 month ago',
+        name: 'Auto Detailing Special Offer',
+        steps: 3,
+        status: 'Active',
+        lastUpdated: '2 days ago',
         type: 'Sales'
     },
     {
         id: '5',
-        name: 'Client Onboarding',
-        steps: 6,
+        name: 'Yoga Class Free Trial',
+        steps: 2,
+        status: 'Active',
+        lastUpdated: '3 days ago',
+        type: 'Lead Magnet'
+    },
+    {
+        id: '6',
+        name: 'High Ticket Coaching Application',
+        steps: 5,
         status: 'Active',
         lastUpdated: '5 days ago',
+        type: 'Appointment'
+    },
+    {
+        id: '7',
+        name: 'Black Friday Flash Sale',
+        steps: 3,
+        status: 'Archived',
+        lastUpdated: '2 months ago',
+        type: 'Sales'
+    },
+    {
+        id: '8',
+        name: 'Crossfit Challenge Registration',
+        steps: 4,
+        status: 'Draft',
+        lastUpdated: '1 week ago',
         type: 'Product Launch'
     }
 ];
