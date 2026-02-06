@@ -81,7 +81,7 @@ const CreateSiteModal = ({ isOpen, onClose, onCreate, type }: CreateSiteModalPro
                                 <span className="text-2xl font-bold text-gray-400 group-hover:text-blue-500">+</span>
                             </div>
                             <h4 className="text-lg font-semibold text-gray-900 mb-2">From Blank</h4>
-                            <p className="text-sm text-gray-500 text-center">Start from scratch and build your {type.toLowerCase()} exactly how you want.</p>
+                            <p className="text-sm text-gray-500 text-center">Start from scratch using the drag and drop builder.</p>
                         </button>
 
                         <button
