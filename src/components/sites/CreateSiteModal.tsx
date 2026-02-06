@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { X } from 'lucide-react';
 
 interface CreateSiteModalProps {
@@ -10,16 +10,17 @@ interface CreateSiteModalProps {
 
 const CreateSiteModal = ({ isOpen, onClose, onCreate, type }: CreateSiteModalProps) => {
     const [name, setName] = useState('');
-    const [step, setStep] = useState<'type-selection' | 'details' | 'migrate-details'>('type-selection');
+    const [step, setStep] = useState<'type-selection' | 'details' | 'migrate-details'>(() => {
+        // Initialize step based on type
+        return type === 'WordPress Site' || type === 'Website' || type === 'Funnel'
+            ? 'type-selection'
+            : 'details';
+    });
     const [wpMode, setWpMode] = useState<'create' | 'migrate'>('create');
 
     if (!isOpen) return null;
 
-    useEffect(() => {
-        if (isOpen) {
-            setStep(type === 'WordPress Site' || type === 'Website' || type === 'Funnel' ? 'type-selection' : 'details');
-        }
-    }, [isOpen, type]);
+    // No useEffect needed as we force remount on open
 
     const handleNext = (selection: 'blank' | 'template' | 'migrate') => {
         if (type === 'WordPress Site') {
