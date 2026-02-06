@@ -1,7 +1,12 @@
 import { Plus, Search, MoreHorizontal, Filter, ArrowUpRight } from 'lucide-react';
 import { mockFunnels, type Funnel } from '../../data/mockFunnels';
 
-const FunnelsTab = () => {
+interface FunnelsTabProps {
+    items?: Funnel[];
+    onCreate?: () => void;
+}
+
+const FunnelsTab = ({ items = mockFunnels, onCreate }: FunnelsTabProps) => {
     return (
         <div className="flex flex-col h-full bg-white rounded-lg shadow-sm border border-gray-200">
             {/* Toolbar */}
@@ -21,7 +26,10 @@ const FunnelsTab = () => {
                     </button>
                 </div>
                 <div>
-                    <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
+                    <button
+                        onClick={onCreate}
+                        className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                    >
                         <Plus size={16} />
                         New Funnel
                     </button>
@@ -39,7 +47,7 @@ const FunnelsTab = () => {
 
             {/* List Body */}
             <div className="flex-1 overflow-y-auto">
-                {mockFunnels.map((funnel: Funnel) => (
+                {items.map((funnel: Funnel) => (
                     <div key={funnel.id} className="grid grid-cols-12 gap-4 px-6 py-4 border-b border-gray-100 hover:bg-gray-50 transition-colors items-center group">
                         <div className="col-span-4">
                             <div className="font-medium text-gray-900 group-hover:text-blue-600 cursor-pointer flex items-center gap-2">

@@ -2,13 +2,68 @@ import { useState } from 'react';
 import { LayoutTemplate, Globe, FileText, FormInput, MessageSquare, PenTool, Tv } from 'lucide-react';
 import FunnelsTab from '../components/sites/FunnelsTab';
 import GenericSiteList from '../components/sites/GenericSiteList';
-import { mockWebsites, mockBlogs, mockForms, mockSurveys, mockChatWidgets, mockWordPress } from '../data/mockSitesData';
+import CreateSiteModal from '../components/sites/CreateSiteModal';
+import { mockWebsites, mockBlogs, mockForms, mockSurveys, mockChatWidgets, mockWordPress, type SiteItem } from '../data/mockSitesData';
+import { mockFunnels, type Funnel } from '../data/mockFunnels';
 
 
 type SiteTab = 'funnels' | 'websites' | 'blogs' | 'wordpress' | 'forms' | 'surveys' | 'chat_widget' | 'media';
 
 const SitesPage = () => {
     const [activeTab, setActiveTab] = useState<SiteTab>('funnels');
+
+    // State for lists
+    const [funnels, setFunnels] = useState<Funnel[]>(mockFunnels);
+    const [websites, setWebsites] = useState<SiteItem[]>(mockWebsites);
+    const [blogs, setBlogs] = useState<SiteItem[]>(mockBlogs);
+    const [forms, setForms] = useState<SiteItem[]>(mockForms);
+    const [surveys, setSurveys] = useState<SiteItem[]>(mockSurveys);
+    const [chatWidgets, setChatWidgets] = useState<SiteItem[]>(mockChatWidgets);
+    const [wordPressSites, setWordPressSites] = useState<SiteItem[]>(mockWordPress);
+
+    // Modal State
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [createType, setCreateType] = useState('');
+
+    const openCreateModal = (type: string) => {
+        setCreateType(type);
+        setIsCreateModalOpen(true);
+    };
+
+    const handleCreate = (name: string) => {
+        const newItemBase = {
+            id: Date.now().toString(),
+            name,
+            status: 'Draft' as const,
+            lastUpdated: 'Just now',
+        };
+
+        switch (createType) {
+            case 'Funnel':
+                setFunnels([{ ...newItemBase, steps: 0, type: 'Sales' } as Funnel, ...funnels]);
+                break;
+            case 'Website':
+                setWebsites([{ ...newItemBase, stats: '0 Pages', type: 'Business' }, ...websites]);
+                break;
+            case 'Blog':
+                setBlogs([{ ...newItemBase, stats: '0 Posts', type: 'General' }, ...blogs]);
+                break;
+            case 'WordPress Site':
+                setWordPressSites([{ ...newItemBase, stats: 'v6.4', type: 'Managed' }, ...wordPressSites]);
+                break;
+            case 'Form':
+                setForms([{ ...newItemBase, stats: '0 Submissions' }, ...forms]);
+                break;
+            case 'Survey':
+                setSurveys([{ ...newItemBase, stats: '0 Responses' }, ...surveys]);
+                break;
+            case 'Chat Widget':
+                setChatWidgets([{ ...newItemBase, stats: 'Default Theme' }, ...chatWidgets]);
+                break;
+            default:
+                break;
+        }
+    };
 
     const tabs: { id: SiteTab; label: string; icon: any }[] = [
         { id: 'funnels', label: 'Funnels', icon: LayoutTemplate },
@@ -24,59 +79,65 @@ const SitesPage = () => {
     const renderContent = () => {
         switch (activeTab) {
             case 'funnels':
-                return <FunnelsTab />;
+                return <FunnelsTab items={funnels} onCreate={() => openCreateModal('Funnel')} />;
             case 'websites':
                 return (
                     <GenericSiteList
                         title="Websites"
-                        items={mockWebsites}
+                        items={websites}
                         newItemLabel="New Website"
                         icon={Globe}
+                        onNewItem={() => openCreateModal('Website')}
                     />
                 );
             case 'blogs':
                 return (
                     <GenericSiteList
                         title="Blogs"
-                        items={mockBlogs}
+                        items={blogs}
                         newItemLabel="Create Blog Post"
                         icon={PenTool}
+                        onNewItem={() => openCreateModal('Blog')}
                     />
                 );
             case 'wordpress':
                 return (
                     <GenericSiteList
                         title="WordPress Sites"
-                        items={mockWordPress}
+                        items={wordPressSites}
                         newItemLabel="Create WordPress Site"
                         icon={FileText}
+                        onNewItem={() => openCreateModal('WordPress Site')}
                     />
                 );
             case 'forms':
                 return (
                     <GenericSiteList
                         title="Forms"
-                        items={mockForms}
+                        items={forms}
                         newItemLabel="Create Form"
                         icon={FormInput}
+                        onNewItem={() => openCreateModal('Form')}
                     />
                 );
             case 'surveys':
                 return (
                     <GenericSiteList
                         title="Surveys"
-                        items={mockSurveys}
+                        items={surveys}
                         newItemLabel="Create Survey"
                         icon={FormInput}
+                        onNewItem={() => openCreateModal('Survey')}
                     />
                 );
             case 'chat_widget':
                 return (
                     <GenericSiteList
                         title="Chat Widgets"
-                        items={mockChatWidgets}
+                        items={chatWidgets}
                         newItemLabel="Configure Widget"
                         icon={MessageSquare}
+                        onNewItem={() => openCreateModal('Chat Widget')}
                     />
                 );
             case 'media':
@@ -140,6 +201,13 @@ const SitesPage = () => {
             <div className="flex-1 overflow-y-auto p-6">
                 {renderContent()}
             </div>
+
+            <CreateSiteModal
+                isOpen={isCreateModalOpen}
+                onClose={() => setIsCreateModalOpen(false)}
+                onCreate={handleCreate}
+                type={createType}
+            />
         </div>
     );
 };
