@@ -58,8 +58,8 @@ const CreateSiteModal = ({ isOpen, onClose, onCreate, type }: CreateSiteModalPro
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className={`bg-white rounded-xl shadow-xl w-full ${step === 'type-selection' ? 'max-w-3xl' : 'max-w-md'} overflow-hidden animate-in zoom-in-95 duration-200`}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+            <div className={`bg-white rounded-xl shadow-xl w-full ${step === 'type-selection' ? 'max-w-3xl' : 'max-w-md'} overflow-hidden`}>
                 <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
                     <h3 className="text-lg font-semibold text-gray-900">
                         {step === 'type-selection' ? `New ${type}` :

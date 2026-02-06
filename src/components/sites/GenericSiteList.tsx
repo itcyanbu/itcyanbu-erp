@@ -11,7 +11,7 @@ interface GenericSiteListProps {
 
 const GenericSiteList = ({ title, items, newItemLabel, icon: Icon, onNewItem }: GenericSiteListProps) => {
     return (
-        <div className="flex flex-col h-full bg-white rounded-lg shadow-sm border border-gray-200 animate-in fade-in duration-300">
+        <div className="flex flex-col h-full bg-white rounded-lg shadow-sm border border-gray-200">
             {/* Toolbar */}
             <div className="p-4 border-b border-gray-200 flex items-center justify-between">
                 <div className="flex items-center gap-4 flex-1">
