@@ -21,9 +21,17 @@ const CreateSiteModal = ({ isOpen, onClose, onCreate, type }: CreateSiteModalPro
     });
     const [wpMode, setWpMode] = useState<'create' | 'migrate' | 'import'>('create');
 
-    if (!isOpen) return null;
+    // Reset state when modal opens
+    React.useEffect(() => {
+        if (isOpen) {
+            setStep(TYPES_WITH_SELECTION.includes(type) ? 'type-selection' : 'details');
+            setName('');
+            setImportUrl('');
+            setWpMode('create');
+        }
+    }, [isOpen, type]);
 
-    // No useEffect needed as we force remount on open
+    if (!isOpen) return null;
 
     const handleNext = (selection: 'blank' | 'template' | 'migrate' | 'import') => {
         if (type === 'WordPress Site') {
@@ -54,22 +62,14 @@ const CreateSiteModal = ({ isOpen, onClose, onCreate, type }: CreateSiteModalPro
         setStep('details');
     };
 
-    const [isSubmitting, setIsSubmitting] = useState(false);
-
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (name.trim() && !isSubmitting) {
-            setIsSubmitting(true);
-            try {
-                let finalName = name;
-                if (wpMode === 'migrate') finalName = `${name} (Migrated)`;
-                if (wpMode === 'import') finalName = `${name} (Imported)`;
-                onCreate(finalName);
-                handleClose();
-            } catch (err) {
-                console.error('Failed to create:', err);
-                setIsSubmitting(false);
-            }
+        if (name.trim()) {
+            let finalName = name;
+            if (wpMode === 'migrate') finalName = `${name} (Migrated)`;
+            if (wpMode === 'import') finalName = `${name} (Imported)`;
+            onCreate(finalName);
+            handleClose();
         }
     };
 
@@ -218,17 +218,10 @@ const CreateSiteModal = ({ isOpen, onClose, onCreate, type }: CreateSiteModalPro
                             </button>
                             <button
                                 type="submit"
-                                disabled={!name.trim() || isSubmitting}
-                                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm flex items-center gap-2"
+                                disabled={!name.trim()}
+                                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
                             >
-                                {isSubmitting ? (
-                                    <>
-                                        <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                                        Creating...
-                                    </>
-                                ) : (
-                                    wpMode === 'migrate' ? 'Start Migration' : `Create ${type}`
-                                )}
+                                {wpMode === 'migrate' ? 'Start Migration' : `Create ${type}`}
                             </button>
                         </div>
                     </form>

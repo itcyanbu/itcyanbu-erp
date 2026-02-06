@@ -216,7 +216,6 @@ const SitesPage = () => {
             </div>
 
             <CreateSiteModal
-                key={isCreateModalOpen ? 'open' : 'closed'}
                 isOpen={isCreateModalOpen}
                 onClose={() => setIsCreateModalOpen(false)}
                 onCreate={handleCreate}
