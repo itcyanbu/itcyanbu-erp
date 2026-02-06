@@ -90,7 +90,8 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     const loadAppointmentsFromLocalStorage = () => {
         try {
-            const saved = localStorage.getItem('ghl_appointments');
+            const storageKey = user ? `ghl_appointments_${user.id}` : 'ghl_appointments';
+            const saved = localStorage.getItem(storageKey);
             setAppointments(saved ? JSON.parse(saved) : []);
         } catch (e) {
             console.error('Failed to parse appointments', e);
@@ -99,7 +100,11 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
 
     const migrateLocalDataToSupabase = async () => {
-        const savedAppointments = localStorage.getItem('ghl_appointments');
+        if (!user) return;
+
+        const storageKey = `ghl_appointments_${user.id}`;
+        const savedAppointments = localStorage.getItem(storageKey) || localStorage.getItem('ghl_appointments');
+
         if (!savedAppointments) {
             setSynced(true);
             return;
@@ -137,6 +142,7 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
 
     const addAppointment = async (appointment: Omit<Appointment, 'id'>) => {
+        const storageKey = user ? `ghl_appointments_${user.id}` : 'ghl_appointments';
         if (user && isSupabaseEnabled) {
             // Save to Supabase
             const dbAppointment = mapAppAppointmentToDbAppointment(appointment);
@@ -148,14 +154,14 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                 const localAppointment = { ...appointment, id: Math.random().toString(36).substr(2, 9) };
                 setAppointments(prev => {
                     const updated = [...prev, localAppointment];
-                    localStorage.setItem('ghl_appointments', JSON.stringify(updated));
+                    localStorage.setItem(storageKey, JSON.stringify(updated));
                     return updated;
                 });
             } else if (data) {
                 const appAppointment = mapDbAppointmentToAppAppointment(data);
                 setAppointments(prev => {
                     const updated = [...prev, appAppointment];
-                    localStorage.setItem('ghl_appointments', JSON.stringify(updated));
+                    localStorage.setItem(storageKey, JSON.stringify(updated));
                     return updated;
                 });
             }
@@ -164,13 +170,14 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             const localAppointment = { ...appointment, id: Math.random().toString(36).substr(2, 9) };
             setAppointments(prev => {
                 const updated = [...prev, localAppointment];
-                localStorage.setItem('ghl_appointments', JSON.stringify(updated));
+                localStorage.setItem(storageKey, JSON.stringify(updated));
                 return updated;
             });
         }
     };
 
     const updateAppointment = async (id: string, updates: Partial<Appointment>) => {
+        const storageKey = user ? `ghl_appointments_${user.id}` : 'ghl_appointments';
         if (user && isSupabaseEnabled) {
             // Update in Supabase
             const dbUpdates = mapAppAppointmentToDbAppointment(updates);
@@ -181,14 +188,14 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                 // Fallback to local update
                 setAppointments(prev => {
                     const updated = prev.map(a => a.id === id ? { ...a, ...updates } : a);
-                    localStorage.setItem('ghl_appointments', JSON.stringify(updated));
+                    localStorage.setItem(storageKey, JSON.stringify(updated));
                     return updated;
                 });
             } else if (data) {
                 const appAppointment = mapDbAppointmentToAppAppointment(data);
                 setAppointments(prev => {
                     const updated = prev.map(a => a.id === id ? appAppointment : a);
-                    localStorage.setItem('ghl_appointments', JSON.stringify(updated));
+                    localStorage.setItem(storageKey, JSON.stringify(updated));
                     return updated;
                 });
             }
@@ -196,13 +203,14 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             // Local-only mode
             setAppointments(prev => {
                 const updated = prev.map(a => a.id === id ? { ...a, ...updates } : a);
-                localStorage.setItem('ghl_appointments', JSON.stringify(updated));
+                localStorage.setItem(storageKey, JSON.stringify(updated));
                 return updated;
             });
         }
     };
 
     const deleteAppointment = async (id: string) => {
+        const storageKey = user ? `ghl_appointments_${user.id}` : 'ghl_appointments';
         if (user && isSupabaseEnabled) {
             // Delete from Supabase
             const { error } = await appointmentsService.delete(id);
@@ -215,7 +223,7 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         // Remove from local state
         setAppointments(prev => {
             const updated = prev.filter(a => a.id !== id);
-            localStorage.setItem('ghl_appointments', JSON.stringify(updated));
+            localStorage.setItem(storageKey, JSON.stringify(updated));
             return updated;
         });
     };

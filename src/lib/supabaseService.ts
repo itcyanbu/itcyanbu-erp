@@ -27,9 +27,15 @@ export const contactsService = {
             return { data: null, error: new Error('Supabase not configured') };
         }
 
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+            return { data: null, error: new Error('User not authenticated') };
+        }
+
         const { data, error } = await supabase
             .from('contacts')
             .select('*')
+            .eq('user_id', user.id)
             .order('created_at', { ascending: false });
 
         return { data, error };
@@ -65,10 +71,16 @@ export const contactsService = {
             return { data: null, error: new Error('Supabase not configured') };
         }
 
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+            return { data: null, error: new Error('User not authenticated') };
+        }
+
         const { data, error } = await supabase
             .from('contacts')
             .update(updates)
             .eq('id', id)
+            .eq('user_id', user.id)
             .select()
             .single();
 
@@ -83,10 +95,16 @@ export const contactsService = {
             return { error: new Error('Supabase not configured') };
         }
 
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+            return { error: new Error('User not authenticated') };
+        }
+
         const { error } = await supabase
             .from('contacts')
             .delete()
-            .eq('id', id);
+            .eq('id', id)
+            .eq('user_id', user.id);
 
         return { error };
     },
@@ -128,9 +146,15 @@ export const calendarsService = {
             return { data: null, error: new Error('Supabase not configured') };
         }
 
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+            return { data: null, error: new Error('User not authenticated') };
+        }
+
         const { data, error } = await supabase
             .from('calendars')
             .select('*')
+            .eq('user_id', user.id)
             .order('created_at', { ascending: false });
 
         return { data, error };
@@ -166,10 +190,16 @@ export const calendarsService = {
             return { data: null, error: new Error('Supabase not configured') };
         }
 
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+            return { data: null, error: new Error('User not authenticated') };
+        }
+
         const { data, error } = await supabase
             .from('calendars')
             .update(updates)
             .eq('id', id)
+            .eq('user_id', user.id)
             .select()
             .single();
 
@@ -184,10 +214,16 @@ export const calendarsService = {
             return { error: new Error('Supabase not configured') };
         }
 
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+            return { error: new Error('User not authenticated') };
+        }
+
         const { error } = await supabase
             .from('calendars')
             .delete()
-            .eq('id', id);
+            .eq('id', id)
+            .eq('user_id', user.id);
 
         return { error };
     },
@@ -229,9 +265,15 @@ export const appointmentsService = {
             return { data: null, error: new Error('Supabase not configured') };
         }
 
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+            return { data: null, error: new Error('User not authenticated') };
+        }
+
         const { data, error } = await supabase
             .from('appointments')
             .select('*')
+            .eq('user_id', user.id)
             .order('start_time', { ascending: true });
 
         return { data, error };
@@ -267,10 +309,16 @@ export const appointmentsService = {
             return { data: null, error: new Error('Supabase not configured') };
         }
 
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+            return { data: null, error: new Error('User not authenticated') };
+        }
+
         const { data, error } = await supabase
             .from('appointments')
             .update(updates)
             .eq('id', id)
+            .eq('user_id', user.id)
             .select()
             .single();
 
@@ -285,10 +333,16 @@ export const appointmentsService = {
             return { error: new Error('Supabase not configured') };
         }
 
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+            return { error: new Error('User not authenticated') };
+        }
+
         const { error } = await supabase
             .from('appointments')
             .delete()
-            .eq('id', id);
+            .eq('id', id)
+            .eq('user_id', user.id);
 
         return { error };
     },

@@ -112,21 +112,28 @@ export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children })
     };
 
     const loadFromLocalStorage = () => {
-        const savedContacts = localStorage.getItem('ghl_contacts');
-        const savedVersion = localStorage.getItem('ghl_contacts_version');
+        const storageKey = user ? `ghl_contacts_${user.id}` : 'ghl_contacts';
+        const versionKey = user ? `ghl_contacts_version_${user.id}` : 'ghl_contacts_version';
+
+        const savedContacts = localStorage.getItem(storageKey);
+        const savedVersion = localStorage.getItem(versionKey);
 
         if (savedContacts && savedVersion === DATA_VERSION) {
             setContacts(JSON.parse(savedContacts));
         } else {
             const mocks = generateMockContacts();
             setContacts(mocks);
-            localStorage.setItem('ghl_contacts', JSON.stringify(mocks));
-            localStorage.setItem('ghl_contacts_version', DATA_VERSION);
+            localStorage.setItem(storageKey, JSON.stringify(mocks));
+            localStorage.setItem(versionKey, DATA_VERSION);
         }
     };
 
     const migrateLocalDataToSupabase = async () => {
-        const savedContacts = localStorage.getItem('ghl_contacts');
+        if (!user) return;
+
+        const storageKey = `ghl_contacts_${user.id}`;
+        const savedContacts = localStorage.getItem(storageKey) || localStorage.getItem('ghl_contacts'); // Check legacy key too 
+
         if (!savedContacts) {
             setSynced(true);
             return;
@@ -167,7 +174,8 @@ export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children })
 
     const saveToStorage = (newContacts: Contact[]) => {
         try {
-            localStorage.setItem('ghl_contacts', JSON.stringify(newContacts));
+            const storageKey = user ? `ghl_contacts_${user.id}` : 'ghl_contacts';
+            localStorage.setItem(storageKey, JSON.stringify(newContacts));
         } catch (error) {
             console.error('Failed to save contacts to localStorage:', error);
         }
