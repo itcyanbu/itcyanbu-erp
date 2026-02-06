@@ -8,11 +8,13 @@ interface CreateSiteModalProps {
     type: string;
 }
 
+const TYPES_WITH_SELECTION = ['WordPress Site', 'Website', 'Funnel', 'Form', 'Survey'];
+
 const CreateSiteModal = ({ isOpen, onClose, onCreate, type }: CreateSiteModalProps) => {
     const [name, setName] = useState('');
     const [step, setStep] = useState<'type-selection' | 'details' | 'migrate-details'>(() => {
         // Initialize step based on type
-        return type === 'WordPress Site' || type === 'Website' || type === 'Funnel'
+        return TYPES_WITH_SELECTION.includes(type)
             ? 'type-selection'
             : 'details';
     });
@@ -134,13 +136,15 @@ const CreateSiteModal = ({ isOpen, onClose, onCreate, type }: CreateSiteModalPro
                         </div>
 
                         <div className="flex items-center justify-end gap-3">
-                            <button
-                                type="button"
-                                onClick={() => setStep('type-selection')}
-                                className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
-                            >
-                                Back
-                            </button>
+                            {TYPES_WITH_SELECTION.includes(type) && (
+                                <button
+                                    type="button"
+                                    onClick={() => setStep('type-selection')}
+                                    className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+                                >
+                                    Back
+                                </button>
+                            )}
                             <button
                                 type="button"
                                 onClick={handleClose}
