@@ -1,6 +1,9 @@
 import { useState } from 'react';
-import { Layout, Globe, FileText, FormInput, MessageSquare, PenTool, Tv } from 'lucide-react';
+import { LayoutTemplate, Globe, FileText, FormInput, MessageSquare, PenTool, Tv } from 'lucide-react';
 import FunnelsTab from '../components/sites/FunnelsTab';
+import GenericSiteList from '../components/sites/GenericSiteList';
+import { mockWebsites, mockBlogs, mockForms, mockSurveys, mockChatWidgets, mockWordPress } from '../data/mockSitesData';
+
 
 type SiteTab = 'funnels' | 'websites' | 'blogs' | 'wordpress' | 'forms' | 'surveys' | 'chat_widget' | 'media';
 
@@ -8,7 +11,7 @@ const SitesPage = () => {
     const [activeTab, setActiveTab] = useState<SiteTab>('funnels');
 
     const tabs: { id: SiteTab; label: string; icon: any }[] = [
-        { id: 'funnels', label: 'Funnels', icon: Layout },
+        { id: 'funnels', label: 'Funnels', icon: LayoutTemplate },
         { id: 'websites', label: 'Websites', icon: Globe },
         { id: 'blogs', label: 'Blogs', icon: PenTool },
         { id: 'wordpress', label: 'WordPress', icon: FileText },
@@ -24,93 +27,76 @@ const SitesPage = () => {
                 return <FunnelsTab />;
             case 'websites':
                 return (
-                    <div className="text-center py-20">
-                        <div className="bg-gray-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6">
-                            <Globe size={40} className="text-gray-400" />
-                        </div>
-                        <h3 className="text-xl font-semibold text-gray-900 mb-2">No Websites Yet</h3>
-                        <p className="text-gray-500 mb-8 max-w-md mx-auto">Build professional websites with our drag-and-drop builder. Secure, fast, and SEO-ready.</p>
-                        <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium">
-                            + New Website
-                        </button>
-                    </div>
+                    <GenericSiteList
+                        title="Websites"
+                        items={mockWebsites}
+                        newItemLabel="New Website"
+                        icon={Globe}
+                    />
                 );
             case 'blogs':
                 return (
-                    <div className="text-center py-20">
-                        <div className="bg-gray-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6">
-                            <PenTool size={40} className="text-gray-400" />
-                        </div>
-                        <h3 className="text-xl font-semibold text-gray-900 mb-2">Start Blogging</h3>
-                        <p className="text-gray-500 mb-8 max-w-md mx-auto">Share your expertise and grow your audience with our integrated blogging platform.</p>
-                        <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium">
-                            + Create Blog Post
-                        </button>
-                    </div>
+                    <GenericSiteList
+                        title="Blogs"
+                        items={mockBlogs}
+                        newItemLabel="Create Blog Post"
+                        icon={PenTool}
+                    />
                 );
             case 'wordpress':
                 return (
-                    <div className="text-center py-20">
-                        <div className="bg-gray-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6">
-                            <FileText size={40} className="text-gray-400" />
-                        </div>
-                        <h3 className="text-xl font-semibold text-gray-900 mb-2">WordPress Hosting</h3>
-                        <p className="text-gray-500 mb-8 max-w-md mx-auto">Powered by Google Cloud Platform. Secure, fast, and managed WordPress hosting.</p>
-                        <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium">
-                            Get Started
-                        </button>
-                    </div>
+                    <GenericSiteList
+                        title="WordPress Sites"
+                        items={mockWordPress}
+                        newItemLabel="Create WordPress Site"
+                        icon={FileText}
+                    />
                 );
             case 'forms':
                 return (
-                    <div className="text-center py-20">
-                        <div className="bg-gray-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6">
-                            <FormInput size={40} className="text-gray-400" />
-                        </div>
-                        <h3 className="text-xl font-semibold text-gray-900 mb-2">Forms Builder</h3>
-                        <p className="text-gray-500 mb-8 max-w-md mx-auto">Create custom forms to capture leads, collect feedback, and more.</p>
-                        <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium">
-                            + Create Form
-                        </button>
-                    </div>
+                    <GenericSiteList
+                        title="Forms"
+                        items={mockForms}
+                        newItemLabel="Create Form"
+                        icon={FormInput}
+                    />
                 );
             case 'surveys':
                 return (
-                    <div className="text-center py-20">
-                        <div className="bg-gray-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6">
-                            <FormInput size={40} className="text-gray-400" />
-                        </div>
-                        <h3 className="text-xl font-semibold text-gray-900 mb-2">Surveys Builder</h3>
-                        <p className="text-gray-500 mb-8 max-w-md mx-auto">Gather valuable insights from your audience with our easy-to-use survey builder.</p>
-                        <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium">
-                            + Create Survey
-                        </button>
-                    </div>
+                    <GenericSiteList
+                        title="Surveys"
+                        items={mockSurveys}
+                        newItemLabel="Create Survey"
+                        icon={FormInput}
+                    />
                 );
             case 'chat_widget':
                 return (
-                    <div className="text-center py-20">
-                        <div className="bg-gray-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6">
-                            <MessageSquare size={40} className="text-gray-400" />
-                        </div>
-                        <h3 className="text-xl font-semibold text-gray-900 mb-2">Chat Widget</h3>
-                        <p className="text-gray-500 mb-8 max-w-md mx-auto">Engage with visitors in real-time. Customize your chat widget to match your brand.</p>
-                        <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium">
-                            Configure Widget
-                        </button>
-                    </div>
+                    <GenericSiteList
+                        title="Chat Widgets"
+                        items={mockChatWidgets}
+                        newItemLabel="Configure Widget"
+                        icon={MessageSquare}
+                    />
                 );
             case 'media':
                 return (
-                    <div className="text-center py-20">
-                        <div className="bg-gray-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6">
-                            <Tv size={40} className="text-gray-400" />
+                    <div className="flex flex-col h-full bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <div className="flex items-center justify-between mb-6">
+                            <h3 className="text-lg font-semibold text-gray-900">Media Library</h3>
+                            <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium flex items-center gap-2">
+                                <Tv size={16} />
+                                Upload File
+                            </button>
                         </div>
-                        <h3 className="text-xl font-semibold text-gray-900 mb-2">Media Library</h3>
-                        <p className="text-gray-500 mb-8 max-w-md mx-auto">Manage all your images, videos, and documents in one place.</p>
-                        <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium">
-                            Open Media Library
-                        </button>
+                        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+                                <div key={i} className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center border border-gray-200 hover:border-blue-500 cursor-pointer transition-colors group relative">
+                                    <Tv className="text-gray-400 group-hover:text-blue-500" size={32} />
+                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors rounded-lg" />
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 );
             default:
@@ -133,7 +119,7 @@ const SitesPage = () => {
                                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                 }`}
                         >
-                            {/* <tab.icon size={16} />  -- Optional: hide icons in tabs if preferred for cleaner look, GHL usually has text tabs here */}
+                            <tab.icon size={16} />
                             {tab.label}
                         </button>
                     ))}
