@@ -1,3 +1,4 @@
+import { useState, useMemo } from 'react';
 import { Plus, Search, MoreHorizontal, Filter, ArrowUpRight } from 'lucide-react';
 import { mockFunnels, type Funnel } from '../../data/mockFunnels';
 
@@ -7,6 +8,15 @@ interface FunnelsTabProps {
 }
 
 const FunnelsTab = ({ items = mockFunnels, onCreate }: FunnelsTabProps) => {
+    const [searchQuery, setSearchQuery] = useState('');
+
+    const filteredItems = useMemo(() => {
+        return items.filter(funnel =>
+            funnel.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            funnel.type.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+    }, [items, searchQuery]);
+
     return (
         <div className="flex flex-col h-full bg-white rounded-lg shadow-sm border border-gray-200">
             {/* Toolbar */}
@@ -17,6 +27,8 @@ const FunnelsTab = ({ items = mockFunnels, onCreate }: FunnelsTabProps) => {
                         <input
                             type="text"
                             placeholder="Search Funnels"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
                             className="pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 w-64"
                         />
                     </div>
@@ -28,7 +40,7 @@ const FunnelsTab = ({ items = mockFunnels, onCreate }: FunnelsTabProps) => {
                 <div>
                     <button
                         onClick={onCreate}
-                        className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                        className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 shadow-sm"
                     >
                         <Plus size={16} />
                         New Funnel
@@ -47,36 +59,45 @@ const FunnelsTab = ({ items = mockFunnels, onCreate }: FunnelsTabProps) => {
 
             {/* List Body */}
             <div className="flex-1 overflow-y-auto">
-                {items.map((funnel: Funnel) => (
-                    <div key={funnel.id} className="grid grid-cols-12 gap-4 px-6 py-4 border-b border-gray-100 hover:bg-gray-50 transition-colors items-center group">
-                        <div className="col-span-4">
-                            <div className="font-medium text-gray-900 group-hover:text-blue-600 cursor-pointer flex items-center gap-2">
-                                {funnel.name}
-                                <ArrowUpRight size={14} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                {filteredItems.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center h-64 text-gray-500">
+                        <div className="bg-gray-100 p-4 rounded-full mb-4">
+                            <Plus size={32} className="text-gray-400" />
+                        </div>
+                        <p>{searchQuery ? 'No funnels match your search' : 'No funnels found'}</p>
+                    </div>
+                ) : (
+                    filteredItems.map((funnel: Funnel) => (
+                        <div key={funnel.id} className="grid grid-cols-12 gap-4 px-6 py-4 border-b border-gray-100 hover:bg-gray-50 transition-colors items-center group">
+                            <div className="col-span-4">
+                                <div className="font-medium text-gray-900 group-hover:text-blue-600 cursor-pointer flex items-center gap-2">
+                                    {funnel.name}
+                                    <ArrowUpRight size={14} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                                </div>
+                            </div>
+                            <div className="col-span-2">
+                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${funnel.status === 'Active' ? 'bg-green-100 text-green-700' :
+                                    funnel.status === 'Draft' ? 'bg-yellow-100 text-yellow-700' :
+                                        'bg-gray-100 text-gray-600'
+                                    }`}>
+                                    {funnel.status}
+                                </span>
+                            </div>
+                            <div className="col-span-2 text-sm text-gray-600">
+                                {funnel.steps} Steps
+                            </div>
+                            <div className="col-span-2 text-sm text-gray-600">
+                                {funnel.type}
+                            </div>
+                            <div className="col-span-2 text-right flex items-center justify-end gap-2">
+                                <span className="text-sm text-gray-500 mr-2">{funnel.lastUpdated}</span>
+                                <button className="p-1 text-gray-400 hover:text-gray-600 rounded-md hover:bg-gray-100 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <MoreHorizontal size={16} />
+                                </button>
                             </div>
                         </div>
-                        <div className="col-span-2">
-                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${funnel.status === 'Active' ? 'bg-green-100 text-green-700' :
-                                funnel.status === 'Draft' ? 'bg-yellow-100 text-yellow-700' :
-                                    'bg-gray-100 text-gray-600'
-                                }`}>
-                                {funnel.status}
-                            </span>
-                        </div>
-                        <div className="col-span-2 text-sm text-gray-600">
-                            {funnel.steps} Steps
-                        </div>
-                        <div className="col-span-2 text-sm text-gray-600">
-                            {funnel.type}
-                        </div>
-                        <div className="col-span-2 text-right flex items-center justify-end gap-2">
-                            <span className="text-sm text-gray-500 mr-2">{funnel.lastUpdated}</span>
-                            <button className="p-1 text-gray-400 hover:text-gray-600 rounded-md hover:bg-gray-100 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <MoreHorizontal size={16} />
-                            </button>
-                        </div>
-                    </div>
-                ))}
+                    ))
+                )}
             </div>
         </div>
     );

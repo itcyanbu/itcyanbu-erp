@@ -3,29 +3,18 @@ import { LayoutTemplate, Globe, FileText, FormInput, MessageSquare, PenTool, Tv 
 import FunnelsTab from '../components/sites/FunnelsTab';
 import GenericSiteList from '../components/sites/GenericSiteList';
 import CreateSiteModal from '../components/sites/CreateSiteModal';
-import { mockWebsites, mockBlogs, mockForms, mockSurveys, mockChatWidgets, mockWordPress, type SiteItem } from '../data/mockSitesData';
-import { mockFunnels, type Funnel } from '../data/mockFunnels';
+import { useSites } from '../context/SiteContext';
 
 
 type SiteTab = 'funnels' | 'websites' | 'blogs' | 'wordpress' | 'forms' | 'surveys' | 'chat_widget' | 'media';
 
 const SitesPage = () => {
     const [activeTab, setActiveTab] = useState<SiteTab>('funnels');
-
-    // State for lists
-    const [funnels, setFunnels] = useState<Funnel[]>(mockFunnels);
-    const [websites, setWebsites] = useState<SiteItem[]>(mockWebsites);
-    const [blogs, setBlogs] = useState<SiteItem[]>(mockBlogs);
-    const [forms, setForms] = useState<SiteItem[]>(mockForms);
-    const [surveys, setSurveys] = useState<SiteItem[]>(mockSurveys);
-    const [chatWidgets, setChatWidgets] = useState<SiteItem[]>(mockChatWidgets);
-    const [wordPressSites, setWordPressSites] = useState<SiteItem[]>(mockWordPress);
-    const [mediaItems, setMediaItems] = useState<any[]>([
-        { id: '1', name: 'hero-image.jpg' },
-        { id: '2', name: 'logo-dark.png' },
-        { id: '3', name: 'banner-ads.png' },
-        { id: '4', name: 'testimonial-1.jpg' }
-    ]);
+    const {
+        funnels, websites, blogs, forms, surveys,
+        chatWidgets, wordPressSites, mediaItems,
+        addSite
+    } = useSites();
 
     // Modal State
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -37,41 +26,7 @@ const SitesPage = () => {
     };
 
     const handleCreate = (name: string) => {
-        const newItemBase = {
-            id: Date.now().toString(),
-            name,
-            status: 'Draft' as const,
-            lastUpdated: 'Just now',
-        };
-
-        switch (createType) {
-            case 'Funnel':
-                setFunnels(prev => [{ ...newItemBase, steps: 0, type: 'Sales' } as Funnel, ...prev]);
-                break;
-            case 'Website':
-                setWebsites(prev => [{ ...newItemBase, stats: '0 Pages', type: 'Business' }, ...prev]);
-                break;
-            case 'Blog':
-                setBlogs(prev => [{ ...newItemBase, stats: '0 Posts', type: 'General' }, ...prev]);
-                break;
-            case 'WordPress Site':
-                setWordPressSites(prev => [{ ...newItemBase, stats: 'v6.4', type: 'Managed' }, ...prev]);
-                break;
-            case 'Form':
-                setForms(prev => [{ ...newItemBase, stats: '0 Submissions' }, ...prev]);
-                break;
-            case 'Survey':
-                setSurveys(prev => [{ ...newItemBase, stats: '0 Responses' }, ...prev]);
-                break;
-            case 'Chat Widget':
-                setChatWidgets(prev => [{ ...newItemBase, stats: 'Default Theme' }, ...prev]);
-                break;
-            case 'Media File':
-                setMediaItems(prev => [{ id: Date.now().toString(), name: name || 'uploaded-file.jpg' }, ...prev]);
-                break;
-            default:
-                break;
-        }
+        addSite(createType, name);
     };
 
     const tabs: { id: SiteTab; label: string; icon: any }[] = [

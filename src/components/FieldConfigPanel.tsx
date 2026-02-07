@@ -38,7 +38,7 @@ const SortableItem = ({ field, onToggleRequired, onRemove }: SortableItemProps) 
         transform: CSS.Transform.toString(transform),
         transition,
         zIndex: transform ? 9999 : 'auto',
-        position: 'relative' as 'relative',
+        position: 'relative' as const,
     };
 
     return (

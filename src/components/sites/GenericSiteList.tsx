@@ -1,3 +1,4 @@
+import { useState, useMemo } from 'react';
 import { Plus, Search, MoreHorizontal, Filter, ArrowUpRight } from 'lucide-react';
 import type { SiteItem } from '../../data/mockSitesData';
 
@@ -10,6 +11,15 @@ interface GenericSiteListProps {
 }
 
 const GenericSiteList = ({ title, items, newItemLabel, icon: Icon, onNewItem }: GenericSiteListProps) => {
+    const [searchQuery, setSearchQuery] = useState('');
+
+    const filteredItems = useMemo(() => {
+        return items.filter(item =>
+            item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (item.type && item.type.toLowerCase().includes(searchQuery.toLowerCase()))
+        );
+    }, [items, searchQuery]);
+
     return (
         <div className="flex flex-col h-full bg-white rounded-lg shadow-sm border border-gray-200">
             {/* Toolbar */}
@@ -20,6 +30,8 @@ const GenericSiteList = ({ title, items, newItemLabel, icon: Icon, onNewItem }: 
                         <input
                             type="text"
                             placeholder={`Search ${title}`}
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
                             className="pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 w-64"
                         />
                     </div>
@@ -49,15 +61,15 @@ const GenericSiteList = ({ title, items, newItemLabel, icon: Icon, onNewItem }: 
 
             {/* List Body */}
             <div className="flex-1 overflow-y-auto">
-                {items.length === 0 ? (
+                {filteredItems.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-64 text-gray-500">
                         <div className="bg-gray-100 p-4 rounded-full mb-4">
                             {Icon && <Icon size={32} className="text-gray-400" />}
                         </div>
-                        <p>No {title.toLowerCase()} found</p>
+                        <p>{searchQuery ? 'No matches found' : `No ${title.toLowerCase()} found`}</p>
                     </div>
                 ) : (
-                    items.map((item) => (
+                    filteredItems.map((item) => (
                         <div key={item.id} className="grid grid-cols-12 gap-4 px-6 py-4 border-b border-gray-100 hover:bg-gray-50 transition-colors items-center group">
                             <div className="col-span-5 relative">
                                 <div className="font-medium text-gray-900 group-hover:text-blue-600 cursor-pointer flex items-center gap-2">

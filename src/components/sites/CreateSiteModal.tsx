@@ -100,13 +100,13 @@ const CreateSiteModal = ({ isOpen, onClose, onCreate, type }: CreateSiteModalPro
                     <div className={`p-8 grid ${type === 'WordPress Site' || type === 'Funnel' || type === 'Website' ? 'grid-cols-1 md:grid-cols-3' : 'grid-cols-1 md:grid-cols-2'} gap-6`}>
                         <button
                             onClick={() => handleNext('blank')}
-                            className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-gray-200 rounded-xl hover:border-blue-500 hover:bg-blue-50/50 transition-all group bg-white"
+                            className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-gray-200 rounded-2xl hover:border-blue-500 hover:bg-blue-50/50 transition-all group bg-white shadow-sm hover:shadow-md"
                         >
-                            <div className="w-16 h-16 bg-blue-50 border border-blue-100 rounded-2xl shadow-sm flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-blue-600 transition-all duration-300">
+                            <div className="w-16 h-16 bg-blue-50 border border-blue-100 rounded-2xl shadow-sm flex items-center justify-center mb-5 group-hover:scale-110 group-hover:bg-blue-600 transition-all duration-300">
                                 <Plus size={32} className="text-blue-600 group-hover:text-white transition-colors" />
                             </div>
-                            <h4 className="text-lg font-semibold text-gray-900 mb-2">From Blank</h4>
-                            <p className="text-sm text-gray-500 text-center">Start from scratch using the drag and drop builder.</p>
+                            <h4 className="text-xl font-bold text-gray-900 mb-2">From Blank</h4>
+                            <p className="text-sm text-gray-500 text-center max-w-[180px]">Start from scratch using the drag and drop builder.</p>
                         </button>
 
                         <button
@@ -199,29 +199,33 @@ const CreateSiteModal = ({ isOpen, onClose, onCreate, type }: CreateSiteModalPro
                             />
                         </div>
 
-                        <div className="flex items-center justify-end gap-3">
+                        <div className="flex items-center justify-end gap-3 px-2">
+                            <button
+                                type="button"
+                                onClick={handleClose}
+                                className="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-all"
+                            >
+                                Cancel
+                            </button>
+
                             {TYPES_WITH_SELECTION.includes(type) && (
                                 <button
                                     type="button"
                                     onClick={() => setStep('type-selection')}
-                                    className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+                                    className="px-5 py-2.5 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-xl transition-all"
                                 >
                                     Back
                                 </button>
                             )}
-                            <button
-                                type="button"
-                                onClick={handleClose}
-                                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                            >
-                                Cancel
-                            </button>
+
                             <button
                                 type="submit"
-                                disabled={!name.trim()}
-                                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
+                                disabled={wpMode === 'import' ? !importUrl.trim() : !name.trim()}
+                                className="px-6 py-2.5 text-sm font-bold text-white bg-blue-600 rounded-xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-blue-100"
                             >
-                                {wpMode === 'migrate' ? 'Start Migration' : `Create ${type}`}
+                                {wpMode === 'migrate' ? 'Start Migration' :
+                                    wpMode === 'import' ? 'Begin Import' :
+                                        `Create ${type}`}
                             </button>
                         </div>
                     </form>

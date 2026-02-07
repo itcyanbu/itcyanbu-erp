@@ -6,6 +6,7 @@ import ContactsPage from './components/ContactsPage';
 import { ContactProvider } from './context/ContactContext';
 import { CalendarProvider } from './context/CalendarContext';
 import { EventProvider } from './context/EventContext';
+import { SiteProvider } from './context/SiteContext';
 import { useAuth } from './context/AuthContext';
 import LoginPage from './pages/auth/LoginPage';
 import AuthCallback from './pages/auth/AuthCallback';
@@ -120,16 +121,18 @@ function App() {
             <ContactProvider>
               <CalendarProvider>
                 <EventProvider>
-                  <div className="flex h-screen bg-ghl-bg font-sans text-ghl-text overflow-hidden">
-                    <Sidebar
-                      activeModule={activeModule}
-                      onModuleChange={setActiveModule}
-                    />
-                    <div className="flex-1 flex flex-col min-w-0 overflow-hidden min-h-0 relative">
-                      <Header />
-                      {renderModule()}
+                  <SiteProvider>
+                    <div className="flex h-screen bg-ghl-bg font-sans text-ghl-text overflow-hidden">
+                      <Sidebar
+                        activeModule={activeModule}
+                        onModuleChange={setActiveModule}
+                      />
+                      <div className="flex-1 flex flex-col min-w-0 overflow-hidden min-h-0 relative">
+                        <Header />
+                        {renderModule()}
+                      </div>
                     </div>
-                  </div>
+                  </SiteProvider>
                 </EventProvider>
               </CalendarProvider>
             </ContactProvider>

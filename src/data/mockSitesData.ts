@@ -25,23 +25,23 @@ export const mockBlogs: SiteItem[] = [
 ];
 
 export const mockForms: SiteItem[] = [
-    { id: '1', name: 'New Patient Registration', status: 'Active', stats: '243 Submissions', lastUpdated: '30 mins ago' },
-    { id: '2', name: 'Property Viewing Request', status: 'Active', stats: '56 Submissions', lastUpdated: '2 hours ago' },
-    { id: '3', name: 'Free Consultation Application', status: 'Active', stats: '89 Submissions', lastUpdated: '1 day ago' },
-    { id: '4', name: 'Newsletter Signup - Footer', status: 'Active', stats: '1,205 Submissions', lastUpdated: '10 mins ago' },
-    { id: '5', name: 'Customer Feedback Form', status: 'Active', stats: '45 Submissions', lastUpdated: '3 days ago' }
+    { id: '1', name: 'New Patient Registration', status: 'Active', stats: '243 Submissions', type: 'Registration', lastUpdated: '30 mins ago' },
+    { id: '2', name: 'Property Viewing Request', status: 'Active', stats: '56 Submissions', type: 'Real Estate', lastUpdated: '2 hours ago' },
+    { id: '3', name: 'Free Consultation Application', status: 'Active', stats: '89 Submissions', type: 'Consultation', lastUpdated: '1 day ago' },
+    { id: '4', name: 'Newsletter Signup - Footer', status: 'Active', stats: '1,205 Submissions', type: 'Lead Gen', lastUpdated: '10 mins ago' },
+    { id: '5', name: 'Customer Feedback Form', status: 'Active', stats: '45 Submissions', type: 'Feedback', lastUpdated: '3 days ago' }
 ];
 
 export const mockSurveys: SiteItem[] = [
-    { id: '1', name: 'Client Onboarding Questionnaire', status: 'Active', stats: '34 Responses', lastUpdated: '1 hour ago' },
-    { id: '2', name: 'Customer Satisfaction (NPS)', status: 'Active', stats: '156 Responses', lastUpdated: '5 hours ago' },
-    { id: '3', name: 'Fitness Goals Assessment', status: 'Active', stats: '89 Responses', lastUpdated: '2 days ago' },
-    { id: '4', name: 'Home Security Audit', status: 'Draft', stats: '0 Responses', lastUpdated: '1 week ago' }
+    { id: '1', name: 'Client Onboarding Questionnaire', status: 'Active', stats: '34 Responses', type: 'Onboarding', lastUpdated: '1 hour ago' },
+    { id: '2', name: 'Customer Satisfaction (NPS)', status: 'Active', stats: '156 Responses', type: 'Feedback', lastUpdated: '5 hours ago' },
+    { id: '3', name: 'Fitness Goals Assessment', status: 'Active', stats: '89 Responses', type: 'Fitness', lastUpdated: '2 days ago' },
+    { id: '4', name: 'Home Security Audit', status: 'Draft', stats: '0 Responses', type: 'Security', lastUpdated: '1 week ago' }
 ];
 
 export const mockChatWidgets: SiteItem[] = [
-    { id: '1', name: 'Main Site - Support', status: 'Active', stats: 'Standard Theme', lastUpdated: '1 month ago' },
-    { id: '2', name: 'Sales Page - Lead Capture', status: 'Active', stats: 'Pop-up Theme', lastUpdated: '2 weeks ago' }
+    { id: '1', name: 'Main Site - Support', status: 'Active', stats: 'Standard Theme', type: 'Chat', lastUpdated: '1 month ago' },
+    { id: '2', name: 'Sales Page - Lead Capture', status: 'Active', stats: 'Pop-up Theme', type: 'Chat', lastUpdated: '2 weeks ago' }
 ];
 
 export const mockWordPress: SiteItem[] = [
