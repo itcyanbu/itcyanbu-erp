@@ -14,11 +14,25 @@ import {
     Settings,
     ShieldCheck,
     Globe,
-    MessageCircle
+    MessageCircle,
+    Wand2,
+    Copy,
+    RefreshCw
 } from 'lucide-react';
 
 const MembershipsPage = () => {
     const [activeTab, setActiveTab] = useState('Dashboard');
+    const [magicLink, setMagicLink] = useState('https://app.itcyanbu.com/v2/preview/magic/token_bt892x_lz01');
+
+    const copyToClipboard = () => {
+        navigator.clipboard.writeText(magicLink);
+        alert('Magic Link copied to clipboard!');
+    };
+
+    const regenerateMagicLink = () => {
+        const newToken = Math.random().toString(36).substring(2, 12);
+        setMagicLink(`https://app.itcyanbu.com/v2/preview/magic/token_${newToken}`);
+    };
 
     const tabs = [
         { id: 'Dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -459,6 +473,81 @@ const MembershipsPage = () => {
                                                 <div className="absolute right-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow" />
                                             </div>
                                             <span className="text-xs font-bold text-gray-700">Enable Welcome Emails</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm">
+                                <div className="flex items-start gap-4">
+                                    <div className="p-3 bg-indigo-50 text-indigo-600 rounded-xl">
+                                        <Wand2 size={24} />
+                                    </div>
+                                    <div className="flex-1">
+                                        <div className="flex items-center justify-between mb-1">
+                                            <h3 className="font-bold text-gray-900">Site Details & Magic Links</h3>
+                                            <a
+                                                href="https://help.gohighlevel.com/support/solutions/articles/48001207804-magic-links-in-memberships-courses-"
+                                                target="_blank"
+                                                rel="noreferrer"
+                                                className="text-xs text-blue-600 hover:underline"
+                                            >
+                                                Learn More
+                                            </a>
+                                        </div>
+                                        <p className="text-sm text-gray-500 mb-6">Magic links allow one-click login for members without needing a username or password.</p>
+
+                                        <div className="space-y-6">
+                                            <div>
+                                                <label className="text-xs font-bold text-gray-400 uppercase mb-2 block tracking-wider">Default Magic Link (SSO)</label>
+                                                <div className="flex gap-2">
+                                                    <div className="flex-1 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-mono text-gray-600 overflow-hidden truncate">
+                                                        {magicLink}
+                                                    </div>
+                                                    <button
+                                                        onClick={copyToClipboard}
+                                                        className="p-2.5 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 text-gray-600 transition-colors"
+                                                        title="Copy Link"
+                                                    >
+                                                        <Copy size={18} />
+                                                    </button>
+                                                    <button
+                                                        onClick={regenerateMagicLink}
+                                                        className="p-2.5 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 text-gray-600 transition-colors"
+                                                        title="Regenerate Link"
+                                                    >
+                                                        <RefreshCw size={18} />
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div className="p-4 bg-blue-50/50 rounded-xl border border-blue-100">
+                                                    <h4 className="text-sm font-bold text-blue-900 mb-1 flex items-center gap-2">
+                                                        <Users size={16} />
+                                                        User's Magic Link
+                                                    </h4>
+                                                    <p className="text-xs text-blue-700 leading-relaxed">
+                                                        Best for internal staff or location users. Use this as a Custom Menu Link in the sidebar for quick staff access.
+                                                    </p>
+                                                </div>
+                                                <div className="p-4 bg-emerald-50/50 rounded-xl border border-emerald-100">
+                                                    <h4 className="text-sm font-bold text-emerald-900 mb-1 flex items-center gap-2">
+                                                        <GraduationCap size={16} />
+                                                        Learner's Magic Link
+                                                    </h4>
+                                                    <p className="text-xs text-emerald-700 leading-relaxed">
+                                                        Best for students. Send this via Workflows or Email Campaigns using the <span className="font-mono font-bold">{"{{ membership.login_url }}"}</span> custom value.
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <div className="p-4 bg-amber-50 rounded-xl border border-amber-100 flex gap-3">
+                                                <ShieldCheck size={20} className="text-amber-600 shrink-0" />
+                                                <p className="text-xs text-amber-800 leading-relaxed">
+                                                    <span className="font-bold">Security Note:</span> Magic links should only be shared with trusted contacts. Anyone with the link can access the course material assigned to that specific contact.
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
