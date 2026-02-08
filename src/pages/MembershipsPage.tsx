@@ -19,9 +19,24 @@ import {
     RefreshCw
 } from 'lucide-react';
 
+const TABS = [
+    { id: 'Dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'Products', label: 'Products', icon: BookOpen },
+    { id: 'Offers', label: 'Offers', icon: Tag },
+    { id: 'Analytics', label: 'Analytics', icon: BarChart3 },
+    { id: 'Certificates', label: 'Certificates', icon: Award },
+    { id: 'Communities', label: 'Communities', icon: Users },
+    { id: 'Settings', label: 'Settings', icon: Settings },
+];
+
 const MembershipsPage = () => {
-    const [activeTab, setActiveTab] = useState('Dashboard');
+    const [activeTab, setActiveTab] = (useState as any)('Dashboard');
     const [magicLink, setMagicLink] = useState('https://app.itcyanbu.com/v2/preview/magic/token_bt892x_lz01');
+
+    const handleTabChange = (tabId: string) => {
+        console.log('Changing tab to:', tabId);
+        setActiveTab(tabId);
+    };
 
     const copyToClipboard = () => {
         navigator.clipboard.writeText(magicLink);
@@ -33,16 +48,6 @@ const MembershipsPage = () => {
         setMagicLink(`https://app.itcyanbu.com/v2/preview/magic/token_${newToken}`);
     };
 
-    const tabs = [
-        { id: 'Dashboard', label: 'Dashboard', icon: LayoutDashboard },
-        { id: 'Products', label: 'Products', icon: BookOpen },
-        { id: 'Offers', label: 'Offers', icon: Tag },
-        { id: 'Analytics', label: 'Analytics', icon: BarChart3 },
-        { id: 'Certificates', label: 'Certificates', icon: Award },
-        { id: 'Communities', label: 'Communities', icon: Users },
-        { id: 'Settings', label: 'Settings', icon: Settings },
-    ];
-
     const recentActivity = [
         { id: 1, user: 'Sarah Jenkins', action: 'completed lesson', target: 'SEO Basics', time: '2 mins ago' },
         { id: 2, user: 'Mike Ross', action: 'joined community', target: 'Marketing Pros', time: '15 mins ago' },
@@ -53,35 +58,33 @@ const MembershipsPage = () => {
     return (
         <div className="h-full flex flex-col bg-gray-50 overflow-hidden">
             {/* Header */}
-            <header className="px-8 py-6 bg-white border-b border-gray-200 shrink-0">
+            <header className="px-8 py-6 bg-white border-b border-gray-200 shrink-0 relative z-30">
                 <div className="flex items-center justify-between mb-6">
                     <div>
                         <h1 className="text-2xl font-bold text-gray-900">Memberships</h1>
                         <p className="text-gray-500 mt-1">Manage your courses, communities, and member engagement.</p>
                     </div>
-                    <div className="flex gap-3">
-                        <button className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors flex items-center gap-2">
-                            <Plus size={16} />
-                            Create Product
-                        </button>
-                    </div>
                 </div>
 
                 {/* Tabs */}
                 <div className="flex items-center gap-1 border-b border-gray-200">
-                    {tabs.map((tab) => (
-                        <button
-                            key={tab.id}
-                            onClick={() => setActiveTab(tab.id)}
-                            className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${activeTab === tab.id
-                                ? 'border-blue-600 text-blue-600'
-                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                }`}
-                        >
-                            <tab.icon size={16} />
-                            {tab.label}
-                        </button>
-                    ))}
+                    {TABS.map((tab) => {
+                        const Icon = tab.icon;
+                        return (
+                            <button
+                                key={tab.id}
+                                type="button"
+                                onClick={() => handleTabChange(tab.id)}
+                                className={`px-4 py-3 text-sm font-medium border-b-2 transition-all flex items-center gap-2 cursor-pointer relative z-40 ${activeTab === tab.id
+                                    ? 'border-blue-600 text-blue-600'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                    }`}
+                            >
+                                <Icon size={16} className="shrink-0" />
+                                {tab.label}
+                            </button>
+                        );
+                    })}
                 </div>
             </header>
 
