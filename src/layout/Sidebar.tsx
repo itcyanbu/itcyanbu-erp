@@ -95,7 +95,10 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule = 'Contacts', onModuleCh
                     {menuItems.map((item) => (
                         <button
                             key={item.id}
-                            onClick={() => onModuleChange?.(item.id)}
+                            onClick={() => {
+                                console.log('Sidebar: clicking module', item.id);
+                                onModuleChange?.(item.id);
+                            }}
                             className={clsx(
                                 "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group relative",
                                 activeModule === item.id
