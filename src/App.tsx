@@ -85,7 +85,7 @@ function App() {
         return <AffiliatePortalPage />;
       case 'Agency Analytics':
         return <AgencyAnalyticsPage />;
-      case 'Media library':
+      case 'Media Library':
         return <MediaLibraryPage />;
       case 'Facebook Group':
         return <FacebookGroupPage />;
