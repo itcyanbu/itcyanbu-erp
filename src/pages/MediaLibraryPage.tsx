@@ -23,6 +23,17 @@ import {
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 
+interface MediaItem {
+    id: number;
+    name: string;
+    type: string;
+    items?: number;
+    size: string;
+    date: string;
+    updatedBy: string;
+    url?: string;
+}
+
 const MediaLibraryPage = () => {
     const { t } = useTranslation();
     const [activeTab, setActiveTab] = useState('all');
@@ -30,16 +41,9 @@ const MediaLibraryPage = () => {
     const [currentPath, setCurrentPath] = useState(['Home']);
     const [searchQuery, setSearchQuery] = useState('');
     const [showNewFolderModal, setShowNewFolderModal] = useState(false);
+    const [newFolderName, setNewFolderName] = useState('');
     const [selectedItems, setSelectedItems] = useState<number[]>([]);
-
-    const tabs = [
-        { id: 'all', label: t('common.all') || 'All' },
-        { id: 'image', label: t('ai_solutions.cctv_ai') || 'Images' },
-        { id: 'video', label: 'Videos' },
-        { id: 'document', label: t('help_tab.pdf') || 'Documents' }
-    ];
-
-    const mediaItems = [
+    const [items, setItems] = useState<MediaItem[]>([
         { id: 1, name: 'Marketing Assets', type: 'folder', items: 12, size: '-', date: '2024-01-20', updatedBy: 'Admin' },
         { id: 2, name: 'Client Project A', type: 'folder', items: 8, size: '-', date: '2024-01-18', updatedBy: 'Admin' },
         { id: 3, name: 'logo-vertical.png', type: 'image', size: '1.2 MB', date: '2024-01-22', url: 'https://images.unsplash.com/photo-1614850523296-d8c1af93d400?q=80&w=400&h=400&auto=format&fit=crop', updatedBy: 'System' },
@@ -48,6 +52,13 @@ const MediaLibraryPage = () => {
         { id: 6, name: 'banner-hero.jpg', type: 'image', size: '3.5 MB', date: '2024-01-21', url: 'https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=400&h=400&auto=format&fit=crop', updatedBy: 'Admin' },
         { id: 7, name: 'social-post-01.png', type: 'image', size: '850 KB', date: '2024-01-19', url: 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=400&h=400&auto=format&fit=crop', updatedBy: 'Admin' },
         { id: 8, name: 'contract-template.docx', type: 'document', size: '45 KB', date: '2024-01-05', updatedBy: 'Admin' },
+    ]);
+
+    const tabs = [
+        { id: 'all', label: t('common.all') || 'All' },
+        { id: 'image', label: t('ai_solutions.cctv_ai') || 'Images' },
+        { id: 'video', label: 'Videos' },
+        { id: 'document', label: t('help_tab.pdf') || 'Documents' }
     ];
 
     const getIcon = (type: string) => {
@@ -67,7 +78,42 @@ const MediaLibraryPage = () => {
         );
     };
 
-    const filteredItems = mediaItems
+    const handleCreateFolder = () => {
+        if (!newFolderName.trim()) return;
+        const newFolder = {
+            id: Date.now(),
+            name: newFolderName,
+            type: 'folder',
+            items: 0,
+            size: '-',
+            date: new Date().toISOString().split('T')[0],
+            updatedBy: 'Admin'
+        };
+        setItems([newFolder, ...items]);
+        setNewFolderName('');
+        setShowNewFolderModal(false);
+    };
+
+    const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const type = file.type.startsWith('image/') ? 'image' :
+            file.type.startsWith('video/') ? 'video' : 'document';
+
+        const newItem = {
+            id: Date.now(),
+            name: file.name,
+            type,
+            size: `${(file.size / (1024 * 1024)).toFixed(1)} MB`,
+            date: new Date().toISOString().split('T')[0],
+            url: type === 'image' ? URL.createObjectURL(file) : undefined,
+            updatedBy: 'Admin'
+        };
+        setItems([newItem, ...items]);
+    };
+
+    const filteredItems = items
         .filter(item => activeTab === 'all' || item.type === activeTab)
         .filter(item => item.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
@@ -92,9 +138,14 @@ const MediaLibraryPage = () => {
                             <FolderPlus size={18} />
                             New Folder
                         </button>
-                        <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-xl text-sm transition-all flex items-center gap-2 shadow-md shadow-blue-100 active:scale-95">
+                        <button className="relative bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-xl text-sm transition-all flex items-center gap-2 shadow-md shadow-blue-100 active:scale-95">
                             <Upload size={18} />
                             Upload
+                            <input
+                                type="file"
+                                className="absolute inset-0 opacity-0 cursor-pointer"
+                                onChange={handleUpload}
+                            />
                         </button>
                     </div>
                 </div>
@@ -351,20 +402,26 @@ const MediaLibraryPage = () => {
                                 <input
                                     type="text"
                                     autoFocus
+                                    value={newFolderName}
+                                    onChange={(e) => setNewFolderName(e.target.value)}
                                     placeholder="e.g. Social Media Assets"
                                     className="w-full px-5 py-3.5 bg-slate-50 border-transparent focus:bg-white focus:border-blue-500 rounded-2xl outline-none text-slate-900 placeholder:text-slate-300 transition-all border font-medium"
+                                    onKeyDown={(e) => e.key === 'Enter' && handleCreateFolder()}
                                 />
                             </div>
                             <div className="flex gap-3 pt-2">
                                 <button
-                                    onClick={() => setShowNewFolderModal(false)}
+                                    onClick={() => {
+                                        setShowNewFolderModal(false);
+                                        setNewFolderName('');
+                                    }}
                                     className="flex-1 py-3 text-slate-500 font-bold hover:bg-slate-50 rounded-2xl transition-all"
                                 >
                                     Cancel
                                 </button>
                                 <button
-                                    onClick={() => setShowNewFolderModal(false)}
-                                    className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl shadow-lg shadow-blue-100 transition-all"
+                                    onClick={handleCreateFolder}
+                                    className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl shadow-lg shadow-blue-100 transition-all font-sans"
                                 >
                                     Create Folder
                                 </button>
