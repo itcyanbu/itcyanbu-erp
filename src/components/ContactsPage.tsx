@@ -310,7 +310,7 @@ const ContactsPage = () => {
     };
 
     return (
-        <div className="flex-1 flex flex-col overflow-hidden bg-gray-50 min-h-0 relative">
+        <div className="flex-1 flex flex-col h-full overflow-hidden bg-gray-50 min-h-0 relative">
             {/* Header */}
             <div className="px-6 py-4 bg-white border-b border-gray-200 flex items-center justify-between rtl:flex-row-reverse">
                 <div className="flex items-center gap-6 rtl:flex-row-reverse">

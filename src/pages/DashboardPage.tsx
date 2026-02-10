@@ -110,7 +110,7 @@ const DashboardPage = () => {
     };
 
     return (
-        <div className="flex-1 flex flex-col overflow-hidden bg-gray-50 relative">
+        <div className="flex-1 flex flex-col h-full overflow-hidden bg-gray-50 relative">
             <div className="px-8 py-6 bg-white border-b border-gray-200">
                 <div className="flex items-center justify-between rtl:flex-row-reverse">
                     <div className="text-left rtl:text-right">
