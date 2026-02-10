@@ -141,6 +141,12 @@ const AiSolutionsPage = () => {
                         <div className="flex flex-col gap-4 w-full max-w-md">
 
                             <button
+                                onClick={() => window.open('https://solution-spark-x.lovable.app', '_blank')}
+                                className="w-full px-6 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5 active:translate-y-0"
+                            >
+                                {t('ai_solutions.launch_solution_spark')}
+                            </button>
+                            <button
                                 onClick={() => window.open('https://arabish-bright.lovable.app', '_blank')}
                                 className="w-full px-6 py-3 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5 active:translate-y-0"
                             >
