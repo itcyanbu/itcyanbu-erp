@@ -69,18 +69,24 @@ const AppMarketplacePage = () => {
                 {activeTab === 'Discover' && (
                     <div className="max-w-6xl mx-auto space-y-8">
                         {/* Search and Filter */}
-                        <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-                            <div className="relative w-full md:w-96">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                        <div className="flex flex-col md:flex-row gap-8 items-center justify-between mb-12">
+                            <div className="relative w-full md:w-[450px] group">
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors" size={20} />
                                 <input
                                     type="text"
                                     placeholder="Search for apps..."
-                                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                                    className="w-full pl-12 pr-4 py-4 bg-white border border-gray-200 rounded-[1.25rem] text-sm focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all shadow-sm hover:shadow-md placeholder:text-gray-400 font-medium"
                                 />
                             </div>
-                            <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0">
+                            <div className="flex items-center gap-3 overflow-x-auto w-full md:w-auto pb-4 md:pb-0 no-scrollbar">
                                 {categories.map((cat, i) => (
-                                    <button key={i} className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap ${i === 0 ? 'bg-blue-600 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
+                                    <button
+                                        key={i}
+                                        className={`px-6 py-3 rounded-full text-xs font-black uppercase tracking-widest whitespace-nowrap transition-all ${i === 0
+                                                ? 'bg-blue-600 text-white shadow-lg shadow-blue-200'
+                                                : 'bg-white border border-gray-100 text-gray-500 hover:bg-gray-50 hover:border-gray-200 shadow-sm'
+                                            }`}
+                                    >
                                         {cat}
                                     </button>
                                 ))}

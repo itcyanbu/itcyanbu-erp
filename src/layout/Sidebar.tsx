@@ -20,6 +20,10 @@ import {
     Facebook,
     Settings,
     Brain,
+    Phone,
+    Mail,
+    MessageCircle,
+    Info,
 } from 'lucide-react';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
@@ -126,13 +130,49 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule = 'Contacts', onModuleCh
                 <button
                     onClick={() => onModuleChange?.('Settings')}
                     className={clsx(
-                        "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#94a3b8] hover:bg-slate-800 hover:text-white transition-all group",
+                        "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#94a3b8] hover:bg-slate-800 hover:text-white transition-all group mb-4",
                         activeModule === 'Settings' && "bg-blue-600/10 text-blue-400"
                     )}
                 >
                     <Settings size={20} className="group-hover:rotate-45 transition-transform duration-300" />
                     <span className="hidden lg:block text-sm font-medium">{t('common.settings')}</span>
                 </button>
+
+                {/* Contact Info */}
+                <div className="hidden lg:block pt-4 border-t border-[#334155/50]">
+                    <div className="flex flex-col gap-2">
+                        <div className="flex items-center gap-3 text-[#94a3b8] hover:text-white transition-colors group">
+                            <Phone size={16} className="shrink-0" />
+                            <span className="text-xs">+966545450613</span>
+                        </div>
+
+                        <div className="flex items-center gap-3 text-[#94a3b8] hover:text-white transition-colors group">
+                            <MessageCircle size={16} className="shrink-0" />
+                            <span className="text-xs">+966545450613</span>
+                        </div>
+
+                        <div className="flex items-center gap-3 text-[#94a3b8] hover:text-white transition-colors group">
+                            <Mail size={16} className="shrink-0" />
+                            <span className="text-xs">itc@itcyanbu.net</span>
+                        </div>
+
+                        <a
+                            href="https://preview--itcyanbu-digital-blueprint.lovable.app/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-3 text-[#94a3b8] hover:text-white transition-colors group"
+                        >
+                            <Info size={16} className="shrink-0" />
+                            <span className="text-xs">Who are we ?</span>
+                        </a>
+
+                        <div className="mt-4 text-[10px] text-[#64748b] leading-relaxed pl-1">
+                            <p>Saudi Arabia - Royal Commission of Yanbu</p>
+                            <p>Sumairi Area - Bustan Market</p>
+                            <p>B. 2, Office 18</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );

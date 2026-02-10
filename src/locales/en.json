@@ -234,5 +234,60 @@
     "email_campaign": "Email Campaign",
     "template": "Template",
     "trigger_link": "Trigger Link"
+  },
+  "affiliate_portal": {
+    "title": "Affiliate Portal",
+    "subtitle": "Manage your affiliate program, track commissions, and grow your revenue.",
+    "add_affiliate": "Add Affiliate",
+    "tabs": {
+      "dashboard": "Dashboard",
+      "affiliates": "Affiliates",
+      "commissions": "Commissions",
+      "media": "Media",
+      "campaigns": "Campaigns",
+      "payouts": "Payouts",
+      "settings": "Settings"
+    },
+    "metrics": {
+      "revenue": "Total Revenue",
+      "affiliates": "Active Affiliates",
+      "commissions": "Commissions Paid",
+      "leads": "Leads Tracked",
+      "customers": "Active Customers"
+    },
+    "dashboard": {
+      "top_performing": "Top Performing Affiliates",
+      "recent_signups": "Recent Signups",
+      "performance_chart": "Clicks vs. Conversions"
+    },
+    "affiliates": {
+      "all_affiliates": "All Affiliates",
+      "search_placeholder": "Search affiliates...",
+      "name": "Name",
+      "email": "Email",
+      "status": "Status",
+      "leads": "Leads",
+      "commission": "Commission",
+      "actions": "Actions"
+    },
+    "campaigns": {
+      "title": "Affiliate Campaigns",
+      "commission_type": "Commission Type",
+      "cookie_life": "Cookie Life",
+      "payout_terms": "Payout Terms",
+      "active": "Active",
+      "copy_link": "Copy Link"
+    },
+    "payouts": {
+      "title": "Payouts Ledger",
+      "to_be_paid": "To be paid",
+      "pending": "Pending",
+      "paid": "Paid"
+    },
+    "settings": {
+      "custom_domain": "Custom Domain",
+      "registration_form": "Registration Form",
+      "terms": "Terms & Conditions"
+    }
   }
 }

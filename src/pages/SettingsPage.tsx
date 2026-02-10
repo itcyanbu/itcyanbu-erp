@@ -22,11 +22,14 @@ import {
     HelpCircle
 } from 'lucide-react';
 import BusinessProfileCard from '../components/settings/BusinessProfileCard';
+import MyStaffView from '../components/settings/MyStaffView';
+import StaffModal from '../components/settings/StaffModal';
 import clsx from 'clsx';
 
 const SettingsPage = () => {
     const [activeTab, setActiveTab] = useState('Business Profile');
     const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>({});
+    const [isStaffModalOpen, setIsStaffModalOpen] = useState(false);
 
     const [settings, setSettings] = useState({
         // General Information
@@ -736,9 +739,9 @@ const SettingsPage = () => {
     );
 
     return (
-        <div className="flex-1 flex overflow-hidden bg-gray-50">
+        <div className="flex-1 flex h-full overflow-hidden bg-gray-50">
             {/* Settings Sidebar */}
-            <div className="w-64 bg-white border-r border-gray-200 flex flex-col shrink-0">
+            <div className="w-64 bg-white border-r border-gray-200 flex flex-col shrink-0 h-full">
                 <div className="p-6 border-b border-gray-200">
                     <h2 className="text-xl font-bold text-gray-900">Settings</h2>
                 </div>
@@ -775,7 +778,13 @@ const SettingsPage = () => {
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
-                    {activeTab === 'Business Profile' ? renderBusinessProfile() : (
+                    {activeTab === 'Business Profile' && renderBusinessProfile()}
+                    {activeTab === 'My Staff' && (
+                        <div className="max-w-6xl mx-auto">
+                            <MyStaffView onAddClick={() => setIsStaffModalOpen(true)} />
+                        </div>
+                    )}
+                    {activeTab !== 'Business Profile' && activeTab !== 'My Staff' && (
                         <div className="flex flex-col items-center justify-center h-full text-center max-w-md mx-auto">
                             <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4">
                                 <SettingsIcon className="text-ghl-blue" size={32} />
@@ -789,6 +798,11 @@ const SettingsPage = () => {
                     )}
                 </div>
             </div>
+
+            <StaffModal
+                isOpen={isStaffModalOpen}
+                onClose={() => setIsStaffModalOpen(false)}
+            />
         </div>
     );
 };
