@@ -25,6 +25,22 @@ import BusinessProfileCard from '../components/settings/BusinessProfileCard';
 import MyStaffView from '../components/settings/MyStaffView';
 import StaffModal from '../components/settings/StaffModal';
 import PipelinesSettings from '../components/settings/PipelinesSettings';
+import CalendarsSettings from '../components/settings/CalendarsSettings';
+import PhoneNumbersSettings from '../components/settings/PhoneNumbersSettings';
+import WhatsAppSettings from '../components/settings/WhatsAppSettings';
+import ReputationSettings from '../components/settings/ReputationSettings';
+import CustomFieldsSettings from '../components/settings/CustomFieldsSettings';
+import CustomValuesSettings from '../components/settings/CustomValuesSettings';
+import DomainsSettings from '../components/settings/DomainsSettings';
+import MediaLibrarySettings from '../components/settings/MediaLibrarySettings';
+import UrlRedirectsSettings from '../components/settings/UrlRedirectsSettings';
+import IntegrationsSettings from '../components/settings/IntegrationsSettings';
+import ConversationProvidersSettings from '../components/settings/ConversationProvidersSettings';
+import EmailServicesSettings from '../components/settings/EmailServicesSettings';
+import TagsSettings from '../components/settings/TagsSettings';
+import TemplatesSettings from '../components/settings/TemplatesSettings';
+import LabsSettings from '../components/settings/LabsSettings';
+import AuditLogsSettings from '../components/settings/AuditLogsSettings';
 import clsx from 'clsx';
 
 const SettingsPage = () => {
@@ -785,19 +801,64 @@ const SettingsPage = () => {
                             <MyStaffView onAddClick={() => setIsStaffModalOpen(true)} />
                         </div>
                     )}
+                    import CalendarsSettings from '../components/settings/CalendarsSettings';
+                    import PhoneNumbersSettings from '../components/settings/PhoneNumbersSettings';
+                    import WhatsAppSettings from '../components/settings/WhatsAppSettings';
+                    import ReputationSettings from '../components/settings/ReputationSettings';
+                    import CustomFieldsSettings from '../components/settings/CustomFieldsSettings';
+                    import CustomValuesSettings from '../components/settings/CustomValuesSettings';
+                    import DomainsSettings from '../components/settings/DomainsSettings';
+                    import MediaLibrarySettings from '../components/settings/MediaLibrarySettings';
+                    import UrlRedirectsSettings from '../components/settings/UrlRedirectsSettings';
+                    import IntegrationsSettings from '../components/settings/IntegrationsSettings';
+                    import ConversationProvidersSettings from '../components/settings/ConversationProvidersSettings';
+                    import EmailServicesSettings from '../components/settings/EmailServicesSettings';
+                    import TagsSettings from '../components/settings/TagsSettings';
+                    import TemplatesSettings from '../components/settings/TemplatesSettings';
+                    import LabsSettings from '../components/settings/LabsSettings';
+                    import AuditLogsSettings from '../components/settings/AuditLogsSettings';
+
+                    // ... (existing imports)
+
+                    // Inside SettingsPage component return:
+
                     {activeTab === 'Pipelines' && <PipelinesSettings />}
-                    {activeTab !== 'Business Profile' && activeTab !== 'My Staff' && activeTab !== 'Pipelines' && (
-                        <div className="flex flex-col items-center justify-center h-full text-center max-w-md mx-auto">
-                            <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4">
-                                <SettingsIcon className="text-ghl-blue" size={32} />
+                    {activeTab === 'Calendars' && <CalendarsSettings />}
+                    {activeTab === 'Phone Numbers' && <PhoneNumbersSettings />}
+                    {activeTab === 'WhatsApp' && <WhatsAppSettings />}
+                    {activeTab === 'Reputation Management' && <ReputationSettings />}
+                    {activeTab === 'Custom Fields' && <CustomFieldsSettings />}
+                    {activeTab === 'Custom Values' && <CustomValuesSettings />}
+                    {activeTab === 'Domains' && <DomainsSettings />}
+                    {activeTab === 'Media Library' && <MediaLibrarySettings />}
+                    {activeTab === 'URL Redirects' && <UrlRedirectsSettings />}
+                    {activeTab === 'Integrations' && <IntegrationsSettings />}
+                    {activeTab === 'Conversation Providers' && <ConversationProvidersSettings />}
+                    {activeTab === 'Email Services' && <EmailServicesSettings />}
+                    {activeTab === 'Tag Management' && <TagsSettings />}
+                    {activeTab === 'SMS & Email Templates' && <TemplatesSettings />}
+                    {activeTab === 'Labs' && <LabsSettings />}
+                    {activeTab === 'Audit Logs' && <AuditLogsSettings />}
+
+                    {/* Fallback for anything truly missing */}
+                    {![
+                        'Business Profile', 'My Staff', 'Pipelines', 'Calendars',
+                        'Phone Numbers', 'WhatsApp', 'Reputation Management',
+                        'Custom Fields', 'Custom Values', 'Domains', 'Media Library',
+                        'URL Redirects', 'Integrations', 'Conversation Providers',
+                        'Email Services', 'Tag Management', 'SMS & Email Templates',
+                        'Labs', 'Audit Logs'
+                    ].includes(activeTab) && (
+                            <div className="flex flex-col items-center justify-center h-full text-center max-w-md mx-auto">
+                                <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4">
+                                    <SettingsIcon className="text-ghl-blue" size={32} />
+                                </div>
+                                <h2 className="text-xl font-semibold text-gray-900 mb-2">{activeTab}</h2>
+                                <p className="text-gray-500">
+                                    This section is currently under development.
+                                </p>
                             </div>
-                            <h2 className="text-xl font-semibold text-gray-900 mb-2">{activeTab}</h2>
-                            <p className="text-gray-500">
-                                This section is currently under development to match the full GoHighLevel experience.
-                                Please check back soon for updates.
-                            </p>
-                        </div>
-                    )}
+                        )}
                 </div>
             </div>
 
