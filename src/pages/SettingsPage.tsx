@@ -59,21 +59,21 @@ const SettingsPage = () => {
     const [settings, setSettings] = useState({
         // General Information
         logo: null as string | null,
-        friendlyName: 'Ai & IT Solutions',
-        legalName: '',
-        email: 'itc@example.com',
-        phone: '',
-        website: '',
-        niche: 'Software / SaaS',
+        friendlyName: 'itcyanbu',
+        legalName: 'itcyanbu',
+        email: 'itc@itcyanbu.net',
+        phone: '+966545450613',
+        website: 'https://itcyanbu.net',
+        niche: 'Technology',
         brandedDomain: '',
         locationId: 'LOC-12345-67890',
         apiKey: '6b89-4a7b-8c9d-1e2f3g4h5i6j',
 
         // Physical Address
-        streetAddress: '',
-        city: '',
-        stateProvince: '',
-        zipCode: '',
+        streetAddress: 'Royal Commission',
+        city: 'Yanbu',
+        stateProvince: 'Al Madinah',
+        zipCode: '46424', // Approximate zip for Yanbu Industrial City
         country: 'Saudi Arabia',
         timeZone: '(GMT+03:00) Riyadh',
         platformLanguage: 'English',
@@ -84,13 +84,13 @@ const SettingsPage = () => {
         businessIndustry: 'Technology',
         registrationIdType: 'Tax ID',
         registrationNumber: '',
-        regionsOfOperations: ['Middle East'],
+        regionsOfOperations: ['Saudi Arabia', 'Middle East'],
 
         // Authorized Representative
         authorizedRep: {
             fullName: '',
-            email: '',
-            phone: '',
+            email: 'itc@itcyanbu.net',
+            phone: '+966545450613',
             jobTitle: ''
         },
 
