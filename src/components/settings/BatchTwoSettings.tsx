@@ -1,19 +1,29 @@
+import { useState } from 'react';
 import SettingsSectionLayout from './SettingsSectionLayout';
 
 // Custom Fields
-export const CustomFieldsSettings = () => (
-    <SettingsSectionLayout
-        title="Custom Fields"
-        description="Create and manage custom fields for your contacts"
-        actionButtonText="Add Field"
-        onAction={() => console.log('Add Field')}
-    >
-        <div className="px-6 py-12 text-center">
-            <p className="text-gray-500 mb-2">No custom fields created</p>
-            <button className="text-ghl-blue font-medium hover:underline">Create a custom field</button>
-        </div>
-    </SettingsSectionLayout>
-);
+export const CustomFieldsSettings = () => {
+    const [activeTab, setActiveTab] = useState('fields');
+    return (
+        <SettingsSectionLayout
+            title="Custom Fields"
+            description="Create and manage custom fields for your contacts"
+            actionButtonText="Add Field"
+            onAction={() => console.log('Add Field')}
+            tabs={[
+                { id: 'fields', label: 'Fields' },
+                { id: 'folders', label: 'Folders' },
+            ]}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+        >
+            <div className="px-6 py-12 text-center">
+                <p className="text-gray-500 mb-2">No custom {activeTab} created</p>
+                <button className="text-ghl-blue font-medium hover:underline">Create a custom {activeTab === 'fields' ? 'field' : 'folder'}</button>
+            </div>
+        </SettingsSectionLayout>
+    );
+};
 
 // Custom Values
 export const CustomValuesSettings = () => (
@@ -31,19 +41,28 @@ export const CustomValuesSettings = () => (
 );
 
 // Domains
-export const DomainsSettings = () => (
-    <SettingsSectionLayout
-        title="Domains"
-        description="Connect and manage your domains"
-        actionButtonText="Add Domain"
-        onAction={() => console.log('Add Domain')}
-    >
-        <div className="px-6 py-12 text-center">
-            <p className="text-gray-500 mb-2">No domains connected</p>
-            <button className="text-ghl-blue font-medium hover:underline">Connect a domain</button>
-        </div>
-    </SettingsSectionLayout>
-);
+export const DomainsSettings = () => {
+    const [activeTab, setActiveTab] = useState('domains');
+    return (
+        <SettingsSectionLayout
+            title="Domains"
+            description="Connect and manage your domains"
+            actionButtonText="Add Domain"
+            onAction={() => console.log('Add Domain')}
+            tabs={[
+                { id: 'domains', label: 'Domains' },
+                { id: 'dns-records', label: 'DNS Records' },
+            ]}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+        >
+            <div className="px-6 py-12 text-center">
+                <p className="text-gray-500 mb-2">No {activeTab.replace('-', ' ')} found</p>
+                <button className="text-ghl-blue font-medium hover:underline">Add a domain</button>
+            </div>
+        </SettingsSectionLayout>
+    );
+};
 
 // Media Library
 export const MediaLibrarySettings = () => (

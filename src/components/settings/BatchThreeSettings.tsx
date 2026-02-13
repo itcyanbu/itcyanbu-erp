@@ -1,25 +1,41 @@
+import { useState } from 'react';
 import SettingsSectionLayout from './SettingsSectionLayout';
 
 // Integrations
-export const IntegrationsSettings = () => (
-    <SettingsSectionLayout
-        title="Integrations"
-        description="Connect with third-party applications"
-        showSearch={false}
-    >
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
-            {['Google', 'Facebook', 'QuickBooks', 'Stripe', 'Shopify', 'Slack', 'TikTok'].map((app) => (
-                <div key={app} className="border border-gray-200 rounded-lg p-6 flex flex-col items-center text-center hover:shadow-md transition-shadow">
-                    <div className="w-12 h-12 bg-gray-100 rounded-full mb-4 flex items-center justify-center font-bold text-gray-500">
-                        {app[0]}
-                    </div>
-                    <h3 className="font-medium text-gray-900 mb-2">{app}</h3>
-                    <button className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium hover:bg-gray-50 w-full mt-auto">Connect</button>
+export const IntegrationsSettings = () => {
+    const [activeTab, setActiveTab] = useState('connected-apps');
+    return (
+        <SettingsSectionLayout
+            title="Integrations"
+            description="Connect with third-party applications"
+            showSearch={false}
+            tabs={[
+                { id: 'connected-apps', label: 'Connected Apps' },
+                { id: 'webhooks', label: 'Webhooks' },
+            ]}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+        >
+            {activeTab === 'connected-apps' ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+                    {['Google', 'Facebook', 'QuickBooks', 'Stripe', 'Shopify', 'Slack', 'TikTok'].map((app) => (
+                        <div key={app} className="border border-gray-200 rounded-lg p-6 flex flex-col items-center text-center hover:shadow-md transition-shadow">
+                            <div className="w-12 h-12 bg-gray-100 rounded-full mb-4 flex items-center justify-center font-bold text-gray-500">
+                                {app[0]}
+                            </div>
+                            <h3 className="font-medium text-gray-900 mb-2">{app}</h3>
+                            <button className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium hover:bg-gray-50 w-full mt-auto">Connect</button>
+                        </div>
+                    ))}
                 </div>
-            ))}
-        </div>
-    </SettingsSectionLayout>
-);
+            ) : (
+                <div className="px-6 py-12 text-center">
+                    <p className="text-gray-500">No webhooks configured</p>
+                </div>
+            )}
+        </SettingsSectionLayout>
+    );
+};
 
 // Conversation Providers
 export const ConversationProvidersSettings = () => (
