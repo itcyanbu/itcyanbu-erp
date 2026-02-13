@@ -24,6 +24,7 @@ import {
 import BusinessProfileCard from '../components/settings/BusinessProfileCard';
 import MyStaffView from '../components/settings/MyStaffView';
 import StaffModal from '../components/settings/StaffModal';
+import PipelinesSettings from '../components/settings/PipelinesSettings';
 import clsx from 'clsx';
 
 const SettingsPage = () => {
@@ -784,7 +785,8 @@ const SettingsPage = () => {
                             <MyStaffView onAddClick={() => setIsStaffModalOpen(true)} />
                         </div>
                     )}
-                    {activeTab !== 'Business Profile' && activeTab !== 'My Staff' && (
+                    {activeTab === 'Pipelines' && <PipelinesSettings />}
+                    {activeTab !== 'Business Profile' && activeTab !== 'My Staff' && activeTab !== 'Pipelines' && (
                         <div className="flex flex-col items-center justify-center h-full text-center max-w-md mx-auto">
                             <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4">
                                 <SettingsIcon className="text-ghl-blue" size={32} />

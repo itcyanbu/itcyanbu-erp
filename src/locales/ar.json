@@ -235,5 +235,42 @@
         "email_campaign": "حملة بريد إلكتروني",
         "template": "قالب",
         "trigger_link": "رابط تشغيل"
+    },
+    "facebook_group": {
+        "title": "مدير مجموعات فيسبوك",
+        "connector_status": "حالة الموصل",
+        "official": "رسمي",
+        "tutorial": "شرح تعليمي",
+        "add_group": "إضافة مجموعة",
+        "tabs": {
+            "groups": "المجموعات",
+            "automations": "الأتمتة",
+            "questions": "الأسئلة",
+            "settings": "الإعدادات"
+        },
+        "manager": {
+            "connected_groups": "المجموعات المتصلة",
+            "search_placeholder": "البحث عن مجموعات...",
+            "active_sync": "مزامنة نشطة",
+            "last_synced": "آخر مزامنة قبل {{time}}",
+            "connect_title": "ربط مجموعة أخرى",
+            "connect_desc": "اجمع العملاء المحتملين من أسئلة العضوية الخاصة بك وقم بمزامنتهم تلقائياً مع نظام إدارة العملاء.",
+            "begin_connection": "بدء الربط",
+            "welcome_sequence": "سلسلة ترحيب الأعضاء",
+            "welcome_desc": "يتم تفعيله عند الموافقة على عضو جديد.",
+            "mapping_title": "ربط الأسئلة",
+            "update_mapping": "تحديث الربط"
+        },
+        "connector": {
+            "title": "تفاصيل الإضافة الرسمية",
+            "subtitle": "إدارة إضافة متصفح موصل فيسبوك ومفاتيح واجهة برمجة التطبيقات.",
+            "status": "حالة الاتصال",
+            "connected": "متصل",
+            "latency": "تأخر الاستجابة",
+            "heartbeat": "آخر نبض للخدمة",
+            "just_now": "الآن",
+            "extension_detected": "تم اكتشاف التثبيت وهو نشط.",
+            "check_updates": "التحقق من التحديثات"
+        }
     }
 }

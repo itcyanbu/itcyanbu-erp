@@ -290,5 +290,42 @@
       "registration_form": "Registration Form",
       "terms": "Terms & Conditions"
     }
+  },
+  "facebook_group": {
+    "title": "Facebook Group Manager",
+    "connector_status": "Connector Status",
+    "official": "Official",
+    "tutorial": "Tutorial",
+    "add_group": "Add Group",
+    "tabs": {
+      "groups": "Groups",
+      "automations": "Automations",
+      "questions": "Questions",
+      "settings": "Settings"
+    },
+    "manager": {
+      "connected_groups": "Connected Groups",
+      "search_placeholder": "Search groups...",
+      "active_sync": "Active Sync",
+      "last_synced": "Last synced {{time}} ago",
+      "connect_title": "Connect another group",
+      "connect_desc": "Collect leads from your membership questions and automatically sync them to your HighLevel CRM.",
+      "begin_connection": "Begin Connection",
+      "welcome_sequence": "Member Welcome Sequence",
+      "welcome_desc": "Triggered when a new member is approved.",
+      "mapping_title": "Question Mapping",
+      "update_mapping": "Update Mapping"
+    },
+    "connector": {
+      "title": "Official Extension Details",
+      "subtitle": "Manage your Facebook Connector browser extension and API keys.",
+      "status": "Connection Status",
+      "connected": "Connected",
+      "latency": "API Latency",
+      "heartbeat": "Last Heartbeat",
+      "just_now": "Just now",
+      "extension_detected": "Installation detected and active.",
+      "check_updates": "Check for Updates"
+    }
   }
 }
