@@ -26,19 +26,37 @@ export const CustomFieldsSettings = () => {
 };
 
 // Custom Values
-export const CustomValuesSettings = () => (
-    <SettingsSectionLayout
-        title="Custom Values"
-        description="Manage global custom values for use in templates and workflows"
-        actionButtonText="Add Value"
-        onAction={() => console.log('Add Value')}
-    >
-        <div className="px-6 py-12 text-center">
-            <p className="text-gray-500 mb-2">No custom values found</p>
-            <button className="text-ghl-blue font-medium hover:underline">Create a custom value</button>
-        </div>
-    </SettingsSectionLayout>
-);
+export const CustomValuesSettings = () => {
+    const [activeTab, setActiveTab] = useState('values');
+
+    return (
+        <SettingsSectionLayout
+            title="Custom Values"
+            description="Manage global custom values for use in templates and workflows"
+            actionButtonText="Add Value"
+            onAction={() => console.log('Add Value')}
+            tabs={[
+                { id: 'values', label: 'Values' },
+                { id: 'folders', label: 'Folders' },
+            ]}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+        >
+            {activeTab === 'values' && (
+                <div className="px-6 py-12 text-center">
+                    <p className="text-gray-500 mb-2">No custom values found</p>
+                    <button className="text-ghl-blue font-medium hover:underline">Create a custom value</button>
+                </div>
+            )}
+            {activeTab === 'folders' && (
+                <div className="px-6 py-12 text-center">
+                    <p className="text-gray-500 mb-2">No folders created</p>
+                    <button className="text-ghl-blue font-medium hover:underline">Create a folder</button>
+                </div>
+            )}
+        </SettingsSectionLayout>
+    );
+};
 
 // Domains
 export const DomainsSettings = () => {
@@ -65,31 +83,65 @@ export const DomainsSettings = () => {
 };
 
 // Media Library
-export const MediaLibrarySettings = () => (
-    <SettingsSectionLayout
-        title="Media Library"
-        description="Manage your images, videos, and documents"
-        actionButtonText="Upload File"
-        onAction={() => console.log('Upload File')}
-    >
-        <div className="px-6 py-12 text-center">
-            <p className="text-gray-500 mb-2">Media library is empty</p>
-            <button className="text-ghl-blue font-medium hover:underline">Upload your first file</button>
-        </div>
-    </SettingsSectionLayout>
-);
+export const MediaLibrarySettings = () => {
+    const [activeTab, setActiveTab] = useState('media');
+
+    return (
+        <SettingsSectionLayout
+            title="Media Library"
+            description="Manage your images, videos, and documents"
+            actionButtonText="Upload File"
+            onAction={() => console.log('Upload File')}
+            tabs={[
+                { id: 'media', label: 'Media' },
+                { id: 'trash', label: 'Trash' },
+            ]}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+        >
+            {activeTab === 'media' && (
+                <div className="px-6 py-12 text-center">
+                    <p className="text-gray-500 mb-2">Media library is empty</p>
+                    <button className="text-ghl-blue font-medium hover:underline">Upload your first file</button>
+                </div>
+            )}
+            {activeTab === 'trash' && (
+                <div className="px-6 py-12 text-center">
+                    <p className="text-gray-500 mb-2">Trash is empty</p>
+                </div>
+            )}
+        </SettingsSectionLayout>
+    );
+};
 
 // URL Redirects
-export const UrlRedirectsSettings = () => (
-    <SettingsSectionLayout
-        title="URL Redirects"
-        description="Manage URL redirects for your domains"
-        actionButtonText="Add Redirect"
-        onAction={() => console.log('Add Redirect')}
-    >
-        <div className="px-6 py-12 text-center">
-            <p className="text-gray-500 mb-2">No redirects configured</p>
-            <button className="text-ghl-blue font-medium hover:underline">Create a redirect</button>
-        </div>
-    </SettingsSectionLayout>
-);
+export const UrlRedirectsSettings = () => {
+    const [activeTab, setActiveTab] = useState('redirects');
+
+    return (
+        <SettingsSectionLayout
+            title="URL Redirects"
+            description="Manage URL redirects for your domains"
+            actionButtonText="Add Redirect"
+            onAction={() => console.log('Add Redirect')}
+            tabs={[
+                { id: 'redirects', label: 'Redirects' },
+                { id: '404-logs', label: '404 Logs' },
+            ]}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+        >
+            {activeTab === 'redirects' && (
+                <div className="px-6 py-12 text-center">
+                    <p className="text-gray-500 mb-2">No redirects configured</p>
+                    <button className="text-ghl-blue font-medium hover:underline">Create a redirect</button>
+                </div>
+            )}
+            {activeTab === '404-logs' && (
+                <div className="px-6 py-12 text-center">
+                    <p className="text-gray-500 mb-2">No 404 logs found</p>
+                </div>
+            )}
+        </SettingsSectionLayout>
+    );
+};

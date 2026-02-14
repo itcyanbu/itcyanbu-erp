@@ -64,19 +64,37 @@ export const ConversationProvidersSettings = () => (
 );
 
 // Email Services
-export const EmailServicesSettings = () => (
-    <SettingsSectionLayout
-        title="Email Services"
-        description="Configure default email settings"
-        actionButtonText="Add Service"
-        onAction={() => console.log('Add Service')}
-    >
-        <div className="px-6 py-12 text-center">
-            <p className="text-gray-500 mb-2">No email services configured</p>
-            <button className="text-ghl-blue font-medium hover:underline">Add a service</button>
-        </div>
-    </SettingsSectionLayout>
-);
+export const EmailServicesSettings = () => {
+    const [activeTab, setActiveTab] = useState('smtp-service');
+
+    return (
+        <SettingsSectionLayout
+            title="Email Services"
+            description="Configure default email settings"
+            actionButtonText="Add Service"
+            onAction={() => console.log('Add Service')}
+            tabs={[
+                { id: 'smtp-service', label: 'SMTP Service' },
+                { id: 'reply-masking', label: 'Reply Masking' },
+            ]}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+        >
+            {activeTab === 'smtp-service' && (
+                <div className="px-6 py-12 text-center">
+                    <p className="text-gray-500 mb-2">No email services configured</p>
+                    <button className="text-ghl-blue font-medium hover:underline">Add a service</button>
+                </div>
+            )}
+            {activeTab === 'reply-masking' && (
+                <div className="px-6 py-12 text-center">
+                    <p className="text-gray-500 mb-2">Reply masking is not configured</p>
+                    <button className="text-ghl-blue font-medium hover:underline">Configure reply masking</button>
+                </div>
+            )}
+        </SettingsSectionLayout>
+    );
+};
 
 // Tag Management
 export const TagManagementSettings = () => (
