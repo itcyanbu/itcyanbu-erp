@@ -65,7 +65,7 @@ const SettingsSectionLayout = ({
                   whitespace-nowrap py-4 px-4 border-b-2 text-sm focus:outline-none cursor-pointer rounded-t-md transition-colors duration-200
                 `}
                             >
-                                {tab.label}
+                                {tab.label} {activeTab === tab.id && <span className="ml-1">•</span>}
                             </button>
                         ))}
                     </nav>
