@@ -90,13 +90,6 @@ const SettingsSectionLayout = ({
                 {children}
             </div>
 
-            {/* VISUAL DEBUGGER */}
-            <div className="fixed bottom-4 right-4 bg-black/90 text-white p-4 rounded-lg z-[9999] shadow-xl font-mono text-xs pointer-events-none">
-                <div className="font-bold text-yellow-400 mb-1">TAB DEBUGGER v3.3</div>
-                <div>Current: <span className="text-green-400">{activeTab || 'undefined'}</span></div>
-                <div>Tabs: {tabs?.length || 0}</div>
-                <div>Handler: {onTabChange ? 'YES' : 'NO'}</div>
-            </div>
         </div>
     );
 };
