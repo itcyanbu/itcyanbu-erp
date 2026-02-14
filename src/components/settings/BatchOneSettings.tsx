@@ -11,15 +11,26 @@ export const CalendarsSettings = () => {
             description="Manage your calendars and appointment settings"
             actionButtonText="Create Calendar"
             onAction={() => console.log('Create Calendar')}
-            tabs={[
-                { id: 'calendars', label: 'Calendars' },
-                { id: 'appointments', label: 'Appointments' },
-                { id: 'preferences', label: 'Preferences' },
-                { id: 'conflicts', label: 'Conflicts' },
-            ]}
+            // tabs prop removed to test isolation
             activeTab={activeTab}
             onTabChange={setActiveTab}
         >
+            {/* MANUAL ABS TEST TABS */}
+            <div className="p-4 border-b border-red-500 bg-red-50">
+                <h3 className="font-bold text-red-600 mb-2">DEBUG MODE: Direct Buttons</h3>
+                <div className="flex gap-4">
+                    {['calendars', 'appointments', 'preferences', 'conflicts'].map(id => (
+                        <button
+                            key={id}
+                            onClick={() => setActiveTab(id)}
+                            className={`px-4 py-2 border ${activeTab === id ? 'bg-blue-600 text-white' : 'bg-white text-gray-800'}`}
+                        >
+                            {id.charAt(0).toUpperCase() + id.slice(1)}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
             {activeTab === 'calendars' && (
                 <div className="px-6 py-12 text-center">
                     <p className="text-gray-500 mb-2">No calendars found</p>
