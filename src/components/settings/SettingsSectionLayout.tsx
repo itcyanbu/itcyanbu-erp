@@ -62,7 +62,7 @@ const SettingsSectionLayout = ({
                                     fontWeight: activeTab === tab.id ? '600' : '500',
                                 }}
                                 className={`
-                  whitespace-nowrap py-4 px-4 border-b-2 text-sm focus:outline-none cursor-pointer rounded-t-md transition-colors duration-200
+                  whitespace-nowrap py-4 px-4 border-b-2 text-sm focus:outline-none cursor-pointer rounded-t-md transition-colors duration-200 relative z-10 hover:bg-gray-50 hover:text-blue-600
                 `}
                             >
                                 {tab.label} {activeTab === tab.id && <span className="ml-1">•</span>}

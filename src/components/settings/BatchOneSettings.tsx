@@ -10,7 +10,7 @@ export const CalendarsSettings = () => {
             title="Calendars"
             description="Manage your calendars and appointment settings"
             actionButtonText="Create Calendar"
-            onAction={() => console.log('Create Calendar')}
+            onAction={() => window.alert('Create Calendar Clicked')}
             tabs={[
                 { id: 'calendars', label: 'Calendars' },
                 { id: 'appointments', label: 'Appointments' },
@@ -45,7 +45,7 @@ export const PhoneNumbersSettings = () => {
             title="Phone Numbers"
             description="Manage your tracking numbers and SMS settings"
             actionButtonText="Add Number"
-            onAction={() => console.log('Add Number')}
+            onAction={() => window.alert('Add Number Clicked')}
             tabs={[
                 { id: 'phone-numbers', label: 'Phone Numbers' },
                 { id: 'porting', label: 'Porting' },
