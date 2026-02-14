@@ -51,12 +51,19 @@ const SettingsSectionLayout = ({
                             <button
                                 key={tab.id}
                                 type="button"
-                                onClick={() => {
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    // window.alert('Tab clicked: ' + tab.id); // Immediate visual feedback
                                     console.log('Tab clicked:', tab.id);
-                                    if (onTabChange) onTabChange(tab.id);
+                                    if (onTabChange) {
+                                        onTabChange(tab.id);
+                                    } else {
+                                        console.error('onTabChange is missing!');
+                                    }
                                 }}
+                                style={{ zIndex: 9999, position: 'relative' }}
                                 className={`
-                  whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm focus:outline-none cursor-pointer relative z-50 pointer-events-auto
+                  whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm focus:outline-none cursor-pointer select-none
                   ${activeTab === tab.id
                                         ? 'border-ghl-blue text-ghl-blue'
                                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
