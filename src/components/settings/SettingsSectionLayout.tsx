@@ -26,16 +26,6 @@ const SettingsSectionLayout = ({
     activeTab,
     onTabChange,
 }: SettingsSectionLayoutProps) => {
-    // Internal state for immediate UI feedback
-    const [internalActiveTab, setInternalActiveTab] = useState(activeTab || (tabs && tabs.length > 0 ? tabs[0].id : ''));
-
-    // Sync internal state with prop if it changes externally
-    useEffect(() => {
-        if (activeTab) {
-            setInternalActiveTab(activeTab);
-        }
-    }, [activeTab]);
-
     return (
         <div className="max-w-6xl mx-auto space-y-6">
             <div className="flex items-center justify-between">
@@ -63,13 +53,12 @@ const SettingsSectionLayout = ({
                                 type="button"
                                 onClick={(e) => {
                                     e.stopPropagation();
-                                    setInternalActiveTab(tab.id); // Immediate visual update
                                     if (onTabChange) onTabChange(tab.id);
                                 }}
                                 className={`
                   whitespace-nowrap py-4 px-4 border-b-2 font-medium text-sm focus:outline-none cursor-pointer rounded-t-md transition-colors duration-200
-                  ${internalActiveTab === tab.id
-                                        ? 'bg-blue-50 border-blue-600 text-blue-600'
+                  ${activeTab === tab.id
+                                        ? 'bg-blue-600 border-blue-600 text-white'
                                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 hover:bg-gray-50'
                                     }
                 `}
