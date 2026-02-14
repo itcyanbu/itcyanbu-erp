@@ -38,30 +38,46 @@ export const IntegrationsSettings = () => {
 };
 
 // Conversation Providers
-export const ConversationProvidersSettings = () => (
-    <SettingsSectionLayout
-        title="Conversation Providers"
-        description="Manage email and SMS providers"
-        showSearch={false}
-    >
-        <div className="p-6 space-y-4">
-            <div className="border border-gray-200 rounded-lg p-4 flex items-center justify-between">
-                <div>
-                    <h3 className="font-medium text-gray-900">Email Providers</h3>
-                    <p className="text-sm text-gray-500">Manage your SMTP services</p>
+export const ConversationProvidersSettings = () => {
+    const [activeTab, setActiveTab] = useState('email-providers');
+
+    return (
+        <SettingsSectionLayout
+            title="Conversation Providers"
+            description="Manage email and SMS providers"
+            showSearch={false}
+            tabs={[
+                { id: 'email-providers', label: 'Email Providers' },
+                { id: 'sms-providers', label: 'SMS Providers' },
+            ]}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+        >
+            {activeTab === 'email-providers' && (
+                <div className="p-6">
+                    <div className="border border-gray-200 rounded-lg p-4 flex items-center justify-between">
+                        <div>
+                            <h3 className="font-medium text-gray-900">Email Providers</h3>
+                            <p className="text-sm text-gray-500">Manage your SMTP services</p>
+                        </div>
+                        <button className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium hover:bg-gray-50">Manage</button>
+                    </div>
                 </div>
-                <button className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium hover:bg-gray-50">Manage</button>
-            </div>
-            <div className="border border-gray-200 rounded-lg p-4 flex items-center justify-between">
-                <div>
-                    <h3 className="font-medium text-gray-900">SMS Providers</h3>
-                    <p className="text-sm text-gray-500">Manage your Twilio or LeadConnector settings</p>
+            )}
+            {activeTab === 'sms-providers' && (
+                <div className="p-6">
+                    <div className="border border-gray-200 rounded-lg p-4 flex items-center justify-between">
+                        <div>
+                            <h3 className="font-medium text-gray-900">SMS Providers</h3>
+                            <p className="text-sm text-gray-500">Manage your Twilio or LeadConnector settings</p>
+                        </div>
+                        <button className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium hover:bg-gray-50">Manage</button>
+                    </div>
                 </div>
-                <button className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium hover:bg-gray-50">Manage</button>
-            </div>
-        </div>
-    </SettingsSectionLayout>
-);
+            )}
+        </SettingsSectionLayout>
+    );
+};
 
 // Email Services
 export const EmailServicesSettings = () => {
