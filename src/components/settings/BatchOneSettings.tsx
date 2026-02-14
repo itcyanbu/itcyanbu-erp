@@ -5,6 +5,7 @@ import SettingsSectionLayout from './SettingsSectionLayout';
 // Calendars
 export const CalendarsSettings = () => {
     const [activeTab, setActiveTab] = useState('calendars');
+    console.log('CalendarsSettings Rendered. activeTab state:', activeTab);
 
     return (
         <SettingsSectionLayout

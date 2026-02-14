@@ -91,6 +91,10 @@ const SettingsSectionLayout = ({
                         </div>
                     </div>
                 )}
+                {/* Debug Info */}
+                <div className="bg-yellow-100 p-2 text-xs text-yellow-800 border-b border-yellow-200">
+                    DEBUG v2.3: Active Tab Prop = <strong>{activeTab}</strong>
+                </div>
 
                 {children}
             </div>
