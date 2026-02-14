@@ -195,7 +195,7 @@ const SettingsPage = () => {
         { icon: SettingsIcon, label: 'Custom Fields' },
         { icon: Database, label: 'Custom Values' },
         { icon: Globe, label: 'Domains' },
-        { icon: Image, label: 'Media Library' },
+        { icon: Image, label: 'Media Library (New)' },
         { icon: ArrowLeftRight, label: 'URL Redirects' },
         { icon: Layers, label: 'Integrations' },
         { icon: MessageSquare, label: 'Conversation Providers' },
@@ -768,7 +768,7 @@ const SettingsPage = () => {
             {/* Settings Sidebar */}
             <div className="w-64 bg-white border-r border-gray-200 flex flex-col shrink-0 h-full">
                 <div className="p-6 border-b border-gray-200">
-                    <h2 className="text-xl font-bold text-gray-900">Settings</h2>
+                    <h2 className="text-xl font-bold text-gray-900">Settings <span className="text-xs text-gray-400 font-normal">v2.0</span></h2>
                 </div>
                 <nav className="flex-1 overflow-y-auto py-4 custom-scrollbar">
                     {sidebarItems.map((item) => (
