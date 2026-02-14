@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { Plus, Search } from 'lucide-react';
 
 interface SettingsSectionLayoutProps {
