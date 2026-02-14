@@ -53,20 +53,19 @@ const SettingsSectionLayout = ({
                                 type="button"
                                 onClick={(e) => {
                                     e.stopPropagation();
-                                    console.log(`Clicked ${tab.id}. Current active: ${activeTab}. Match? ${activeTab === tab.id}`);
                                     if (onTabChange) onTabChange(tab.id);
                                 }}
                                 style={{
                                     backgroundColor: activeTab === tab.id ? '#2563eb' : 'transparent',
                                     color: activeTab === tab.id ? '#ffffff' : '#6b7280',
                                     borderColor: activeTab === tab.id ? '#2563eb' : 'transparent',
-                                    fontWeight: activeTab === tab.id ? 'bold' : 'normal',
+                                    fontWeight: activeTab === tab.id ? '600' : '500',
                                 }}
                                 className={`
-                  whitespace-nowrap py-4 px-4 border-b-2 font-medium text-sm focus:outline-none cursor-pointer rounded-t-md transition-colors duration-200
+                  whitespace-nowrap py-4 px-4 border-b-2 text-sm focus:outline-none cursor-pointer rounded-t-md transition-colors duration-200
                 `}
                             >
-                                {tab.label} {activeTab === tab.id ? '(ACTIVE)' : ''}
+                                {tab.label}
                             </button>
                         ))}
                     </nav>
