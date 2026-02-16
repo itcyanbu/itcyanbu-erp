@@ -10,7 +10,8 @@ import {
     X,
     Target,
     BookOpen,
-    Settings
+    Settings,
+    Check
 } from 'lucide-react';
 import clsx from 'clsx';
 
@@ -24,9 +25,9 @@ const ConversationAiSettings: React.FC<ConversationAiSettingsProps> = ({ setting
     const [activeTrainingTab, setActiveTrainingTab] = useState('Website');
     const [isChannelDropdownOpen, setIsChannelDropdownOpen] = useState(false);
     const aiSettings = settings.conversationAi || {};
-    const currentChannels = aiSettings.channels || ['SMS', 'Web Chat (SMS Chat)']; // Default channels as shown in screenshot
+    const currentChannels = aiSettings.channels || ['SMS', 'Chat Widget (SMS chat)']; // Default channels as shown in screenshot
 
-    const ALL_CHANNELS = ["SMS", "FB", "IG", "Web Chat (SMS Chat)", "Live Chat"];
+    const ALL_CHANNELS = ["Instagram", "Facebook", "SMS", "GBP", "Chat Widget (SMS chat)", "Live Chat"];
 
     const toggleChannel = (channel: string) => {
         const newChannels = currentChannels.includes(channel)
@@ -295,12 +296,12 @@ const ConversationAiSettings: React.FC<ConversationAiSettingsProps> = ({ setting
                                 <div className="relative">
                                     <div
                                         onClick={() => setIsChannelDropdownOpen(!isChannelDropdownOpen)}
-                                        className="w-full border border-gray-300 rounded-lg p-2.5 flex flex-wrap gap-2 items-center bg-white min-h-[44px] cursor-pointer hover:border-blue-400 transition-colors shadow-sm"
+                                        className="w-full border border-gray-300 rounded-lg p-2.5 flex flex-wrap gap-2 items-center bg-white min-h-[44px] cursor-pointer hover:border-gray-400 transition-colors shadow-sm"
                                     >
                                         {(currentChannels).map((channel: string) => (
                                             <div
                                                 key={channel}
-                                                className="bg-gray-100 border border-gray-200 rounded-md px-2 py-1 flex items-center gap-2 text-sm text-gray-700 font-bold hover:bg-gray-200 transition-colors"
+                                                className="bg-white border border-gray-300 rounded px-3 py-1.5 flex items-center gap-2 text-sm text-gray-700 font-bold hover:bg-gray-50 transition-colors"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     toggleChannel(channel);
@@ -320,7 +321,7 @@ const ConversationAiSettings: React.FC<ConversationAiSettingsProps> = ({ setting
 
                                     {/* Dropdown Menu */}
                                     {isChannelDropdownOpen && (
-                                        <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 max-h-60 overflow-y-auto">
+                                        <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 max-h-72 overflow-y-auto">
                                             <div className="py-1">
                                                 {ALL_CHANNELS.map((channel) => {
                                                     const isSelected = currentChannels.includes(channel);
@@ -329,12 +330,12 @@ const ConversationAiSettings: React.FC<ConversationAiSettingsProps> = ({ setting
                                                             key={channel}
                                                             onClick={() => toggleChannel(channel)}
                                                             className={clsx(
-                                                                "px-4 py-2.5 text-sm font-bold cursor-pointer flex items-center justify-between transition-colors",
+                                                                "px-6 py-3 text-sm font-bold cursor-pointer flex items-center justify-between transition-colors",
                                                                 isSelected ? "bg-blue-50 text-blue-600" : "text-gray-700 hover:bg-gray-50"
                                                             )}
                                                         >
                                                             {channel}
-                                                            {isSelected && <Zap size={14} className="text-blue-500" fill="currentColor" />}
+                                                            {isSelected && <Check size={18} className="text-blue-500" />}
                                                         </div>
                                                     );
                                                 })}
@@ -390,9 +391,11 @@ const ConversationAiSettings: React.FC<ConversationAiSettingsProps> = ({ setting
                                     <p className="text-sm text-gray-500 font-medium mb-6">Configure settings for the auto-pilot mode based on your business needs</p>
 
                                     <div className="text-sm text-gray-400 flex items-center gap-2 bg-gray-50/50 p-8 rounded-xl border border-dashed border-gray-200 justify-center">
-                                        <div className="animate-pulse flex items-center gap-2">
-                                            <Settings className="animate-spin-slow" size={16} />
-                                            Wait for Auto-Pilot mode activation to configure intents
+                                        <div className="animate-blink flex items-center gap-2 text-center flex-col">
+                                            <div className="flex items-center gap-2 font-bold text-gray-500">
+                                                <Settings className="animate-spin-slow" size={16} />
+                                                ( Wait for Auto-Pilot mode activation to configure intents )
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -419,17 +422,27 @@ const ConversationAiSettings: React.FC<ConversationAiSettingsProps> = ({ setting
                 </div>
 
                 {/* Footer Buttons */}
-                <div className="flex justify-end gap-3 pt-4 pb-20">
-                    <button className="px-6 py-2.5 border border-gray-300 rounded-lg text-sm font-bold text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                <div className="flex justify-end gap-4 pt-8 pb-10 border-t border-gray-100">
+                    <button className="px-10 py-3 border border-gray-200 rounded-xl text-lg font-black text-gray-700 bg-white hover:bg-gray-50 transition-all shadow-sm">
                         Cancel
                     </button>
                     <button
                         onClick={() => onUpdate('conversationAi.lastSaved', new Date().toISOString())}
-                        className="px-8 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 transition-colors shadow-sm shadow-blue-200"
+                        className="px-12 py-3 bg-blue-600 text-white rounded-xl text-lg font-black hover:bg-blue-700 transition-all shadow-md shadow-blue-200"
                     >
                         Save
                     </button>
                 </div>
+
+                <style>{`
+                    @keyframes sharp-blink {
+                        0%, 100% { opacity: 1; }
+                        50% { opacity: 0; }
+                    }
+                    .animate-blink {
+                        animation: sharp-blink 1s steps(1) infinite;
+                    }
+                `}</style>
             </div>
         </div>
     );
