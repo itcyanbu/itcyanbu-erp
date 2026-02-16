@@ -163,14 +163,22 @@ const SettingsPage = () => {
 
     const updateSetting = (path: string, value: any) => {
         setSettings(prev => {
-            const newState = { ...prev };
             const keys = path.split('.');
-            let current: any = newState;
-            for (let i = 0; i < keys.length - 1; i++) {
-                current = current[keys[i]];
-            }
-            current[keys[keys.length - 1]] = value;
-            return newState;
+
+            const updateImmutable = (obj: any, keys: string[], val: any): any => {
+                const [currentKey, ...rest] = keys;
+
+                if (rest.length === 0) {
+                    return { ...obj, [currentKey]: val };
+                }
+
+                return {
+                    ...obj,
+                    [currentKey]: updateImmutable(obj[currentKey] || {}, rest, val)
+                };
+            };
+
+            return updateImmutable(prev, keys, value);
         });
     };
 

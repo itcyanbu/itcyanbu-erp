@@ -23,16 +23,12 @@ const ConversationAiSettings: React.FC<ConversationAiSettingsProps> = ({ setting
     const [activeSubTab, setActiveSubTab] = useState('Bot Settings');
     const [activeTrainingTab, setActiveTrainingTab] = useState('Website');
     const [isChannelDropdownOpen, setIsChannelDropdownOpen] = useState(false);
-    const aiSettings = settings.conversationAi || {
-        mode: 'OFF',
-        businessName: '',
-        channels: ['SMS', 'Web Chat (SMS chat)']
-    };
+    const aiSettings = settings.conversationAi || {};
+    const currentChannels = aiSettings.channels || ['SMS', 'Web Chat (SMS Chat)']; // Default channels as shown in screenshot
 
-    const ALL_CHANNELS = ["SMS", "FB", "IG", "Web Chat (SMS chat)", "Live Chat"];
+    const ALL_CHANNELS = ["SMS", "FB", "IG", "Web Chat (SMS Chat)", "Live Chat"];
 
     const toggleChannel = (channel: string) => {
-        const currentChannels = aiSettings.channels || [];
         const newChannels = currentChannels.includes(channel)
             ? currentChannels.filter((c: string) => c !== channel)
             : [...currentChannels, channel];
@@ -299,12 +295,12 @@ const ConversationAiSettings: React.FC<ConversationAiSettingsProps> = ({ setting
                                 <div className="relative">
                                     <div
                                         onClick={() => setIsChannelDropdownOpen(!isChannelDropdownOpen)}
-                                        className="w-full border border-gray-300 rounded-lg p-2.5 flex flex-wrap gap-2 items-center bg-white min-h-[44px] cursor-pointer hover:border-blue-400 transition-colors"
+                                        className="w-full border border-gray-300 rounded-lg p-2.5 flex flex-wrap gap-2 items-center bg-white min-h-[44px] cursor-pointer hover:border-blue-400 transition-colors shadow-sm"
                                     >
-                                        {(aiSettings.channels || []).map((channel: string) => (
+                                        {(currentChannels).map((channel: string) => (
                                             <div
                                                 key={channel}
-                                                className="bg-gray-100 border border-gray-200 rounded-md px-2 py-1 flex items-center gap-2 text-sm text-gray-700 font-bold"
+                                                className="bg-gray-100 border border-gray-200 rounded-md px-2 py-1 flex items-center gap-2 text-sm text-gray-700 font-bold hover:bg-gray-200 transition-colors"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     toggleChannel(channel);
@@ -314,7 +310,7 @@ const ConversationAiSettings: React.FC<ConversationAiSettingsProps> = ({ setting
                                                 <X size={14} className="text-gray-400 cursor-pointer hover:text-red-500" />
                                             </div>
                                         ))}
-                                        {(aiSettings.channels || []).length === 0 && (
+                                        {(currentChannels).length === 0 && (
                                             <span className="text-gray-400 text-sm font-medium">Select channels...</span>
                                         )}
                                         <div className="ml-auto">
@@ -324,21 +320,21 @@ const ConversationAiSettings: React.FC<ConversationAiSettingsProps> = ({ setting
 
                                     {/* Dropdown Menu */}
                                     {isChannelDropdownOpen && (
-                                        <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                                        <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 max-h-60 overflow-y-auto">
                                             <div className="py-1">
                                                 {ALL_CHANNELS.map((channel) => {
-                                                    const isSelected = (aiSettings.channels || []).includes(channel);
+                                                    const isSelected = currentChannels.includes(channel);
                                                     return (
                                                         <div
                                                             key={channel}
                                                             onClick={() => toggleChannel(channel)}
                                                             className={clsx(
-                                                                "px-4 py-2.5 text-sm font-medium cursor-pointer flex items-center justify-between transition-colors",
+                                                                "px-4 py-2.5 text-sm font-bold cursor-pointer flex items-center justify-between transition-colors",
                                                                 isSelected ? "bg-blue-50 text-blue-600" : "text-gray-700 hover:bg-gray-50"
                                                             )}
                                                         >
                                                             {channel}
-                                                            {isSelected && <Zap size={14} className="text-blue-500" />}
+                                                            {isSelected && <Zap size={14} className="text-blue-500" fill="currentColor" />}
                                                         </div>
                                                     );
                                                 })}
