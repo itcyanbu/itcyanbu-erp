@@ -16,6 +16,7 @@ export interface Contact {
     email: string;
     phone: string;
     createdAt: string;
+    lastActivity?: string;
     tags: string[];
     initials: string;
     avatarColor: string;

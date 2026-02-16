@@ -3,8 +3,11 @@ import { Mail, Pencil, Trash2 } from 'lucide-react';
 import { useContacts } from '../context/ContactContext';
 import type { Contact } from '../types/contact';
 
+import type { ColumnDef } from './ColumnManager';
+
 interface ContactTableProps {
     data: Contact[];
+    columns: ColumnDef[];
     onEdit: (contact: Contact) => void;
     onRowClick: (contact: Contact) => void;
     selectedIds?: Set<string>;
@@ -14,6 +17,7 @@ interface ContactTableProps {
 
 const ContactTable: React.FC<ContactTableProps> = ({
     data,
+    columns,
     onEdit,
     onRowClick,
     selectedIds = new Set(),
@@ -27,15 +31,71 @@ const ContactTable: React.FC<ContactTableProps> = ({
     const someSelected = data.some(c => selectedIds.has(c.id));
 
     const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
-            hour: 'numeric',
-            minute: 'numeric',
-            hour12: true
-        });
+        try {
+            if (!dateString || dateString === '-') return '-';
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return '-';
+            return date.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric',
+                hour12: true
+            });
+        } catch (e) {
+            console.error('Error formatting date:', dateString, e);
+            return '-';
+        }
     };
+
+    const renderCell = (contact: Contact, columnId: string) => {
+        switch (columnId) {
+            case 'name':
+                return (
+                    <div className="flex items-center gap-3">
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium ${contact.avatarColor}`}>
+                            {contact.initials}
+                        </div>
+                        <div>
+                            <div className="font-medium text-ghl-text">{contact.name}</div>
+                        </div>
+                    </div>
+                );
+            case 'phone':
+                return (
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                        {contact.phone}
+                    </div>
+                );
+            case 'email':
+                return (
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <Mail size={14} className="text-gray-400" />
+                        {contact.email}
+                    </div>
+                );
+            case 'created':
+                return <span className="text-sm text-gray-600">{formatDate(contact.createdAt)}</span>;
+            case 'last_activity':
+                const activity = contact.lastActivity || contact.last_activity;
+                return <span className="text-sm text-gray-600">{activity ? formatDate(activity) : '-'}</span>;
+            case 'tags':
+                return (
+                    <div className="flex flex-wrap gap-1 max-w-[200px]">
+                        {contact.tags.map(tag => (
+                            <span key={tag} className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full capitalize border border-gray-200">
+                                {tag}
+                            </span>
+                        ))}
+                    </div>
+                );
+            default:
+                return null;
+        }
+    };
+
+    const visibleColumns = columns.filter(col => col.visible);
 
     return (
         <div className="bg-white border border-ghl-border rounded-lg overflow-hidden shadow-sm">
@@ -56,10 +116,9 @@ const ContactTable: React.FC<ContactTableProps> = ({
                                     onChange={() => onSelectAll(data.map(c => c.id))}
                                 />
                             </th>
-                            <th className="p-4">Name</th>
-                            <th className="p-4">Phone</th>
-                            <th className="p-4">Email</th>
-                            <th className="p-4">Created</th>
+                            {visibleColumns.map(col => (
+                                <th key={col.id} className="p-4">{col.label}</th>
+                            ))}
                             <th className="p-4 w-20"></th>
                         </tr>
                     </thead>
@@ -78,37 +137,11 @@ const ContactTable: React.FC<ContactTableProps> = ({
                                         onChange={() => onSelectionChange(contact.id)}
                                     />
                                 </td>
-                                <td className="p-4">
-                                    <div className="flex items-center gap-3">
-                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium ${contact.avatarColor}`}>
-                                            {contact.initials}
-                                        </div>
-                                        <div>
-                                            <div className="font-medium text-ghl-text">{contact.name}</div>
-                                            <div className="flex gap-1 mt-1">
-                                                {contact.tags.map(tag => (
-                                                    <span key={tag} className="text-xs bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded capitalize">
-                                                        {tag}
-                                                    </span>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td className="p-4 text-sm text-gray-600">
-                                    <div className="flex items-center gap-2">
-                                        {contact.phone}
-                                    </div>
-                                </td>
-                                <td className="p-4 text-sm text-gray-600">
-                                    <div className="flex items-center gap-2">
-                                        <Mail size={14} className="text-gray-400" />
-                                        {contact.email}
-                                    </div>
-                                </td>
-                                <td className="p-4 text-sm text-gray-600">
-                                    {formatDate(contact.createdAt)}
-                                </td>
+                                {visibleColumns.map(col => (
+                                    <td key={col.id} className="p-4">
+                                        {renderCell(contact, col.id)}
+                                    </td>
+                                ))}
                                 <td className="p-4 text-right" onClick={e => e.stopPropagation()}>
                                     <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                         <button
@@ -132,7 +165,7 @@ const ContactTable: React.FC<ContactTableProps> = ({
 
                         {data.length === 0 && (
                             <tr>
-                                <td colSpan={6} className="p-8 text-center text-gray-500">
+                                <td colSpan={visibleColumns.length + 2} className="p-8 text-center text-gray-500">
                                     No contacts found.
                                 </td>
                             </tr>

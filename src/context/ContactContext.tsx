@@ -46,7 +46,8 @@ const mapDbContactToAppContact = (dbContact: any): Contact => {
         avatarColor: dbContact.avatar_color || 'bg-blue-100 text-blue-600',
         timeZone: dbContact.time_zone || undefined,
         dndAllChannels: dbContact.dnd_all_channels || false,
-        createdAt: dbContact.created_at,
+        createdAt: dbContact.created_at || dbContact.createdAt || new Date().toISOString(),
+        lastActivity: dbContact.last_activity || dbContact.lastActivity || dbContact.created_at || dbContact.createdAt || new Date().toISOString(),
         customFields: dbContact.custom_fields || {}
     };
 };
@@ -65,6 +66,7 @@ const mapAppContactToDbContact = (appContact: any): any => {
         avatar_color: appContact.avatarColor || null,
         time_zone: appContact.timeZone || null,
         dnd_all_channels: appContact.dndAllChannels || false,
+        last_activity: appContact.lastActivity || null,
         custom_fields: appContact.customFields || {}
     };
 };
@@ -76,7 +78,7 @@ export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children })
     const [synced, setSynced] = useState(false);
     const { user, isSupabaseEnabled } = useAuth();
 
-    const DATA_VERSION = '2'; // Increment to force data refresh
+    const DATA_VERSION = '4'; // Increment to force data refresh
 
     // Load contacts on mount
     useEffect(() => {
@@ -193,6 +195,8 @@ export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children })
             ...newContactData,
             initials,
             avatarColor,
+            lastActivity: new Date().toISOString(),
+            createdAt: new Date().toISOString()
         };
 
         if (user && isSupabaseEnabled) {

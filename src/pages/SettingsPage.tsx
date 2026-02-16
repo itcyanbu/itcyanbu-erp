@@ -19,7 +19,8 @@ import {
     Beaker,
     History,
     Upload,
-    HelpCircle
+    HelpCircle,
+    Bot
 } from 'lucide-react';
 import BusinessProfileCard from '../components/settings/BusinessProfileCard';
 import MyStaffView from '../components/settings/MyStaffView';
@@ -49,6 +50,7 @@ import {
     LabsSettings,
     AuditLogsSettings
 } from '../components/settings/BatchFourSettings';
+import ConversationAiSettings from '../components/settings/ConversationAiSettings';
 import clsx from 'clsx';
 
 const SettingsPage = () => {
@@ -123,6 +125,16 @@ const SettingsPage = () => {
         duplication: {
             allowDuplicate: false,
             priority: ['Email', 'Phone Number']
+        },
+
+        // Conversation AI
+        conversationAi: {
+            mode: 'OFF',
+            guidedForm: {
+                variedPhrasing: true,
+                toneAdjustment: true,
+                refocusing: true
+            }
         }
     });
 
@@ -203,6 +215,7 @@ const SettingsPage = () => {
         { icon: Tag, label: 'Tag Management' },
         { icon: FileText, label: 'SMS & Email Templates' },
         { icon: Beaker, label: 'Labs' },
+        { icon: Bot, label: 'Conversation AI' },
         { icon: History, label: 'Audit Logs' },
     ];
 
@@ -825,6 +838,7 @@ const SettingsPage = () => {
                     {activeTab === 'Tag Management' && <TagManagementSettings />}
                     {activeTab === 'SMS & Email Templates' && <SmsEmailTemplatesSettings />}
                     {activeTab === 'Labs' && <LabsSettings />}
+                    {activeTab === 'Conversation AI' && <ConversationAiSettings settings={settings} onUpdate={updateSetting} />}
                     {activeTab === 'Audit Logs' && <AuditLogsSettings />}
                 </div>
             </div>

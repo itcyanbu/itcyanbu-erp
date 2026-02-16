@@ -1,6 +1,7 @@
-import { useState } from 'react';
-import { Video, HelpCircle, Box, FileText, Globe, Play, Users, Factory, ArrowLeft, ChevronLeft, ChevronRight, Settings, BookOpen } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Video, HelpCircle, Box, FileText, Globe, Play, Users, Factory, ArrowLeft, ChevronLeft, ChevronRight, Settings, BookOpen, Bot, Zap, Gauge, Target, MessageSquare, ShieldCheck } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import clsx from 'clsx';
 
 const AiSolutionsPage = () => {
     const { t } = useTranslation();
@@ -9,12 +10,111 @@ const AiSolutionsPage = () => {
     const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
     const [helpTab, setHelpTab] = useState('pdf');
 
+    const [settings, setSettings] = useState({
+        conversationAi: {
+            mode: 'OFF',
+            guidedForm: {
+                variedPhrasing: true,
+                toneAdjustment: true,
+                refocusing: true
+            }
+        }
+    });
+
+    useEffect(() => {
+        const savedSettings = localStorage.getItem('ghl_business_settings');
+        if (savedSettings) {
+            try {
+                const parsed = JSON.parse(savedSettings);
+                if (parsed.conversationAi) {
+                    setSettings(parsed);
+                }
+            } catch (e) {
+                console.error('Failed to parse saved settings', e);
+            }
+        }
+    }, []);
+
+    const updateSetting = (path: string, value: any) => {
+        setSettings(prev => {
+            const newState = { ...prev };
+            const keys = path.split('.');
+            let current: any = newState;
+            for (let i = 0; i < keys.length - 1; i++) {
+                current = current[keys[i]];
+            }
+            current[keys[keys.length - 1]] = value;
+
+            // Persist back to general settings
+            const savedSettings = localStorage.getItem('ghl_business_settings');
+            if (savedSettings) {
+                try {
+                    const fullSettings = JSON.parse(savedSettings);
+                    fullSettings.conversationAi = newState.conversationAi;
+                    localStorage.setItem('ghl_business_settings', JSON.stringify(fullSettings));
+                } catch (e) {
+                    console.error('Failed to update localStorage', e);
+                }
+            }
+
+            return newState;
+        });
+    };
+
+    const aiModes = [
+        {
+            id: 'OFF',
+            title: 'OFF',
+            description: 'AI feature is inactive. Training and trial remain active for testing.',
+            icon: Bot,
+            color: 'text-gray-400',
+            bg: 'bg-gray-50'
+        },
+        {
+            id: 'Suggestive',
+            title: 'Suggestive',
+            description: 'Bot responses appear in the composer for manual editing or sending.',
+            icon: Zap,
+            color: 'text-amber-500',
+            bg: 'bg-amber-50'
+        },
+        {
+            id: 'Auto-Pilot',
+            title: 'Auto-Pilot',
+            description: 'Bot automatically responds to contacts on behalf of the business.',
+            icon: Gauge,
+            color: 'text-ghl-blue',
+            bg: 'bg-blue-50'
+        }
+    ];
+
+    const qualityEnhancements = [
+        {
+            id: 'variedPhrasing',
+            label: 'Varied Phrasing',
+            description: 'Automatically varies question phrasing to avoid repetition.',
+            icon: MessageSquare
+        },
+        {
+            id: 'toneAdjustment',
+            label: 'Tone Adjustment',
+            description: 'Adjusts tone based on prior user inputs for natural flow.',
+            icon: ShieldCheck
+        },
+        {
+            id: 'refocusing',
+            label: 'Guided Refocusing',
+            description: 'Gently refocuses off-topic replies to keep progress.',
+            icon: Target
+        }
+    ];
+
     const solutions = [
         { id: 'getting-started', label: t('ai_solutions.getting_started'), icon: Play, color: 'text-purple-500', bg: 'bg-purple-50' },
+        { id: 'conversation-ai', label: 'Conversation AI', icon: Bot, color: 'text-blue-500', bg: 'bg-blue-50' },
         { id: 'cctv-ai', label: t('ai_solutions.cctv_ai'), icon: Video, color: 'text-blue-500', bg: 'bg-blue-50' },
         { id: 'industry-ai', label: t('ai_solutions.industry_ai'), icon: Factory, color: 'text-orange-500', bg: 'bg-orange-50' },
         { id: 'ai-employee-1', label: t('ai_solutions.ai_employee'), icon: Users, color: 'text-green-500', bg: 'bg-green-50' },
-        { id: 'ai-employee-2', label: t('ai_solutions.ai_employee'), icon: Users, color: 'text-indigo-500', bg: 'bg-indigo-50' },
         { id: 'help', label: t('ai_solutions.helps'), icon: HelpCircle, color: 'text-pink-500', bg: 'bg-pink-50' },
     ];
 
@@ -159,6 +259,135 @@ const AiSolutionsPage = () => {
                                 {t('ai_solutions.launch_wonder_sphere')}
                             </button>
                         </div>
+                    </div>
+                );
+            case 'conversation-ai':
+                const aiSettings = settings.conversationAi;
+                return (
+                    <div className="max-w-5xl mx-auto space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
+                        {/* AI Modes Selection */}
+                        <section className="space-y-4">
+                            <h3 className="text-xl font-extrabold text-gray-900 flex items-center gap-2">
+                                <Bot size={24} className="text-blue-500" />
+                                Conversation AI Modes
+                            </h3>
+                            <p className="text-sm text-gray-500">Choose how the AI bot interacts with your contacts</p>
+
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+                                {aiModes.map((mode) => {
+                                    const Icon = mode.icon;
+                                    const isActive = aiSettings.mode === mode.id;
+
+                                    return (
+                                        <button
+                                            key={mode.id}
+                                            onClick={() => updateSetting('conversationAi.mode', mode.id)}
+                                            className={clsx(
+                                                "flex flex-col p-6 border-[3px] rounded-3xl text-left transition-all duration-300 group relative overflow-hidden h-full shadow-sm hover:translate-y-[-4px]",
+                                                isActive
+                                                    ? "border-blue-500 bg-blue-50/50 ring-8 ring-blue-50/50"
+                                                    : "border-white bg-white hover:border-blue-100 hover:shadow-lg"
+                                            )}
+                                        >
+                                            <div className={clsx(
+                                                "w-14 h-14 rounded-2xl flex items-center justify-center mb-6 transition-all duration-300 group-hover:rotate-6 shadow-sm",
+                                                mode.bg, mode.color
+                                            )}>
+                                                <Icon size={28} />
+                                            </div>
+                                            <h4 className={clsx("text-lg font-black mb-2 tracking-tight", isActive ? "text-blue-600" : "text-gray-900")}>
+                                                {mode.title}
+                                            </h4>
+                                            <p className="text-sm text-gray-500 leading-relaxed font-medium">
+                                                {mode.description}
+                                            </p>
+
+                                            {isActive && (
+                                                <div className="absolute top-4 right-4">
+                                                    <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center shadow-lg animate-in zoom-in-50">
+                                                        <div className="w-2.5 h-2.5 bg-white rounded-full" />
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </section>
+
+                        <div className="h-px bg-gray-200" />
+
+                        {/* Guided Form Enhancements */}
+                        <section className={clsx("space-y-8 transition-all duration-500", aiSettings.mode === 'OFF' && "opacity-40 grayscale pointer-events-none")}>
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <h3 className="text-xl font-extrabold text-gray-900 mb-1">Guided Form: Conversational Quality</h3>
+                                    <p className="text-sm text-gray-500 font-medium">Enhance bot interactions for a more natural and productive flow</p>
+                                </div>
+                                {aiSettings.mode === 'OFF' && (
+                                    <span className="text-xs font-black uppercase tracking-widest bg-gray-100 text-gray-500 px-3 py-1.5 rounded-full border border-gray-200">
+                                        Disabled in OFF mode
+                                    </span>
+                                )}
+                            </div>
+
+                            <div className="grid grid-cols-1 gap-4">
+                                {qualityEnhancements.map((item) => {
+                                    const Icon = item.icon;
+                                    const isEnabled = (aiSettings.guidedForm as any)[item.id];
+
+                                    return (
+                                        <div
+                                            key={item.id}
+                                            className={clsx(
+                                                "flex items-center justify-between p-6 bg-white border border-gray-100 rounded-3xl transition-all duration-300 shadow-sm hover:shadow-md",
+                                                isEnabled ? "border-blue-100 bg-blue-50/10" : "hover:border-blue-100"
+                                            )}
+                                        >
+                                            <div className="flex items-center gap-5">
+                                                <div className={clsx(
+                                                    "w-12 h-12 rounded-2xl flex items-center justify-center transition-colors shadow-inner",
+                                                    isEnabled ? "bg-blue-100 text-blue-600" : "bg-gray-50 text-gray-400"
+                                                )}>
+                                                    <Icon size={24} />
+                                                </div>
+                                                <div>
+                                                    <h4 className="text-base font-extrabold text-gray-900 tracking-tight">{item.label}</h4>
+                                                    <p className="text-sm text-gray-500 font-medium">{item.description}</p>
+                                                </div>
+                                            </div>
+                                            <label className="relative inline-flex items-center cursor-pointer">
+                                                <input
+                                                    type="checkbox"
+                                                    className="sr-only peer"
+                                                    checked={isEnabled}
+                                                    onChange={(e) => updateSetting(`conversationAi.guidedForm.${item.id}`, e.target.checked)}
+                                                />
+                                                <div className="w-14 h-7 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all duration-300 peer-checked:bg-blue-600 shadow-inner"></div>
+                                            </label>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </section>
+
+                        {aiSettings.mode !== 'OFF' && (
+                            <div className="bg-blue-600 p-8 rounded-[2.5rem] shadow-2xl shadow-blue-200 flex flex-col md:flex-row gap-6 items-center text-center md:text-left transition-all duration-500 animate-in slide-in-from-bottom-8">
+                                <div className="p-4 bg-white/20 backdrop-blur-md rounded-2xl text-white shadow-xl">
+                                    <Bot size={40} className="animate-pulse" />
+                                </div>
+                                <div>
+                                    <h4 className="text-xl font-black text-white mb-2 tracking-tight">AI Bot Training in Progress</h4>
+                                    <p className="text-blue-50 leading-relaxed font-medium">
+                                        The bot is currently learning from your business profile and website content.
+                                        You can test the bot's responses in the <strong>Bot Trial</strong> section once training is complete.
+                                    </p>
+                                </div>
+                                <button className="md:ml-auto px-6 py-3 bg-white text-blue-600 font-black rounded-xl hover:bg-blue-50 transition-all text-sm uppercase tracking-widest shadow-lg">
+                                    Start Trial
+                                </button>
+                            </div>
+                        )}
                     </div>
                 );
             case 'help':

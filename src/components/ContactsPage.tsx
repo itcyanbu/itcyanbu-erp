@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import {
-    Plus, Filter, Trash2, Search, Columns, ListFilter, Users,
+    Plus, Filter, Trash2, Search, ListFilter,
     MessageSquare, Mail, Star, Download, Building2, MessageCircle, Copy,
-    Phone, Zap, Megaphone, Bell, HelpCircle, Send, X, Clock, RefreshCcw, Briefcase
+    Phone, Zap, Megaphone, Bell, HelpCircle, Send, X, Clock, RefreshCcw, Briefcase,
+    Bot, Globe, ChevronDown, Tag, Upload
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import ContactTable from '../components/ContactTable';
@@ -11,15 +12,16 @@ import { useContacts } from '../context/ContactContext';
 import ModulePlaceholder from '../components/ModulePlaceholder';
 import ContactDetailSlideOver from '../components/ContactDetailSlideOver';
 import DialerModal from './DialerModal';
+import { ColumnManager, type ColumnDef } from './ColumnManager';
 
 const ContactsPage = () => {
     const { contacts, searchQuery, deleteContact, setSearchQuery, addContact, updateContact } = useContacts();
+    console.log('ContactsPage mounted - checking for updates');
     const { t, i18n } = useTranslation();
     const isRtl = i18n.language === 'ar';
 
     // State
-    const [activeTab, setActiveTab] = useState('Smart Lists');
-    const [activeFilter, setActiveFilter] = useState('All');
+    const [activeTab, setActiveTab] = useState('all'); // 'all' is the default smart list
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isDialerOpen, setIsDialerOpen] = useState(false);
     const [editingContact, setEditingContact] = useState<any>(null);
@@ -29,6 +31,39 @@ const ContactsPage = () => {
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
     const [activeActionModal, setActiveActionModal] = useState<string | null>(null);
+
+    // Smart Lists & Filters State
+    interface Filter {
+        id: string;
+        field: string;
+        operator: 'contains' | 'equals' | 'starts_with' | 'is_empty' | 'is_not_empty';
+        value: string;
+    }
+
+    interface SmartList {
+        id: string;
+        name: string;
+        filters: Filter[];
+    }
+
+    const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
+    const [activeFilters, setActiveFilters] = useState<Filter[]>([]);
+    const [smartLists, setSmartLists] = useState<SmartList[]>([
+        { id: 'all', name: 'All', filters: [] },
+        { id: 'leads', name: 'Leads', filters: [{ id: 'f1', field: 'tags', operator: 'contains', value: 'lead' }] }
+    ]);
+    const [newSmartListName, setNewSmartListName] = useState('');
+    const [showSaveListModal, setShowSaveListModal] = useState(false);
+    const [isColumnMenuOpen, setIsColumnMenuOpen] = useState(false);
+
+    const [columns, setColumns] = useState<ColumnDef[]>([
+        { id: 'name', label: 'Name', visible: true },
+        { id: 'phone', label: 'Phone', visible: true },
+        { id: 'email', label: 'Email', visible: true },
+        { id: 'created', label: 'Created', visible: true },
+        { id: 'last_activity', label: 'Last Activity', visible: true },
+        { id: 'tags', label: 'Tags', visible: true },
+    ]);
 
     // ... (rest of state items preserved implicitly by only replacing up to line 30ish if I could, but I need to replace the header block later too)
     // Actually, I'll replace the top block to add import and state, then the bottom block to render modal.
@@ -55,23 +90,44 @@ const ContactsPage = () => {
         { id: 2, name: 'Global Marketing', website: 'globalm.net', phone: '+1 987 654', employees: 12 },
     ]);
 
-    // Clear selection when changing views/filters
+    // clear selection when changing queries
     useEffect(() => {
         setSelectedIds(new Set());
-    }, [activeTab, activeFilter, searchQuery]);
+    }, [activeTab, activeFilters, searchQuery]);
 
-    const filteredContacts = contacts.filter(contact => {
+    const applyFilters = (contacts: any[], filters: Filter[]) => {
+        return contacts.filter(contact => {
+            return filters.every(filter => {
+                const startValue = contact[filter.field]?.toString().toLowerCase() || '';
+                const filterValue = filter.value.toLowerCase();
+                if (filter.field === 'tags') {
+                    // Handle tags array specifically
+                    if (!contact.tags) return false;
+                    if (filter.operator === 'contains') return contact.tags.some((t: string) => t.toLowerCase().includes(filterValue));
+                    if (filter.operator === 'equals') return contact.tags.some((t: string) => t.toLowerCase() === filterValue);
+                    return false;
+                }
+
+                switch (filter.operator) {
+                    case 'contains': return startValue.includes(filterValue);
+                    case 'equals': return startValue === filterValue;
+                    case 'starts_with': return startValue.startsWith(filterValue);
+                    case 'is_empty': return !startValue;
+                    case 'is_not_empty': return !!startValue;
+                    default: return true;
+                }
+            });
+        });
+    };
+
+    const filteredContacts = (() => {
         const query = searchQuery || localSearch;
-        const matchesSearch = contact.name.toLowerCase().includes(query.toLowerCase()) ||
-            contact.email.toLowerCase().includes(query.toLowerCase());
-
-        let matchesTab = true;
-        if (activeFilter === 'Twilio ISV Pending') matchesTab = contact.tags?.some((t: string) => t.includes('isv') || t.includes('pending')) || false;
-        else if (activeFilter === 'Beauty & Fashion Active Users') matchesTab = contact.tags?.some((t: string) => t.includes('beauty') || t.includes('fashion')) || false;
-        else if (activeFilter === 'Imported on Feb 13, 2025') matchesTab = contact.tags?.includes('imported_feb_13') || false;
-
-        return matchesSearch && matchesTab;
-    });
+        const baseContacts = contacts.filter(contact =>
+            contact.name.toLowerCase().includes(query.toLowerCase()) ||
+            contact.email.toLowerCase().includes(query.toLowerCase())
+        );
+        return applyFilters(baseContacts, activeFilters);
+    })();
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setLocalSearch(e.target.value);
@@ -128,53 +184,10 @@ const ContactsPage = () => {
         }
     };
 
-    const tabs = ['Smart Lists', 'Bulk Actions', 'Restore', 'Tasks', 'Companies', 'Manage Smart Lists'];
-    const filterTabs = [
-        'All',
-        'Twilio ISV Pending',
-        'Twilio Rebilling Beta Testers',
-        'Mobile App Web customiser Beta',
-        'Beauty & Fashion Active Users',
-        'Imported on Feb 13, 2025'
-    ];
 
-    const getTabKey = (tab: string) => tab.toLowerCase().replace(/ /g, '_');
 
     const renderTabContent = () => {
         switch (activeTab) {
-            case 'Smart Lists':
-                return (
-                    <>
-                        {selectedIds.size > 0 && (
-                            <div className="mb-4 bg-blue-50 border border-blue-100 text-blue-700 px-4 py-3 rounded-md flex items-center justify-between animate-in fade-in slide-in-from-top-2 duration-200 rtl:flex-row-reverse">
-                                <span className="font-medium text-sm">{t('contacts.selection.selected', { count: selectedIds.size })}</span>
-                                <div className="flex items-center gap-3 rtl:flex-row-reverse">
-                                    <button
-                                        onClick={() => {
-                                            selectedIds.forEach((id: string) => deleteContact(id));
-                                            setSelectedIds(new Set());
-                                            triggerToast(t('contacts.toolbar.delete_contacts'));
-                                        }}
-                                        className="text-sm font-medium hover:text-blue-900 flex items-center gap-2 bg-white px-3 py-1.5 rounded border border-blue-200 shadow-sm rtl:flex-row-reverse"
-                                    >
-                                        <Trash2 size={14} />
-                                        {t('contacts.selection.delete_selected')}
-                                    </button>
-                                    <button onClick={() => setSelectedIds(new Set())} className="text-xs underline hover:text-blue-900">{t('contacts.selection.clear_selection')}</button>
-                                </div>
-                            </div>
-                        )}
-                        <ContactTable
-                            data={filteredContacts}
-                            onEdit={handleOpenModal}
-                            onRowClick={(contact) => setSelectedContact(contact)}
-                            selectedIds={selectedIds}
-                            onSelectionChange={handleSelectionChange}
-                            onSelectAll={handleSelectAll}
-                        />
-                    </>
-                );
-
             case 'Bulk Actions':
                 return (
                     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
@@ -305,27 +318,73 @@ const ContactsPage = () => {
                 );
 
             default:
+                // Assume it's a Smart List
+                if (smartLists.some(l => l.id === activeTab)) {
+                    return (
+                        <>
+                            {selectedIds.size > 0 && (
+                                <div className="mb-4 bg-blue-50 border border-blue-100 text-blue-700 px-4 py-3 rounded-md flex items-center justify-between animate-in fade-in slide-in-from-top-2 duration-200 rtl:flex-row-reverse">
+                                    <span className="font-medium text-sm">{t('contacts.selection.selected', { count: selectedIds.size })}</span>
+                                    <div className="flex items-center gap-3 rtl:flex-row-reverse">
+                                        <button
+                                            onClick={() => {
+                                                selectedIds.forEach((id: string) => deleteContact(id));
+                                                setSelectedIds(new Set());
+                                                triggerToast(t('contacts.toolbar.delete_contacts'));
+                                            }}
+                                            className="text-sm font-medium hover:text-blue-900 flex items-center gap-2 bg-white px-3 py-1.5 rounded border border-blue-200 shadow-sm rtl:flex-row-reverse"
+                                        >
+                                            <Trash2 size={14} />
+                                            {t('contacts.selection.delete_selected')}
+                                        </button>
+                                        <button onClick={() => setSelectedIds(new Set())} className="text-xs underline hover:text-blue-900">{t('contacts.selection.clear_selection')}</button>
+                                    </div>
+                                </div>
+                            )}
+                            <ContactTable
+                                data={filteredContacts}
+                                columns={columns}
+                                onEdit={handleOpenModal}
+                                onRowClick={(contact) => setSelectedContact(contact)}
+                                selectedIds={selectedIds}
+                                onSelectionChange={handleSelectionChange}
+                                onSelectAll={handleSelectAll}
+                            />
+                        </>
+                    );
+                }
                 return <ModulePlaceholder name={activeTab} />;
+        }
+    };
+
+    const handleTabChange = (listId: string) => {
+        setActiveTab(listId);
+        const list = smartLists.find(l => l.id === listId);
+        if (list) {
+            setActiveFilters(list.filters);
         }
     };
 
     return (
         <div className="flex-1 flex flex-col h-full overflow-hidden bg-gray-50 min-h-0 relative">
+            <ColumnManager
+                isOpen={isColumnMenuOpen}
+                onClose={() => setIsColumnMenuOpen(false)}
+                columns={columns}
+                setColumns={setColumns}
+            />
             {/* Header */}
             <div className="px-6 py-4 bg-white border-b border-gray-200 flex items-center justify-between rtl:flex-row-reverse">
                 <div className="flex items-center gap-6 rtl:flex-row-reverse">
-                    <h1 className="text-xl font-bold text-[#1a1a1a] mr-2 rtl:mr-0 rtl:ml-2">{t('sidebar.contacts')}</h1>
+                    <h1 className="text-xl font-bold text-[#1a1a1a] mr-2 rtl:mr-0 rtl:ml-2">{t('sidebar.contacts')} (Updated)</h1>
                     <div className="flex items-center gap-6 rtl:flex-row-reverse">
-                        {tabs.map(tab => (
+                        {smartLists.map(list => (
                             <button
-                                key={tab}
-                                onClick={() => setActiveTab(tab)}
-                                className={`text-[15px] font-medium transition-colors relative h-full flex items-center ${activeTab === tab ? 'text-ghl-blue' : 'text-gray-500 hover:text-gray-700'}`}
+                                key={list.id}
+                                onClick={() => handleTabChange(list.id)}
+                                className={`text-[14px] font-medium transition-all relative h-full flex items-center px-4 -mb-[1px] ${activeTab === list.id ? 'text-gray-900 border-b-2 border-ghl-blue' : 'text-gray-500 hover:text-gray-700'}`}
                             >
-                                {t(`contacts.tabs.${getTabKey(tab)}`, tab)}
-                                {activeTab === tab && (
-                                    <div className="absolute -bottom-[17px] left-0 right-0 h-[2px] bg-ghl-blue"></div>
-                                )}
+                                {list.name}
                             </button>
                         ))}
                     </div>
@@ -373,122 +432,260 @@ const ContactsPage = () => {
                 </div>
             </div>
 
-            {/* Sub-Header / Toolbars (Only for Smart Lists) */}
-            {activeTab === 'Smart Lists' && (
-                <>
-                    {/* Filter Tabs Row */}
-                    <div className="px-8 pt-4 pb-0 bg-white border-b border-gray-200 overflow-x-auto">
-                        <div className="flex gap-6 min-w-max rtl:flex-row-reverse">
-                            {filterTabs.map(tab => (
+            {/* Sub-Header / Toolbars */}
+            <div className="bg-white border-b border-gray-200">
+                {/* Active Filters Row (if any) */}
+                {activeFilters.length > 0 && (
+                    <div className="px-6 py-2 border-b border-gray-100 flex flex-wrap gap-2 rtl:flex-row-reverse">
+                        {activeFilters.map(filter => (
+                            <div key={filter.id} className="flex items-center gap-1 bg-blue-50 text-blue-700 px-2 py-1 rounded text-xs font-medium border border-blue-100 rtl:flex-row-reverse">
+                                <span className="opacity-70">{filter.field}:</span>
+                                <span>{filter.operator === 'contains' ? '~' : filter.operator === 'equals' ? '=' : filter.operator}</span>
+                                <span className="font-bold">"{filter.value}"</span>
                                 <button
-                                    key={tab}
-                                    onClick={() => setActiveFilter(tab)}
-                                    className={`pb-4 text-xs font-medium border-b-2 transition-colors ${activeFilter === tab ? 'border-ghl-blue text-ghl-blue' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+                                    onClick={() => setActiveFilters(prev => prev.filter(f => f.id !== filter.id))}
+                                    className="hover:text-blue-900 ml-1 rtl:mr-1"
                                 >
-                                    {tab}
+                                    <X size={12} />
+                                </button>
+                            </div>
+                        ))}
+                        <button
+                            onClick={() => setActiveFilters([])}
+                            className="text-xs text-gray-500 hover:text-gray-700 underline px-2"
+                        >
+                            {t('common.clear_all')}
+                        </button>
+                        <button
+                            onClick={() => setShowSaveListModal(true)}
+                            className="text-xs text-ghl-blue hover:text-blue-700 font-bold ml-auto rtl:mr-auto rtl:ml-0"
+                        >
+                            {t('contacts.lists.save_as_smart_list', 'Save as Smart List')}
+                        </button>
+                    </div>
+                )}
+
+                {/* Main Toolbar */}
+                <div className="px-6 py-3 flex items-center justify-between rtl:flex-row-reverse border-b border-gray-100">
+                    <div className="flex items-center gap-1 rtl:flex-row-reverse">
+                        <button onClick={() => handleOpenModal()} className="w-10 h-10 flex items-center justify-center text-gray-500 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-all shadow-sm" title={t('contacts.toolbar.add_contact')}>
+                            <Plus size={18} />
+                        </button>
+
+                        <div className="flex items-center gap-1 ml-0 rtl:ml-0 rtl:flex-row-reverse">
+                            {[
+                                { icon: Filter, key: "pipeline_change", bg: "bg-gray-100" },
+                                { icon: Bot, key: "add_to_workflow", bg: "bg-white" },
+                                { icon: MessageSquare, key: "send_sms", bg: "bg-white" },
+                                { icon: Mail, key: "send_email", bg: "bg-white" }
+                            ].map((btn) => (
+                                <button
+                                    key={btn.key}
+                                    onClick={() => handleAction(btn.key)}
+                                    className={`w-10 h-10 flex items-center justify-center text-gray-600 border border-gray-200 rounded-lg hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-all shadow-sm group ${btn.bg}`}
+                                    title={t(`contacts.toolbar.${btn.key}`)}
+                                >
+                                    <btn.icon size={18} className="group-hover:scale-105 transition-transform" />
+                                </button>
+                            ))}
+
+                            <button onClick={() => handleAction('add_tag')} className="w-10 h-10 flex items-center justify-center text-gray-600 bg-gray-100 border border-gray-200 rounded-lg hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-all shadow-sm group" title={t('contacts.toolbar.add_tag')}>
+                                <div className="relative">
+                                    <Tag size={18} className="group-hover:scale-105 transition-transform" />
+                                    <Plus size={9} className="absolute -top-1 -right-1 font-bold text-gray-600 group-hover:text-blue-600" />
+                                </div>
+                            </button>
+
+                            <button onClick={() => handleAction('remove_tag')} className="w-10 h-10 flex items-center justify-center text-gray-600 bg-gray-100 border border-gray-200 rounded-lg hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-all shadow-sm group" title={t('contacts.toolbar.remove_tag')}>
+                                <div className="relative">
+                                    <Tag size={18} className="group-hover:scale-105 transition-transform" />
+                                    <div className="absolute top-0.5 -right-0.5 w-2 h-[2px] bg-gray-600 rounded-full group-hover:bg-blue-600"></div>
+                                </div>
+                            </button>
+
+                            <button
+                                onClick={() => {
+                                    if (selectedIds.size > 0) {
+                                        selectedIds.forEach((id: string) => deleteContact(id));
+                                        setSelectedIds(new Set());
+                                        triggerToast(t('contacts.toolbar.delete_contacts'));
+                                    }
+                                }}
+                                className={`w-10 h-10 flex items-center justify-center border rounded-lg transition-all shadow-sm group ${selectedIds.size > 0 ? 'bg-red-50 border-red-200 text-red-600 hover:bg-red-100 hover:border-red-300' : 'bg-gray-100 border-gray-200 text-gray-400'}`}
+                                title={t('contacts.toolbar.delete_contacts')}
+                                disabled={selectedIds.size === 0}
+                            >
+                                <Trash2 size={18} className={selectedIds.size > 0 ? 'group-hover:scale-105 transition-transform' : ''} />
+                            </button>
+
+                            {[
+                                { icon: Star, key: "add_to_favorites", bg: "bg-gray-100" },
+                                { icon: Upload, key: "export", bg: "bg-white" },
+                                { icon: Download, key: "import", bg: "bg-white" },
+                                { icon: Building2, key: "assign_company", bg: "bg-gray-100" },
+                                { icon: MessageCircle, key: "whatsapp", bg: "bg-gray-100" },
+                                { icon: Copy, key: "duplicate_merge", bg: "bg-gray-100" }
+                            ].map((btn) => (
+                                <button
+                                    key={btn.key}
+                                    onClick={() => handleAction(btn.key)}
+                                    className={`w-10 h-10 flex items-center justify-center text-gray-600 border border-gray-200 rounded-lg hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-all shadow-sm group ${btn.bg}`}
+                                    title={t(`contacts.toolbar.${btn.key}`)}
+                                >
+                                    <btn.icon size={18} className="group-hover:scale-105 transition-transform" />
                                 </button>
                             ))}
                         </div>
                     </div>
 
-                    {/* Action Toolbar Row */}
-                    <div className="px-6 py-3 bg-white border-b border-gray-200 flex items-center justify-between rtl:flex-row-reverse">
-                        <div className="flex items-center gap-2 rtl:flex-row-reverse">
-                            <button onClick={() => handleOpenModal()} className="w-10 h-10 flex items-center justify-center text-gray-400 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm" title={t('contacts.toolbar.add_contact')}>
-                                <Plus size={20} />
-                            </button>
+                    <div className="flex items-center gap-3 rtl:flex-row-reverse">
+                        <button
+                            onClick={() => setIsColumnMenuOpen(true)}
+                            className="flex items-center gap-2 px-4 py-2 text-[14px] font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-all shadow-sm group rtl:flex-row-reverse"
+                        >
+                            <span>{t('contacts.toolbar.columns')}</span>
+                            <ChevronDown size={16} className="text-ghl-blue group-hover:translate-y-0.5 transition-transform" />
+                        </button>
 
-                            <div className="flex items-center gap-1.5 ml-2 rtl:ml-0 rtl:mr-2 rtl:flex-row-reverse">
-                                {[
-                                    { icon: Filter, key: "pipeline_change" },
-                                    { icon: Users, key: "add_to_workflow" },
-                                    { icon: MessageSquare, key: "send_sms" },
-                                    { icon: Mail, key: "send_email" }
-                                ].map((btn) => (
-                                    <button
-                                        key={btn.key}
-                                        onClick={() => handleAction(btn.key)}
-                                        className="w-10 h-10 flex items-center justify-center text-gray-500 bg-gray-50 border border-transparent rounded-lg hover:bg-white hover:border-gray-200 transition-all shadow-sm group"
-                                        title={t(`contacts.toolbar.${btn.key}`)}
-                                    >
-                                        <btn.icon size={20} className="group-hover:scale-110 transition-transform" />
-                                    </button>
-                                ))}
-
-                                <button onClick={() => handleAction('add_tag')} className="w-10 h-10 flex items-center justify-center text-gray-500 bg-gray-50 border border-transparent rounded-lg hover:bg-white hover:border-gray-200 transition-all shadow-sm group" title={t('contacts.toolbar.add_tag')}>
-                                    <div className="relative">
-                                        <ListFilter size={20} className="group-hover:scale-110 transition-transform" />
-                                        <Plus size={10} className="absolute -top-1 -right-1 font-bold text-ghl-blue" />
-                                    </div>
-                                </button>
-
-                                <button onClick={() => handleAction('remove_tag')} className="w-10 h-10 flex items-center justify-center text-gray-500 bg-gray-50 border border-transparent rounded-lg hover:bg-white hover:border-gray-200 transition-all shadow-sm group" title={t('contacts.toolbar.remove_tag')}>
-                                    <div className="relative">
-                                        <ListFilter size={20} className="group-hover:scale-110 transition-transform" />
-                                        <div className="absolute -top-1 -right-1 w-2.5 h-[2px] bg-red-500 rounded-full mt-[4px]"></div>
-                                    </div>
-                                </button>
-
-                                <button
-                                    onClick={() => {
-                                        if (selectedIds.size > 0) {
-                                            selectedIds.forEach((id: string) => deleteContact(id));
-                                            setSelectedIds(new Set());
-                                            triggerToast(t('contacts.toolbar.delete_contacts'));
-                                        }
-                                    }}
-                                    className={`w-10 h-10 flex items-center justify-center border border-transparent rounded-lg transition-all shadow-sm group ${selectedIds.size > 0 ? 'bg-red-50 text-red-600 hover:bg-white hover:border-red-200' : 'bg-gray-50 text-gray-300'}`}
-                                    title={t('contacts.toolbar.delete_contacts')}
-                                    disabled={selectedIds.size === 0}
-                                >
-                                    <Trash2 size={20} className={selectedIds.size > 0 ? 'group-hover:scale-110 transition-transform' : ''} />
-                                </button>
-
-                                {[
-                                    { icon: Star, key: "add_to_favorites" },
-                                    { icon: Download, key: "export", rotate: 180 },
-                                    { icon: Download, key: "import" },
-                                    { icon: Mail, key: "direct_mail", opacity: true },
-                                    { icon: Building2, key: "assign_company" },
-                                    { icon: MessageCircle, key: "whatsapp" },
-                                    { icon: Copy, key: "duplicate_merge" }
-                                ].map((btn) => (
-                                    <button
-                                        key={btn.key}
-                                        onClick={() => handleAction(btn.key)}
-                                        className={`w-10 h-10 flex items-center justify-center text-gray-500 bg-gray-50 border border-transparent rounded-lg hover:bg-white hover:border-gray-200 transition-all shadow-sm group ${btn.opacity ? 'opacity-70' : ''}`}
-                                        title={t(`contacts.toolbar.${btn.key}`)}
-                                    >
-                                        <btn.icon size={20} className={`group-hover:scale-110 transition-transform ${btn.rotate ? 'rotate-180' : ''}`} />
-                                    </button>
-                                ))}
-                            </div>
+                        <div className="relative">
+                            <Search className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                            <input
+                                type="text"
+                                placeholder="Quick search"
+                                className="pl-10 pr-4 rtl:pl-4 rtl:pr-10 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-ghl-blue focus:border-ghl-blue w-64 text-[14px] shadow-sm placeholder:text-gray-400 bg-white text-left rtl:text-right"
+                                value={localSearch}
+                                onChange={handleSearchChange}
+                            />
                         </div>
 
-                        <div className="flex items-center gap-3 rtl:flex-row-reverse">
-                            <button onClick={() => triggerToast(t('contacts.toolbar.columns'))} className="flex items-center gap-2 px-4 py-2 text-[14px] font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-all shadow-sm group rtl:flex-row-reverse">
-                                <span className="group-hover:text-ghl-blue transition-colors">{t('contacts.toolbar.columns')}</span>
-                                <Columns size={16} className="text-[#3b82f6]" />
+                        <div className="relative">
+                            <button
+                                onClick={() => setIsFilterMenuOpen(!isFilterMenuOpen)}
+                                className={`flex items-center gap-2 px-4 py-2 text-[14px] font-medium border rounded-lg transition-all shadow-sm group rtl:flex-row-reverse ${isFilterMenuOpen ? 'bg-blue-50 border-blue-200 text-ghl-blue' : 'text-gray-600 bg-white border-gray-200 hover:bg-gray-50'}`}
+                            >
+                                <span className="group-hover:text-ghl-blue transition-colors">{t('contacts.toolbar.more_filters', 'More Filters')}</span>
+                                <ListFilter size={18} className="text-ghl-blue" />
+                                <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-ghl-blue text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-white shadow-sm animate-bounce">1</span>
                             </button>
 
-                            <div className="relative">
-                                <Search className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold" size={16} />
-                                <input
-                                    type="text"
-                                    placeholder={t('common.search')}
-                                    className="pl-10 pr-4 rtl:pl-4 rtl:pr-10 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-ghl-blue focus:border-ghl-blue w-80 text-[14px] shadow-sm placeholder:text-gray-400 text-left rtl:text-right"
-                                    value={localSearch}
-                                    onChange={handleSearchChange}
-                                />
-                            </div>
+                            {isFilterMenuOpen && (
+                                <div className="absolute top-full right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 z-50 p-4 animate-in fade-in zoom-in-50 duration-200 text-left rtl:text-right">
+                                    <h3 className="text-sm font-bold text-gray-900 mb-3">{t('contacts.filters.add_filter', 'Add Filter')}</h3>
+                                    <div className="space-y-3">
+                                        <div>
+                                            <label className="text-xs font-medium text-gray-500 mb-1 block">{t('contacts.filters.field', 'Field')}</label>
+                                            <select id="filter-field" className="w-full text-sm border-gray-200 rounded-lg focus:ring-ghl-blue">
+                                                <option value="name">Name</option>
+                                                <option value="email">Email</option>
+                                                <option value="tags">Tag</option>
+                                                <option value="company">Company</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="text-xs font-medium text-gray-500 mb-1 block">{t('contacts.filters.operator', 'Operator')}</label>
+                                            <select id="filter-operator" className="w-full text-sm border-gray-200 rounded-lg focus:ring-ghl-blue">
+                                                <option value="contains">Contains</option>
+                                                <option value="equals">Is</option>
+                                                <option value="starts_with">Starts With</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="text-xs font-medium text-gray-500 mb-1 block">{t('contacts.filters.value', 'Value')}</label>
+                                            <input id="filter-value" type="text" className="w-full text-sm border-gray-200 rounded-lg focus:ring-ghl-blue" placeholder="Value..." />
+                                        </div>
+                                        <button
+                                            onClick={() => {
+                                                const field = (document.getElementById('filter-field') as HTMLSelectElement).value;
+                                                const operator = (document.getElementById('filter-operator') as HTMLSelectElement).value as any;
+                                                const value = (document.getElementById('filter-value') as HTMLInputElement).value;
 
-                            <button onClick={() => triggerToast(t('contacts.toolbar.more_filters'))} className="flex items-center gap-2 px-4 py-2 text-[14px] font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-all shadow-sm group rtl:flex-row-reverse">
-                                <span className="group-hover:text-ghl-blue transition-colors">{t('contacts.toolbar.more_filters')}</span>
-                                <ListFilter size={18} className="text-[#3b82f6]" />
+                                                if (value) {
+                                                    const newFilter: Filter = {
+                                                        id: Math.random().toString(36).substr(2, 9),
+                                                        field,
+                                                        operator,
+                                                        value
+                                                    };
+                                                    setActiveFilters([...activeFilters, newFilter]);
+                                                    setIsFilterMenuOpen(false);
+                                                }
+                                            }}
+                                            className="w-full bg-ghl-blue text-white py-2 rounded-lg text-sm font-bold hover:bg-blue-600 transition-colors"
+                                        >
+                                            {t('contacts.filters.apply', 'Apply Filter')}
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Global List Label */}
+                <button
+                    onClick={() => {
+                        setActiveTab('all');
+                        setSearchQuery('');
+                        setLocalSearch('');
+                        setActiveFilters([]);
+                        triggerToast(isRtl ? 'تم عرض القائمة الكاملة' : 'Viewing Global List');
+                    }}
+                    className="px-6 py-2 bg-gray-50/50 flex items-center gap-2 text-[13px] text-gray-500 font-medium hover:bg-gray-100/80 transition-colors w-full border-b border-gray-100 group"
+                >
+                    <Globe size={14} className="text-gray-400 group-hover:text-ghl-blue transition-colors" />
+                    <span className="group-hover:text-gray-900 transition-colors">Global List</span>
+                    <span className="bg-gray-200/50 text-gray-500 px-1.5 py-0.5 rounded text-[10px] ml-1">{contacts.length}</span>
+                </button>
+
+            </div>
+
+            {/* Save Smart List Modal */}
+            {showSaveListModal && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden text-left rtl:text-right">
+                        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+                            <h2 className="text-lg font-bold text-gray-900">{t('contacts.lists.save_title', 'Save Smart List')}</h2>
+                            <button onClick={() => setShowSaveListModal(false)} className="p-2 hover:bg-gray-200 rounded-full transition-colors">
+                                <X size={20} className="text-gray-500" />
+                            </button>
+                        </div>
+                        <div className="p-6">
+                            <p className="text-sm text-gray-500 mb-4">{t('contacts.lists.save_desc', 'Give your smart list a name to save existing filters.')}</p>
+                            <label className="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2 block">{t('contacts.lists.name_label', 'List Name')}</label>
+                            <input
+                                type="text"
+                                value={newSmartListName}
+                                onChange={(e) => setNewSmartListName(e.target.value)}
+                                className="w-full border-gray-300 rounded-lg focus:ring-ghl-blue focus:border-ghl-blue"
+                                placeholder="e.g. Hot Leads"
+                            />
+                        </div>
+                        <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3 rtl:flex-row-reverse">
+                            <button onClick={() => setShowSaveListModal(false)} className="px-4 py-2 text-sm font-bold text-gray-600 hover:text-gray-800">
+                                {t('common.cancel')}
+                            </button>
+                            <button
+                                onClick={() => {
+                                    if (newSmartListName) {
+                                        const newList: SmartList = {
+                                            id: Math.random().toString(36).substr(2, 9),
+                                            name: newSmartListName,
+                                            filters: [...activeFilters]
+                                        };
+                                        setSmartLists([...smartLists, newList]);
+                                        setActiveTab(newList.id);
+                                        setNewSmartListName('');
+                                        setShowSaveListModal(false);
+                                        triggerToast(t('contacts.lists.saved', 'Smart List saved successfully'));
+                                    }
+                                }}
+                                className="px-6 py-2 text-sm font-bold bg-ghl-blue text-white rounded-lg hover:bg-blue-600 shadow-md transition-all active:scale-95"
+                            >
+                                {t('common.save')}
                             </button>
                         </div>
                     </div>
-                </>
+                </div>
             )}
 
             {/* Main Content Area */}

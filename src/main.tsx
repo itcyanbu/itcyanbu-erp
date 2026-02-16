@@ -6,7 +6,7 @@ import App from './App.tsx';
 import './i18n';
 import { AuthProvider } from './context/AuthContext';
 
-console.log('Mounting App...');
+console.log('Mounting App... (DEV VERIFICATION - TIMESTAMP: ' + new Date().toISOString() + ')');
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>

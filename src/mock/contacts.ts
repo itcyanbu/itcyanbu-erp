@@ -27,6 +27,8 @@ export const generateMockContacts = (): Contact[] => {
             email: `${name.toLowerCase().replace(' ', '.')}@example.com`,
             phone: `(555) ${Math.floor(100 + Math.random() * 900)}-${Math.floor(1000 + Math.random() * 9000)}`,
             createdAt: new Date(Date.now() - Math.floor(Math.random() * 10000000000)).toISOString(),
+            lastActivity: new Date(Date.now() - Math.floor(Math.random() * 100000000)).toISOString(),
+            last_activity: new Date(Date.now() - Math.floor(Math.random() * 100000000)).toISOString(),
             tags,
             initials,
             avatarColor: COLORS[index % COLORS.length]
