@@ -22,10 +22,21 @@ interface ConversationAiSettingsProps {
 const ConversationAiSettings: React.FC<ConversationAiSettingsProps> = ({ settings, onUpdate }) => {
     const [activeSubTab, setActiveSubTab] = useState('Bot Settings');
     const [activeTrainingTab, setActiveTrainingTab] = useState('Website');
+    const [isChannelDropdownOpen, setIsChannelDropdownOpen] = useState(false);
     const aiSettings = settings.conversationAi || {
         mode: 'OFF',
         businessName: '',
-        channels: ['SMS', 'Chat Widget (SMS chat)']
+        channels: ['SMS', 'Web Chat (SMS chat)']
+    };
+
+    const ALL_CHANNELS = ["SMS", "FB", "IG", "Web Chat (SMS chat)", "Live Chat"];
+
+    const toggleChannel = (channel: string) => {
+        const currentChannels = aiSettings.channels || [];
+        const newChannels = currentChannels.includes(channel)
+            ? currentChannels.filter((c: string) => c !== channel)
+            : [...currentChannels, channel];
+        onUpdate('conversationAi.channels', newChannels);
     };
 
     const tabs = ['Bot Settings', 'Bot Trial', 'Bot Training', 'Configure Intents'];
@@ -248,8 +259,8 @@ const ConversationAiSettings: React.FC<ConversationAiSettingsProps> = ({ setting
     );
 
     return (
-        <div className="bg-gray-50 min-h-full -m-8 p-8">
-            <div className="max-w-6xl mx-auto space-y-8">
+        <div className="bg-gray-50 min-h-full -m-8 p-8" onClick={() => setIsChannelDropdownOpen(false)}>
+            <div className="max-w-6xl mx-auto space-y-8" onClick={(e) => e.stopPropagation()}>
                 {/* Header */}
                 <div className="flex flex-col gap-1">
                     <h1 className="text-2xl font-bold text-gray-900">Conversation AI</h1>
@@ -285,16 +296,55 @@ const ConversationAiSettings: React.FC<ConversationAiSettingsProps> = ({ setting
 
                             <div className="space-y-4">
                                 <h3 className="text-base font-semibold text-gray-900 font-bold">Supported Channels</h3>
-                                <div className="w-full border border-gray-300 rounded-lg p-2.5 flex flex-wrap gap-2 items-center bg-white min-h-[44px]">
-                                    {(aiSettings.channels || []).map((channel: string) => (
-                                        <div key={channel} className="bg-white border border-gray-200 rounded px-2 py-1 flex items-center gap-2 text-sm text-gray-700 font-medium">
-                                            {channel}
-                                            <X size={14} className="text-gray-400 cursor-pointer hover:text-gray-600" />
+                                <div className="relative">
+                                    <div
+                                        onClick={() => setIsChannelDropdownOpen(!isChannelDropdownOpen)}
+                                        className="w-full border border-gray-300 rounded-lg p-2.5 flex flex-wrap gap-2 items-center bg-white min-h-[44px] cursor-pointer hover:border-blue-400 transition-colors"
+                                    >
+                                        {(aiSettings.channels || []).map((channel: string) => (
+                                            <div
+                                                key={channel}
+                                                className="bg-gray-100 border border-gray-200 rounded-md px-2 py-1 flex items-center gap-2 text-sm text-gray-700 font-bold"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    toggleChannel(channel);
+                                                }}
+                                            >
+                                                {channel}
+                                                <X size={14} className="text-gray-400 cursor-pointer hover:text-red-500" />
+                                            </div>
+                                        ))}
+                                        {(aiSettings.channels || []).length === 0 && (
+                                            <span className="text-gray-400 text-sm font-medium">Select channels...</span>
+                                        )}
+                                        <div className="ml-auto">
+                                            <ChevronRight className={clsx("text-gray-400 transition-transform", isChannelDropdownOpen ? "-rotate-90" : "rotate-90")} size={18} />
                                         </div>
-                                    ))}
-                                    <div className="ml-auto">
-                                        <ChevronRight className="text-gray-400 rotate-90" size={18} />
                                     </div>
+
+                                    {/* Dropdown Menu */}
+                                    {isChannelDropdownOpen && (
+                                        <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                                            <div className="py-1">
+                                                {ALL_CHANNELS.map((channel) => {
+                                                    const isSelected = (aiSettings.channels || []).includes(channel);
+                                                    return (
+                                                        <div
+                                                            key={channel}
+                                                            onClick={() => toggleChannel(channel)}
+                                                            className={clsx(
+                                                                "px-4 py-2.5 text-sm font-medium cursor-pointer flex items-center justify-between transition-colors",
+                                                                isSelected ? "bg-blue-50 text-blue-600" : "text-gray-700 hover:bg-gray-50"
+                                                            )}
+                                                        >
+                                                            {channel}
+                                                            {isSelected && <Zap size={14} className="text-blue-500" />}
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
