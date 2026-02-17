@@ -16,7 +16,8 @@ import {
     useSortable
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, X } from 'lucide-react';
+import { GripVertical, X, Check } from 'lucide-react';
+import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 
 export interface ColumnDef {
@@ -39,29 +40,54 @@ const SortableItem = ({ id, label, visible, onToggle }: { id: string, label: str
         setNodeRef,
         transform,
         transition,
+        isDragging
     } = useSortable({ id });
 
     const style = {
         transform: CSS.Transform.toString(transform),
         transition,
+        zIndex: isDragging ? 50 : 0,
     };
 
     return (
         <div
             ref={setNodeRef}
             style={style}
-            className="flex items-center gap-3 p-3 bg-white border border-gray-100 rounded-lg mb-2 shadow-sm hover:shadow-md transition-all group"
+            className={clsx(
+                "flex items-center gap-4 p-4 bg-white border rounded-xl mb-3 transition-all duration-200 group select-none",
+                isDragging ? "shadow-2xl border-blue-400 scale-[1.02] cursor-grabbing" : "border-gray-100 shadow-sm hover:shadow-md hover:border-gray-200"
+            )}
         >
-            <div {...attributes} {...listeners} className="cursor-grab text-gray-400 hover:text-gray-600">
-                <GripVertical size={20} />
+            <div
+                {...attributes}
+                {...listeners}
+                className="cursor-grab active:cursor-grabbing text-gray-300 hover:text-gray-500 transition-colors"
+            >
+                <GripVertical size={20} strokeWidth={2.5} />
             </div>
-            <input
-                type="checkbox"
-                checked={visible}
-                onChange={onToggle}
-                className="w-4 h-4 text-ghl-blue rounded focus:ring-ghl-blue border-gray-300"
-            />
-            <span className="flex-1 text-sm font-medium text-gray-700">{label}</span>
+
+            <label className="flex items-center gap-3 flex-1 cursor-pointer">
+                <div className="relative flex items-center">
+                    <input
+                        type="checkbox"
+                        checked={visible}
+                        onChange={onToggle}
+                        className="peer w-5 h-5 opacity-0 absolute cursor-pointer"
+                    />
+                    <div className={clsx(
+                        "w-5 h-5 border-2 rounded transition-all duration-200 flex items-center justify-center",
+                        visible ? "bg-blue-600 border-blue-600 shadow-sm shadow-blue-200" : "bg-white border-gray-300"
+                    )}>
+                        {visible && <Check size={14} className="text-white" strokeWidth={3} />}
+                    </div>
+                </div>
+                <span className={clsx(
+                    "text-sm font-bold transition-colors",
+                    visible ? "text-gray-900" : "text-gray-400"
+                )}>
+                    {label}
+                </span>
+            </label>
         </div>
     );
 };
@@ -70,7 +96,11 @@ export const ColumnManager: React.FC<ColumnManagerProps> = ({ isOpen, onClose, c
     const { t } = useTranslation();
 
     const sensors = useSensors(
-        useSensor(PointerSensor),
+        useSensor(PointerSensor, {
+            activationConstraint: {
+                distance: 8,
+            },
+        }),
         useSensor(KeyboardSensor, {
             coordinateGetter: sortableKeyboardCoordinates,
         })

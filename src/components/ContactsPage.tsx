@@ -44,29 +44,63 @@ const ContactsPage = () => {
         id: string;
         name: string;
         filters: Filter[];
+        columns?: ColumnDef[];
     }
 
     const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
     const [activeFilters, setActiveFilters] = useState<Filter[]>([]);
-    const [smartLists, setSmartLists] = useState<SmartList[]>([
-        { id: 'all', name: 'All', filters: [] },
-        { id: 'leads', name: 'Leads', filters: [{ id: 'f1', field: 'tags', operator: 'contains', value: 'lead' }] }
-    ]);
-    const [newSmartListName, setNewSmartListName] = useState('');
-    const [showSaveListModal, setShowSaveListModal] = useState(false);
-    const [isColumnMenuOpen, setIsColumnMenuOpen] = useState(false);
-
-    const [columns, setColumns] = useState<ColumnDef[]>([
+    const DEFAULT_COLUMNS: ColumnDef[] = [
         { id: 'name', label: 'Name', visible: true },
         { id: 'phone', label: 'Phone', visible: true },
         { id: 'email', label: 'Email', visible: true },
         { id: 'created', label: 'Created', visible: true },
         { id: 'last_activity', label: 'Last Activity', visible: true },
         { id: 'tags', label: 'Tags', visible: true },
-    ]);
+    ];
 
-    // ... (rest of state items preserved implicitly by only replacing up to line 30ish if I could, but I need to replace the header block later too)
-    // Actually, I'll replace the top block to add import and state, then the bottom block to render modal.
+    const [columns, setColumns] = useState<ColumnDef[]>(DEFAULT_COLUMNS);
+    const [smartLists, setSmartLists] = useState<SmartList[]>(() => {
+        const saved = localStorage.getItem('ghl_smart_lists');
+        if (saved) {
+            try {
+                return JSON.parse(saved);
+            } catch (e) {
+                console.error('Failed to parse saved smart lists', e);
+            }
+        }
+        return [
+            { id: 'all', name: 'All', filters: [], columns: [...DEFAULT_COLUMNS] },
+            { id: 'leads', name: 'Leads', filters: [{ id: 'f1', field: 'tags', operator: 'contains', value: 'lead' }], columns: [...DEFAULT_COLUMNS] }
+        ];
+    });
+
+    // Save smart lists to local storage
+    useEffect(() => {
+        localStorage.setItem('ghl_smart_lists', JSON.stringify(smartLists));
+    }, [smartLists]);
+
+    // Update columns state when tab changes
+    useEffect(() => {
+        const activeList = smartLists.find(l => l.id === activeTab);
+        if (activeList?.columns) {
+            setColumns(activeList.columns);
+        } else {
+            setColumns(DEFAULT_COLUMNS);
+        }
+    }, [activeTab]);
+
+    // Update active smart list's columns when they change
+    const updateActiveListColumns = (newColumns: ColumnDef[] | ((prev: ColumnDef[]) => ColumnDef[])) => {
+        const resolvedColumns = typeof newColumns === 'function' ? newColumns(columns) : newColumns;
+        setColumns(resolvedColumns);
+        setSmartLists(prev => prev.map(list =>
+            list.id === activeTab ? { ...list, columns: resolvedColumns } : list
+        ));
+    };
+
+    const [newSmartListName, setNewSmartListName] = useState('');
+    const [showSaveListModal, setShowSaveListModal] = useState(false);
+    const [isColumnMenuOpen, setIsColumnMenuOpen] = useState(false);
 
     // Mock Data for Tabs
     const [bulkActions] = useState([
@@ -371,7 +405,7 @@ const ContactsPage = () => {
                 isOpen={isColumnMenuOpen}
                 onClose={() => setIsColumnMenuOpen(false)}
                 columns={columns}
-                setColumns={setColumns}
+                setColumns={updateActiveListColumns}
             />
             {/* Header */}
             <div className="px-6 py-4 bg-white border-b border-gray-200 flex items-center justify-between rtl:flex-row-reverse">
@@ -670,7 +704,8 @@ const ContactsPage = () => {
                                         const newList: SmartList = {
                                             id: Math.random().toString(36).substr(2, 9),
                                             name: newSmartListName,
-                                            filters: [...activeFilters]
+                                            filters: [...activeFilters],
+                                            columns: [...columns]
                                         };
                                         setSmartLists([...smartLists, newList]);
                                         setActiveTab(newList.id);
