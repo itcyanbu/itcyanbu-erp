@@ -1,9 +1,6 @@
 import { useState, useEffect } from 'react';
 import {
-    Plus, Filter, Trash2, Search, ListFilter,
-    MessageSquare, Mail, Star, Download, Building2, MessageCircle, Copy,
-    Phone, Zap, HelpCircle, Send, X, Clock, RefreshCcw, Briefcase,
-    Bot, Globe, ChevronDown, Tag, Upload, Settings
+    Search, HelpCircle, Download, Plus, Zap, Phone, Globe, Settings, RefreshCcw, MoreVertical, LayoutGrid, ChevronDown, ListFilter, Send, Mail, MessageSquare, X, Clock, Briefcase, Trash2
 } from 'lucide-react';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
@@ -13,7 +10,8 @@ import { useContacts } from '../context/ContactContext';
 import ModulePlaceholder from '../components/ModulePlaceholder';
 import ContactDetailSlideOver from '../components/ContactDetailSlideOver';
 import DialerModal from './DialerModal';
-import { ColumnManager, type ColumnDef } from './ColumnManager';
+import { type ColumnDef } from './ColumnManager';
+import { ManageFieldsSidebar } from './ManageFieldsSidebar';
 
 const ContactsPage = () => {
     const { contacts, searchQuery, deleteContact, setSearchQuery, addContact, updateContact } = useContacts();
@@ -207,18 +205,6 @@ const ContactsPage = () => {
         setTimeout(() => setShowToast(false), 3000);
     };
 
-    const handleAction = (actionKey: string) => {
-        if (selectedIds.size === 0 && !['import', 'add_contact'].includes(actionKey)) {
-            triggerToast(isRtl ? 'يرجى تحديد جهة اتصال واحدة على الأقل' : 'Please select at least one contact');
-            return;
-        }
-
-        if (['send_sms', 'send_email', 'add_tag', 'remove_tag'].includes(actionKey)) {
-            setActiveActionModal(actionKey);
-        } else {
-            triggerToast(t('contacts.toolbar.action_triggered', { action: t(`contacts.toolbar.${actionKey}`) }));
-        }
-    };
 
 
 
@@ -401,16 +387,11 @@ const ContactsPage = () => {
         }
     };
 
-    const topTabs = ['Contacts', 'Smart Lists', 'Bulk Actions', 'Restore', 'Tasks', 'Companies', 'Manage Smart Lists'];
+    const topTabs = ['Contacts', 'Smart Lists', 'Bulk Actions', 'Tasks', 'Companies'];
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     return (
         <div className="flex-1 flex flex-col h-full overflow-hidden bg-gray-50 min-h-0 relative">
-            <ColumnManager
-                isOpen={isColumnMenuOpen}
-                onClose={() => setIsColumnMenuOpen(false)}
-                columns={columns}
-                setColumns={updateActiveListColumns}
-            />
             {/* Header Structure */}
             <div className="flex flex-col bg-white border-b border-gray-200">
                 {/* Top Row: Navigation Tabs */}
@@ -437,8 +418,8 @@ const ContactsPage = () => {
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-3 ml-4">
-                        <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1 ml-4 h-full">
+                        <div className="flex items-center gap-2 mr-4">
                             {[
                                 { icon: Phone, color: '#10b981', onClick: () => setIsDialerOpen(true) },
                                 { icon: Zap, color: '#3b82f6' },
@@ -457,9 +438,13 @@ const ContactsPage = () => {
                                 );
                             })}
                         </div>
-                        <div className="w-9 h-9 rounded-full bg-[#c084fc] flex items-center justify-center text-white font-bold text-sm shadow-sm border border-purple-300">
-                            MM
-                        </div>
+                        <div className="w-[1px] h-6 bg-gray-200 mr-2" />
+                        <button className="flex items-center gap-2 px-2 hover:bg-gray-100 h-10 rounded-lg transition-colors group">
+                            <div className="w-8 h-8 rounded-full bg-[#c084fc] flex items-center justify-center text-white font-bold text-[13px] shadow-sm border border-purple-200">
+                                MM
+                            </div>
+                            <ChevronDown size={14} className="text-gray-400 group-hover:text-gray-600" />
+                        </button>
                     </div>
                 </div>
 
@@ -468,36 +453,93 @@ const ContactsPage = () => {
                     The 'Manage Smart Lists' & 'Restore' menu options are moving! From Jan 05, 2026, you'll find it under the actions menu (⋮) next to the Add Contact Button.
                 </div>
 
-                {/* Title & Count Row */}
-                <div className="px-6 py-5 flex items-center gap-3">
-                    <h1 className="text-[22px] font-bold text-gray-900">Contacts</h1>
-                    <span className="bg-[#eef2ff] text-[#4f46e5] px-2.5 py-0.5 rounded-full text-[12px] font-bold border border-[#e0e7ff] h-6 flex items-center">
-                        {contacts.length} Contacts
-                    </span>
+                {/* Title Row with Upper Action Row */}
+                <div className="px-6 py-5 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <h1 className="text-[22px] font-black text-[#111827]">Contacts</h1>
+                        <span className="bg-[#eff6ff] text-[#2563eb] px-3 py-1 rounded-full text-[13px] font-black border border-[#dbeafe] h-7 flex items-center">
+                            {contacts.length} Contacts
+                        </span>
+                    </div>
+
+                    <div className="flex items-center gap-2.5">
+                        <button className="flex items-center gap-2 px-5 py-2.5 text-[14px] font-black text-[#4b5563] bg-white border border-[#e5e7eb] rounded-xl hover:bg-gray-50 transition-all shadow-sm">
+                            <Download size={18} className="text-gray-400" />
+                            {t('contacts.toolbar.import', 'Import')}
+                        </button>
+
+                        <button
+                            onClick={handleOpenModal}
+                            className="flex items-center gap-2 px-6 py-2.5 text-[14px] font-black text-white bg-[#0052cc] rounded-xl hover:bg-blue-700 transition-all shadow-[0_4px_12px_rgba(0,102,255,0.25)] active:scale-[0.98]"
+                        >
+                            <Plus size={20} />
+                            {t('contacts.toolbar.add_contact', 'Add Contact')}
+                        </button>
+
+                        <div className="relative">
+                            <button
+                                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                                className="w-11 h-11 flex items-center justify-center text-gray-400 hover:text-gray-900 bg-white border border-[#e5e7eb] rounded-xl hover:bg-gray-50 transition-all"
+                            >
+                                <MoreVertical size={20} />
+                            </button>
+
+                            {isMenuOpen && (
+                                <div className="absolute top-[calc(100%+8px)] right-0 w-56 bg-white rounded-xl shadow-2xl border border-gray-100 z-50 p-2 animate-in fade-in zoom-in-95 duration-200">
+                                    <button className="w-full flex items-center gap-3 px-3 py-2.5 text-[14px] font-bold text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
+                                        <RefreshCcw size={16} className="text-gray-400" />
+                                        Restore
+                                    </button>
+                                    <button className="w-full flex items-center gap-3 px-3 py-2.5 text-[14px] font-bold text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
+                                        <LayoutGrid size={16} className="text-gray-400" />
+                                        Manage Smart Lists
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 </div>
 
                 {/* Smart List Tabs Row */}
-                <div className="px-6 flex items-center h-11 border-b border-gray-50">
+                <div className="px-6 flex items-center justify-between h-11 border-b border-gray-50">
                     <div className="flex items-center h-full gap-1 overflow-x-auto no-scrollbar">
                         {smartLists.map(list => (
                             <button
                                 key={list.id}
                                 onClick={() => handleTabChange(list.id)}
                                 className={clsx(
-                                    "px-4 h-full flex items-center gap-2 text-[14px] font-medium transition-all relative group",
-                                    (topTab === 'Smart Lists' || topTab === 'Contacts') && activeListId === list.id ? "text-ghl-blue after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-ghl-blue" : "text-gray-500 hover:text-gray-900"
+                                    "px-4 h-full flex items-center gap-2 text-[14px] font-black transition-all relative group",
+                                    (topTab === 'Smart Lists' || topTab === 'Contacts') && activeListId === list.id ? "text-ghl-blue after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2.5px] after:bg-ghl-blue" : "text-gray-400 hover:text-gray-900"
                                 )}
                             >
-                                <ListFilter size={14} className={clsx(activeListId === list.id ? "text-ghl-blue" : "text-gray-400 group-hover:text-gray-600")} />
+                                <LayoutGrid size={14} className={clsx(activeListId === list.id ? "text-ghl-blue" : "text-gray-300 group-hover:text-gray-500")} />
                                 {list.name}
                             </button>
                         ))}
                         <button
                             onClick={() => setShowSaveListModal(true)}
-                            className="px-4 h-full flex items-center gap-2 text-[14px] font-medium text-gray-500 hover:text-gray-900 transition-all font-bold"
+                            className="px-4 h-full flex items-center gap-2 text-[14px] font-black text-gray-400 hover:text-gray-600 transition-all"
                         >
-                            <Plus size={16} className="text-gray-400" />
+                            <Plus size={18} className="text-gray-300" />
                             Add Smart List
+                        </button>
+                    </div>
+
+                    <div className="flex items-center h-full gap-4">
+                        <button className="flex items-center gap-2 text-[13px] font-black text-gray-400 hover:text-gray-700 transition-colors">
+                            <LayoutGrid size={16} />
+                            Customise List
+                        </button>
+                        <div className="w-[1px] h-4 bg-gray-200" />
+                        <button
+                            onClick={() => {
+                                console.log('Opening Manage Fields sidebar');
+                                setIsColumnMenuOpen(true);
+                            }}
+                            className="flex items-center gap-2 text-[13px] font-black text-[#2563eb] hover:text-blue-700 transition-colors"
+                        >
+                            <Settings size={16} />
+                            Manage Fields
                         </button>
                     </div>
                 </div>
@@ -536,192 +578,112 @@ const ContactsPage = () => {
                     </div>
                 )}
 
-                {/* Main Toolbar */}
-                <div className="px-6 py-3 flex items-center justify-between rtl:flex-row-reverse border-b border-gray-100">
-                    <div className="flex items-center gap-1 rtl:flex-row-reverse">
-                        <button onClick={() => handleOpenModal()} className="w-10 h-10 flex items-center justify-center text-gray-500 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-all shadow-sm" title={t('contacts.toolbar.add_contact')}>
-                            <Plus size={18} />
-                        </button>
-
-                        <div className="flex items-center gap-1 ml-0 rtl:ml-0 rtl:flex-row-reverse">
-                            {[
-                                { icon: Filter, key: "pipeline_change", bg: "bg-gray-100" },
-                                { icon: Bot, key: "add_to_workflow", bg: "bg-white" },
-                                { icon: MessageSquare, key: "send_sms", bg: "bg-white" },
-                                { icon: Mail, key: "send_email", bg: "bg-white" }
-                            ].map((btn) => (
-                                <button
-                                    key={btn.key}
-                                    onClick={() => handleAction(btn.key)}
-                                    className={`w-10 h-10 flex items-center justify-center text-gray-600 border border-gray-200 rounded-lg hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-all shadow-sm group ${btn.bg}`}
-                                    title={t(`contacts.toolbar.${btn.key}`)}
-                                >
-                                    <btn.icon size={18} className="group-hover:scale-105 transition-transform" />
-                                </button>
-                            ))}
-
-                            <button onClick={() => handleAction('add_tag')} className="w-10 h-10 flex items-center justify-center text-gray-600 bg-gray-100 border border-gray-200 rounded-lg hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-all shadow-sm group" title={t('contacts.toolbar.add_tag')}>
-                                <div className="relative">
-                                    <Tag size={18} className="group-hover:scale-105 transition-transform" />
-                                    <Plus size={9} className="absolute -top-1 -right-1 font-bold text-gray-600 group-hover:text-blue-600" />
-                                </div>
-                            </button>
-
-                            <button onClick={() => handleAction('remove_tag')} className="w-10 h-10 flex items-center justify-center text-gray-600 bg-gray-100 border border-gray-200 rounded-lg hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-all shadow-sm group" title={t('contacts.toolbar.remove_tag')}>
-                                <div className="relative">
-                                    <Tag size={18} className="group-hover:scale-105 transition-transform" />
-                                    <div className="absolute top-0.5 -right-0.5 w-2 h-[2px] bg-gray-600 rounded-full group-hover:bg-blue-600"></div>
-                                </div>
-                            </button>
-
-                            <button
-                                onClick={() => {
-                                    if (selectedIds.size > 0) {
-                                        selectedIds.forEach((id: string) => deleteContact(id));
-                                        setSelectedIds(new Set());
-                                        triggerToast(t('contacts.toolbar.delete_contacts'));
-                                    }
-                                }}
-                                className={`w-10 h-10 flex items-center justify-center border rounded-lg transition-all shadow-sm group ${selectedIds.size > 0 ? 'bg-red-50 border-red-200 text-red-600 hover:bg-red-100 hover:border-red-300' : 'bg-gray-100 border-gray-200 text-gray-400'}`}
-                                title={t('contacts.toolbar.delete_contacts')}
-                                disabled={selectedIds.size === 0}
-                            >
-                                <Trash2 size={18} className={selectedIds.size > 0 ? 'group-hover:scale-105 transition-transform' : ''} />
-                            </button>
-
-                            {[
-                                { icon: Star, key: "add_to_favorites", bg: "bg-gray-100" },
-                                { icon: Upload, key: "export", bg: "bg-white" },
-                                { icon: Download, key: "import", bg: "bg-white" },
-                                { icon: Building2, key: "assign_company", bg: "bg-gray-100" },
-                                { icon: MessageCircle, key: "whatsapp", bg: "bg-gray-100" },
-                                { icon: Copy, key: "duplicate_merge", bg: "bg-gray-100" }
-                            ].map((btn) => (
-                                <button
-                                    key={btn.key}
-                                    onClick={() => handleAction(btn.key)}
-                                    className={`w-10 h-10 flex items-center justify-center text-gray-600 border border-gray-200 rounded-lg hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-all shadow-sm group ${btn.bg}`}
-                                    title={t(`contacts.toolbar.${btn.key}`)}
-                                >
-                                    <btn.icon size={18} className="group-hover:scale-105 transition-transform" />
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className="flex items-center gap-3 rtl:flex-row-reverse">
-                        <button
-                            onClick={() => setIsColumnMenuOpen(true)}
-                            className="flex items-center gap-2 px-4 py-2 text-[14px] font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-all shadow-sm group rtl:flex-row-reverse"
-                        >
-                            <span>{t('contacts.toolbar.columns')}</span>
-                            <ChevronDown size={16} className="text-ghl-blue group-hover:translate-y-0.5 transition-transform" />
-                        </button>
-
-                        <div className="relative">
-                            <Search className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                            <input
-                                type="text"
-                                placeholder="Quick search"
-                                className="pl-10 pr-4 rtl:pl-4 rtl:pr-10 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-ghl-blue focus:border-ghl-blue w-64 text-[14px] shadow-sm placeholder:text-gray-400 bg-white text-left rtl:text-right"
-                                value={localSearch}
-                                onChange={handleSearchChange}
-                            />
-                        </div>
-
+                {/* Filter & Search Toolbar */}
+                <div className="px-6 py-4 flex items-center justify-between border-b border-gray-100">
+                    <div className="flex items-center gap-3">
                         <div className="relative">
                             <button
                                 onClick={() => setIsFilterMenuOpen(!isFilterMenuOpen)}
                                 className={clsx(
-                                    "flex items-center gap-2 px-6 py-2.5 text-[16px] font-bold border rounded-xl transition-all shadow-sm group rtl:flex-row-reverse",
-                                    isFilterMenuOpen ? "bg-[#eff6ff] border-[#bfdbfe] text-[#2563eb]" : "bg-[#eff6ff] border-[#dbeafe] text-[#2563eb] hover:bg-blue-100"
+                                    "flex items-center gap-3 px-5 py-2.5 text-[15px] font-black border rounded-xl transition-all shadow-sm group",
+                                    isFilterMenuOpen ? "bg-[#eff6ff] border-[#bfdbfe] text-[#2563eb]" : "bg-white border-[#e5e7eb] text-[#2563eb] hover:bg-blue-50/50"
                                 )}
                             >
-                                <span className="transition-colors">{t('contacts.toolbar.more_filters', 'More Filters')}</span>
-                                <ListFilter size={20} className="text-[#2563eb]" />
+                                <ListFilter size={18} className="text-[#2563eb]" />
+                                <span className="transition-colors">Advanced Filters ({activeFilters.length > 0 ? activeFilters.length : '10'})</span>
                                 {activeFilters.length > 0 && (
-                                    <span className="absolute -top-3 -right-3 w-7 h-7 bg-[#2563eb] text-white text-[13px] font-black rounded-full flex items-center justify-center border-[3px] border-white shadow-md">
+                                    <span className="absolute -top-2.5 -right-2.5 w-6 h-6 bg-[#2563eb] text-white text-[11px] font-black rounded-full flex items-center justify-center border-2 border-white shadow-sm">
                                         {activeFilters.length}
                                     </span>
                                 )}
                             </button>
 
                             {isFilterMenuOpen && (
-                                <div className="absolute top-[calc(100%+12px)] right-0 w-[280px] bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 p-6 animate-in fade-in zoom-in-95 duration-200 text-left rtl:text-right">
-                                    <h3 className="text-[19px] font-black text-[#111827] mb-6">{t('contacts.filters.add_filter', 'Add Filter')}</h3>
+                                <div className="absolute top-[calc(100%+12px)] left-0 w-[300px] bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 p-6 animate-in fade-in zoom-in-95 duration-200">
+                                    <h3 className="text-[19px] font-black text-[#111827] mb-6">Add Filter</h3>
 
-                                    <div className="space-y-6">
+                                    <div className="space-y-6 text-left">
                                         <div>
-                                            <label className="text-[14px] font-bold text-gray-400 mb-2 block">{t('contacts.filters.field', 'Field')}</label>
+                                            <label className="text-[13px] font-black text-gray-400 mb-2.5 block">Field</label>
                                             <div className="relative group/select">
                                                 <select
-                                                    id="filter-field"
-                                                    className="w-full h-12 pl-4 pr-10 text-[16px] border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 appearance-none bg-white font-medium text-gray-900 cursor-pointer"
+                                                    id="filter-field-new"
+                                                    className="w-full h-12 pl-4 pr-10 text-[16px] border border-gray-100 rounded-xl focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 appearance-none bg-white font-bold text-gray-900 cursor-pointer"
                                                 >
                                                     <option value="name">Name</option>
                                                     <option value="email">Email</option>
                                                     <option value="phone">Phone</option>
                                                     <option value="tags">Tag</option>
-                                                    <option value="company">Company</option>
                                                 </select>
-                                                <ChevronDown size={18} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none group-hover/select:text-gray-600 transition-colors" />
+                                                <ChevronDown size={18} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 pointer-events-none" />
                                             </div>
                                         </div>
 
                                         <div>
-                                            <label className="text-[14px] font-bold text-gray-400 mb-2 block">{t('contacts.filters.operator', 'Operator')}</label>
+                                            <label className="text-[13px] font-black text-gray-400 mb-2.5 block">Operator</label>
                                             <div className="relative group/select">
                                                 <select
-                                                    id="filter-operator"
-                                                    className="w-full h-12 pl-4 pr-10 text-[16px] border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 appearance-none bg-white font-medium text-gray-900 cursor-pointer"
+                                                    id="filter-operator-new"
+                                                    className="w-full h-12 pl-4 pr-10 text-[16px] border border-gray-100 rounded-xl focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 appearance-none bg-white font-bold text-gray-900 cursor-pointer"
                                                 >
                                                     <option value="contains">Contains</option>
                                                     <option value="equals">Is</option>
-                                                    <option value="starts_with">Starts With</option>
                                                 </select>
-                                                <ChevronDown size={18} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none group-hover/select:text-gray-600 transition-colors" />
+                                                <ChevronDown size={18} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 pointer-events-none" />
                                             </div>
                                         </div>
 
                                         <div>
-                                            <label className="text-[14px] font-bold text-gray-400 mb-2 block">{t('contacts.filters.value', 'Value')}</label>
+                                            <label className="text-[13px] font-black text-gray-400 mb-2.5 block">Value</label>
                                             <input
-                                                id="filter-value"
+                                                id="filter-value-new"
                                                 type="text"
-                                                className="w-full h-12 px-4 text-[16px] border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-medium placeholder:text-gray-300"
+                                                className="w-full h-12 px-4 text-[16px] border border-gray-100 rounded-xl focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 font-bold placeholder:text-gray-300"
                                                 placeholder="Value..."
                                             />
                                         </div>
 
                                         <button
                                             onClick={() => {
-                                                const field = (document.getElementById('filter-field') as HTMLSelectElement).value;
-                                                const operator = (document.getElementById('filter-operator') as HTMLSelectElement).value as any;
-                                                const value = (document.getElementById('filter-value') as HTMLInputElement).value;
-
+                                                const field = (document.getElementById('filter-field-new') as HTMLSelectElement).value;
+                                                const operator = (document.getElementById('filter-operator-new') as HTMLSelectElement).value as any;
+                                                const value = (document.getElementById('filter-value-new') as HTMLInputElement).value;
                                                 if (value) {
-                                                    const newFilter: Filter = {
-                                                        id: Math.random().toString(36).substr(2, 9),
-                                                        field,
-                                                        operator,
-                                                        value
-                                                    };
+                                                    const newFilter: Filter = { id: Math.random().toString(36).substr(2, 9), field, operator, value };
                                                     setActiveFilters([...activeFilters, newFilter]);
                                                     setIsFilterMenuOpen(false);
                                                 }
                                             }}
-                                            className="w-full bg-[#1d4ed8] text-white h-14 rounded-xl text-[17px] font-black hover:bg-blue-800 transition-all active:scale-[0.98] shadow-lg shadow-blue-200 mt-2"
+                                            className="w-full bg-[#2563eb] text-white h-14 rounded-xl text-[17px] font-black hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30 mt-2"
                                         >
-                                            {t('contacts.filters.apply', 'Apply Filter')}
+                                            Apply Filter
                                         </button>
                                     </div>
                                 </div>
                             )}
                         </div>
+
+                        <button className="flex items-center gap-2 px-6 py-2.5 text-[15px] font-black text-[#4b5563] bg-white border border-[#e5e7eb] rounded-xl hover:bg-gray-50 transition-all shadow-sm">
+                            <RefreshCcw size={18} className="text-gray-400" />
+                            Sort
+                        </button>
+                    </div>
+
+                    <div className="flex items-center gap-4 rtl:flex-row-reverse">
+                        <div className="relative group">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-ghl-blue transition-colors" size={18} />
+                            <input
+                                type="text"
+                                placeholder="Search Contacts"
+                                className="h-12 pl-12 pr-4 w-72 border border-gray-100 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 text-[15px] font-bold placeholder:text-gray-300 bg-white transition-all shadow-sm"
+                                value={localSearch}
+                                onChange={handleSearchChange}
+                            />
+                        </div>
                     </div>
                 </div>
 
-                {/* Global List Label */}
+                {/* Global List Banner */}
                 <button
                     onClick={() => {
                         setActiveListId('all');
@@ -730,64 +692,13 @@ const ContactsPage = () => {
                         setActiveFilters([]);
                         triggerToast(isRtl ? 'تم عرض القائمة الكاملة' : 'Viewing Global List');
                     }}
-                    className="px-6 py-2 bg-gray-50/50 flex items-center gap-2 text-[13px] text-gray-500 font-medium hover:bg-gray-100/80 transition-colors w-full border-b border-gray-100 group"
+                    className="px-6 py-2 bg-gray-50/50 flex items-center gap-2 text-[13px] text-gray-500 font-medium hover:bg-gray-100/80 transition-colors w-full border-t border-gray-100 group"
                 >
                     <Globe size={14} className="text-gray-400 group-hover:text-ghl-blue transition-colors" />
                     <span className="group-hover:text-gray-900 transition-colors">Global List</span>
                     <span className="bg-gray-200/50 text-gray-500 px-1.5 py-0.5 rounded text-[10px] ml-1">{contacts.length}</span>
                 </button>
-
             </div>
-
-            {/* Save Smart List Modal */}
-            {showSaveListModal && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden text-left rtl:text-right">
-                        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-                            <h2 className="text-lg font-bold text-gray-900">{t('contacts.lists.save_title', 'Save Smart List')}</h2>
-                            <button onClick={() => setShowSaveListModal(false)} className="p-2 hover:bg-gray-200 rounded-full transition-colors">
-                                <X size={20} className="text-gray-500" />
-                            </button>
-                        </div>
-                        <div className="p-6">
-                            <p className="text-sm text-gray-500 mb-4">{t('contacts.lists.save_desc', 'Give your smart list a name to save existing filters.')}</p>
-                            <label className="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2 block">{t('contacts.lists.name_label', 'List Name')}</label>
-                            <input
-                                type="text"
-                                value={newSmartListName}
-                                onChange={(e) => setNewSmartListName(e.target.value)}
-                                className="w-full border-gray-300 rounded-lg focus:ring-ghl-blue focus:border-ghl-blue"
-                                placeholder="e.g. Hot Leads"
-                            />
-                        </div>
-                        <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3 rtl:flex-row-reverse">
-                            <button onClick={() => setShowSaveListModal(false)} className="px-4 py-2 text-sm font-bold text-gray-600 hover:text-gray-800">
-                                {t('common.cancel')}
-                            </button>
-                            <button
-                                onClick={() => {
-                                    if (newSmartListName) {
-                                        const newList: SmartList = {
-                                            id: Math.random().toString(36).substr(2, 9),
-                                            name: newSmartListName,
-                                            filters: [...activeFilters],
-                                            columns: [...columns]
-                                        };
-                                        setSmartLists([...smartLists, newList]);
-                                        setActiveListId(newList.id);
-                                        setNewSmartListName('');
-                                        setShowSaveListModal(false);
-                                        triggerToast(t('contacts.lists.saved', 'Smart List saved successfully'));
-                                    }
-                                }}
-                                className="px-6 py-2 text-sm font-bold bg-ghl-blue text-white rounded-lg hover:bg-blue-600 shadow-md transition-all active:scale-95"
-                            >
-                                {t('common.save')}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
 
             {/* Main Content Area */}
             <div className="flex-1 overflow-y-auto p-0">
@@ -816,56 +727,115 @@ const ContactsPage = () => {
             />
 
             {/* Placeholder Action Modal */}
-            {activeActionModal && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden text-left rtl:text-right">
-                        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-                            <h2 className="text-xl font-bold text-gray-900">{t(`contacts.toolbar.${activeActionModal}`)}</h2>
-                            <button onClick={() => setActiveActionModal(null)} className="p-2 hover:bg-gray-200 rounded-full transition-colors">
-                                <X size={20} className="text-gray-500" />
-                            </button>
-                        </div>
-                        <div className="p-8 text-center">
-                            <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                                {activeActionModal.includes('sms') ? <MessageSquare size={32} /> : activeActionModal.includes('email') ? <Mail size={32} /> : <ListFilter size={32} />}
+            {
+                activeActionModal && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+                        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden text-left rtl:text-right">
+                            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+                                <h2 className="text-xl font-bold text-gray-900">{t(`contacts.toolbar.${activeActionModal}`)}</h2>
+                                <button onClick={() => setActiveActionModal(null)} className="p-2 hover:bg-gray-200 rounded-full transition-colors">
+                                    <X size={20} className="text-gray-500" />
+                                </button>
                             </div>
-                            <p className="text-gray-600 mb-6">{t('common.coming_soon')}</p>
-                            <div className="space-y-4">
-                                <div className="h-4 bg-gray-100 rounded w-3/4 mx-auto animate-pulse"></div>
-                                <div className="h-4 bg-gray-100 rounded w-1/2 mx-auto animate-pulse"></div>
+                            <div className="p-8 text-center">
+                                <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    {activeActionModal.includes('sms') ? <MessageSquare size={32} /> : activeActionModal.includes('email') ? <Mail size={32} /> : <ListFilter size={32} />}
+                                </div>
+                                <p className="text-gray-600 mb-6">{t('common.coming_soon')}</p>
                             </div>
-                        </div>
-                        <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3 rtl:flex-row-reverse">
-                            <button onClick={() => setActiveActionModal(null)} className="px-4 py-2 text-sm font-bold text-gray-600 hover:text-gray-800">
-                                {t('common.cancel')}
-                            </button>
-                            <button
-                                onClick={() => {
-                                    triggerToast(t('contacts.toolbar.action_triggered', { action: t(`contacts.toolbar.${activeActionModal}`) }));
-                                    setActiveActionModal(null);
-                                }}
-                                className="px-6 py-2 text-sm font-bold bg-ghl-blue text-white rounded-lg hover:bg-blue-600 shadow-md transition-all active:scale-95 flex items-center gap-2 rtl:flex-row-reverse"
-                            >
-                                <Send size={16} />
-                                {t('common.save')}
-                            </button>
+                            <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3 rtl:flex-row-reverse">
+                                <button onClick={() => setActiveActionModal(null)} className="px-4 py-2 text-sm font-bold text-gray-600 hover:text-gray-800">
+                                    {t('common.cancel')}
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        triggerToast(t('contacts.toolbar.action_triggered', { action: t(`contacts.toolbar.${activeActionModal}`) }));
+                                        setActiveActionModal(null);
+                                    }}
+                                    className="px-6 py-2 text-sm font-bold bg-ghl-blue text-white rounded-lg hover:bg-blue-600 shadow-md transition-all active:scale-95 flex items-center gap-2 rtl:flex-row-reverse"
+                                >
+                                    <Send size={16} />
+                                    {t('common.save')}
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
+                )
+            }
+
+            {/* Save Smart List Modal */}
+            {
+                showSaveListModal && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+                        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden text-left rtl:text-right">
+                            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+                                <h2 className="text-lg font-bold text-gray-900">{t('contacts.lists.save_title', 'Save Smart List')}</h2>
+                                <button onClick={() => setShowSaveListModal(false)} className="p-2 hover:bg-gray-200 rounded-full transition-colors">
+                                    <X size={20} className="text-gray-500" />
+                                </button>
+                            </div>
+                            <div className="p-6">
+                                <p className="text-sm text-gray-500 mb-4">{t('contacts.lists.save_desc', 'Give your smart list a name to save existing filters.')}</p>
+                                <label className="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2 block">{t('contacts.lists.name_label', 'List Name')}</label>
+                                <input
+                                    type="text"
+                                    value={newSmartListName}
+                                    onChange={(e) => setNewSmartListName(e.target.value)}
+                                    className="w-full border-gray-300 rounded-lg focus:ring-ghl-blue focus:border-ghl-blue"
+                                    placeholder="e.g. Hot Leads"
+                                />
+                            </div>
+                            <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3 rtl:flex-row-reverse">
+                                <button onClick={() => setShowSaveListModal(false)} className="px-4 py-2 text-sm font-bold text-gray-600 hover:text-gray-800">
+                                    {t('common.cancel')}
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        if (newSmartListName) {
+                                            const newList: SmartList = {
+                                                id: Math.random().toString(36).substr(2, 9),
+                                                name: newSmartListName,
+                                                filters: [...activeFilters],
+                                                columns: [...columns]
+                                            };
+                                            setSmartLists([...smartLists, newList]);
+                                            setActiveListId(newList.id);
+                                            setNewSmartListName('');
+                                            setShowSaveListModal(false);
+                                            triggerToast(t('contacts.lists.saved', 'Smart List saved successfully'));
+                                        }
+                                    }}
+                                    className="px-6 py-2 text-sm font-bold bg-ghl-blue text-white rounded-lg hover:bg-blue-600 shadow-md transition-all active:scale-95"
+                                >
+                                    {t('common.save')}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
 
             {/* Success Toast */}
-            {showToast && (
-                <div className="fixed bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-gray-900 text-white px-6 py-4 rounded-xl shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-300 z-[200] rtl:flex-row-reverse">
-                    <div className="p-1 bg-blue-500 rounded-full">
-                        <Zap size={14} className="text-white" />
+            {
+                showToast && (
+                    <div className="fixed bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-gray-900 text-white px-6 py-4 rounded-xl shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-300 z-[200] rtl:flex-row-reverse">
+                        <div className="p-1 bg-blue-500 rounded-full">
+                            <Zap size={14} className="text-white" />
+                        </div>
+                        <span className="font-medium">{toastMessage}</span>
                     </div>
-                    <span className="font-medium">{toastMessage}</span>
-                </div>
-            )}
+                )
+            }
 
             <DialerModal isOpen={isDialerOpen} onClose={() => setIsDialerOpen(false)} />
-        </div>
+
+            <ManageFieldsSidebar
+                isOpen={isColumnMenuOpen}
+                onClose={() => setIsColumnMenuOpen(false)}
+                columns={columns}
+                setColumns={updateActiveListColumns}
+            />
+        </div >
     );
 };
 
