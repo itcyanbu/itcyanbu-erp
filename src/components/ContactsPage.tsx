@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 import {
     Plus, Filter, Trash2, Search, ListFilter,
     MessageSquare, Mail, Star, Download, Building2, MessageCircle, Copy,
-    Phone, Zap, Megaphone, Bell, HelpCircle, Send, X, Clock, RefreshCcw, Briefcase,
-    Bot, Globe, ChevronDown, Tag, Upload
+    Phone, Zap, HelpCircle, Send, X, Clock, RefreshCcw, Briefcase,
+    Bot, Globe, ChevronDown, Tag, Upload, Settings
 } from 'lucide-react';
+import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import ContactTable from '../components/ContactTable';
 import ContactModal from '../components/ContactModal';
@@ -21,7 +22,8 @@ const ContactsPage = () => {
     const isRtl = i18n.language === 'ar';
 
     // State
-    const [activeTab, setActiveTab] = useState('all'); // 'all' is the default smart list
+    const [topTab, setTopTab] = useState('Smart Lists');
+    const [activeListId, setActiveListId] = useState('all');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isDialerOpen, setIsDialerOpen] = useState(false);
     const [editingContact, setEditingContact] = useState<any>(null);
@@ -81,20 +83,20 @@ const ContactsPage = () => {
 
     // Update columns state when tab changes
     useEffect(() => {
-        const activeList = smartLists.find(l => l.id === activeTab);
+        const activeList = smartLists.find(l => l.id === activeListId);
         if (activeList?.columns) {
             setColumns(activeList.columns);
         } else {
             setColumns(DEFAULT_COLUMNS);
         }
-    }, [activeTab]);
+    }, [activeListId]);
 
     // Update active smart list's columns when they change
     const updateActiveListColumns = (newColumns: ColumnDef[] | ((prev: ColumnDef[]) => ColumnDef[])) => {
         const resolvedColumns = typeof newColumns === 'function' ? newColumns(columns) : newColumns;
         setColumns(resolvedColumns);
         setSmartLists(prev => prev.map(list =>
-            list.id === activeTab ? { ...list, columns: resolvedColumns } : list
+            list.id === activeListId ? { ...list, columns: resolvedColumns } : list
         ));
     };
 
@@ -127,7 +129,7 @@ const ContactsPage = () => {
     // clear selection when changing queries
     useEffect(() => {
         setSelectedIds(new Set());
-    }, [activeTab, activeFilters, searchQuery]);
+    }, [activeListId, activeFilters, searchQuery]);
 
     const applyFilters = (contacts: any[], filters: Filter[]) => {
         return contacts.filter(contact => {
@@ -221,7 +223,7 @@ const ContactsPage = () => {
 
 
     const renderTabContent = () => {
-        switch (activeTab) {
+        switch (topTab) {
             case 'Bulk Actions':
                 return (
                     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
@@ -353,7 +355,7 @@ const ContactsPage = () => {
 
             default:
                 // Assume it's a Smart List
-                if (smartLists.some(l => l.id === activeTab)) {
+                if (smartLists.some(l => l.id === activeListId)) {
                     return (
                         <>
                             {selectedIds.size > 0 && (
@@ -387,17 +389,19 @@ const ContactsPage = () => {
                         </>
                     );
                 }
-                return <ModulePlaceholder name={activeTab} />;
+                return <ModulePlaceholder name={topTab} />;
         }
     };
 
     const handleTabChange = (listId: string) => {
-        setActiveTab(listId);
+        setActiveListId(listId);
         const list = smartLists.find(l => l.id === listId);
         if (list) {
             setActiveFilters(list.filters);
         }
     };
+
+    const topTabs = ['Contacts', 'Smart Lists', 'Bulk Actions', 'Restore', 'Tasks', 'Companies', 'Manage Smart Lists'];
 
     return (
         <div className="flex-1 flex flex-col h-full overflow-hidden bg-gray-50 min-h-0 relative">
@@ -407,61 +411,94 @@ const ContactsPage = () => {
                 columns={columns}
                 setColumns={updateActiveListColumns}
             />
-            {/* Header */}
-            <div className="px-6 py-4 bg-white border-b border-gray-200 flex items-center justify-between rtl:flex-row-reverse">
-                <div className="flex items-center gap-6 rtl:flex-row-reverse">
-                    <h1 className="text-xl font-bold text-[#1a1a1a] mr-2 rtl:mr-0 rtl:ml-2">{t('sidebar.contacts')} (Updated)</h1>
-                    <div className="flex items-center gap-6 rtl:flex-row-reverse">
-                        {smartLists.map(list => (
-                            <button
-                                key={list.id}
-                                onClick={() => handleTabChange(list.id)}
-                                className={`text-[14px] font-medium transition-all relative h-full flex items-center px-4 -mb-[1px] ${activeTab === list.id ? 'text-gray-900 border-b-2 border-ghl-blue' : 'text-gray-500 hover:text-gray-700'}`}
-                            >
-                                {list.name}
+            {/* Header Structure */}
+            <div className="flex flex-col bg-white border-b border-gray-200">
+                {/* Top Row: Navigation Tabs */}
+                <div className="px-6 flex items-center justify-between h-14 border-b border-gray-100">
+                    <div className="flex items-center h-full gap-2 overflow-x-auto no-scrollbar">
+                        <span className="text-gray-900 font-bold mr-6 text-[15px]">Contacts</span>
+                        <div className="flex items-center h-full gap-1">
+                            {topTabs.map(tab => (
+                                <button
+                                    key={tab}
+                                    onClick={() => setTopTab(tab)}
+                                    className={clsx(
+                                        "px-4 h-full flex items-center text-[14px] font-medium transition-all relative whitespace-nowrap",
+                                        topTab === tab ? "text-ghl-blue after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2.5px] after:bg-ghl-blue" : "text-gray-500 hover:text-gray-900"
+                                    )}
+                                >
+                                    {tab}
+                                </button>
+                            ))}
+                            <div className="w-[1px] h-6 bg-gray-200 mx-2" />
+                            <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
+                                <Settings size={18} />
                             </button>
-                        ))}
+                        </div>
                     </div>
-                </div>
 
-                <div className="flex items-center gap-3 rtl:flex-row-reverse transition-all">
-                    <div className="flex items-center gap-2 mr-4 rtl:mr-0 rtl:ml-4">
-                        {[
-                            { icon: Phone, color: '#10b981', onClick: () => setIsDialerOpen(true) },
-                            { icon: Zap, color: '#3b82f6', onClick: () => triggerToast('Features coming soon!') },
-                            { icon: Megaphone, color: '#528a8d', onClick: () => triggerToast('Announcements coming soon!') },
-                            { icon: Bell, color: '#f97316', onClick: () => triggerToast('Notifications coming soon!') },
-                            { icon: HelpCircle, color: '#3b82f6', link: 'https://glow-guide-help-hub.lovable.app/' }
-                        ].map((btn, idx) => {
-                            const Icon = btn.icon;
-                            if (btn.link) {
+                    <div className="flex items-center gap-3 ml-4">
+                        <div className="flex items-center gap-2">
+                            {[
+                                { icon: Phone, color: '#10b981', onClick: () => setIsDialerOpen(true) },
+                                { icon: Zap, color: '#3b82f6' },
+                                { icon: HelpCircle, color: '#3b82f6', link: 'https://glow-guide-help-hub.lovable.app/' }
+                            ].map((btn, idx) => {
+                                const Icon = btn.icon;
                                 return (
-                                    <a
+                                    <button
                                         key={idx}
-                                        href={btn.link}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
+                                        onClick={btn.onClick}
                                         className="w-8 h-8 rounded-full flex items-center justify-center text-white shadow-sm hover:opacity-90 transition-opacity"
                                         style={{ backgroundColor: btn.color }}
                                     >
                                         <Icon size={16} />
-                                    </a>
+                                    </button>
                                 );
-                            }
-                            return (
-                                <button
-                                    key={idx}
-                                    onClick={btn.onClick}
-                                    className="w-8 h-8 rounded-full flex items-center justify-center text-white shadow-sm hover:opacity-90 transition-opacity"
-                                    style={{ backgroundColor: btn.color }}
-                                >
-                                    <Icon size={16} />
-                                </button>
-                            );
-                        })}
+                            })}
+                        </div>
+                        <div className="w-9 h-9 rounded-full bg-[#c084fc] flex items-center justify-center text-white font-bold text-sm shadow-sm border border-purple-300">
+                            MM
+                        </div>
                     </div>
-                    <div className="w-9 h-9 rounded-full bg-[#c084fc] flex items-center justify-center text-white font-bold text-sm shadow-sm border border-purple-300">
-                        MM
+                </div>
+
+                {/* Info Banner */}
+                <div className="px-6 py-2.5 bg-gray-50/50 text-[13px] text-gray-500 italic border-b border-gray-100">
+                    The 'Manage Smart Lists' & 'Restore' menu options are moving! From Jan 05, 2026, you'll find it under the actions menu (⋮) next to the Add Contact Button.
+                </div>
+
+                {/* Title & Count Row */}
+                <div className="px-6 py-5 flex items-center gap-3">
+                    <h1 className="text-[22px] font-bold text-gray-900">Contacts</h1>
+                    <span className="bg-[#eef2ff] text-[#4f46e5] px-2.5 py-0.5 rounded-full text-[12px] font-bold border border-[#e0e7ff] h-6 flex items-center">
+                        {contacts.length} Contacts
+                    </span>
+                </div>
+
+                {/* Smart List Tabs Row */}
+                <div className="px-6 flex items-center h-11 border-b border-gray-50">
+                    <div className="flex items-center h-full gap-1 overflow-x-auto no-scrollbar">
+                        {smartLists.map(list => (
+                            <button
+                                key={list.id}
+                                onClick={() => handleTabChange(list.id)}
+                                className={clsx(
+                                    "px-4 h-full flex items-center gap-2 text-[14px] font-medium transition-all relative group",
+                                    (topTab === 'Smart Lists' || topTab === 'Contacts') && activeListId === list.id ? "text-ghl-blue after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-ghl-blue" : "text-gray-500 hover:text-gray-900"
+                                )}
+                            >
+                                <ListFilter size={14} className={clsx(activeListId === list.id ? "text-ghl-blue" : "text-gray-400 group-hover:text-gray-600")} />
+                                {list.name}
+                            </button>
+                        ))}
+                        <button
+                            onClick={() => setShowSaveListModal(true)}
+                            className="px-4 h-full flex items-center gap-2 text-[14px] font-medium text-gray-500 hover:text-gray-900 transition-all font-bold"
+                        >
+                            <Plus size={16} className="text-gray-400" />
+                            Add Smart List
+                        </button>
                     </div>
                 </div>
             </div>
@@ -658,7 +695,7 @@ const ContactsPage = () => {
                 {/* Global List Label */}
                 <button
                     onClick={() => {
-                        setActiveTab('all');
+                        setActiveListId('all');
                         setSearchQuery('');
                         setLocalSearch('');
                         setActiveFilters([]);
@@ -708,7 +745,7 @@ const ContactsPage = () => {
                                             columns: [...columns]
                                         };
                                         setSmartLists([...smartLists, newList]);
-                                        setActiveTab(newList.id);
+                                        setActiveListId(newList.id);
                                         setNewSmartListName('');
                                         setShowSaveListModal(false);
                                         triggerToast(t('contacts.lists.saved', 'Smart List saved successfully'));
@@ -724,9 +761,13 @@ const ContactsPage = () => {
             )}
 
             {/* Main Content Area */}
-            <div className="flex-1 overflow-y-auto p-8">
-                <div className="max-w-7xl mx-auto">
-                    {renderTabContent()}
+            <div className="flex-1 overflow-y-auto p-0">
+                <div className="max-w-full">
+                    <div className="p-8">
+                        <div className="max-w-7xl mx-auto">
+                            {renderTabContent()}
+                        </div>
+                    </div>
                 </div>
             </div>
 
