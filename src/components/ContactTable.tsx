@@ -91,7 +91,11 @@ const ContactTable: React.FC<ContactTableProps> = ({
                     </div>
                 );
             default:
-                return null;
+                // Dynamic rendering for any other field
+                const value = contact[columnId as keyof Contact];
+                if (value === undefined || value === null) return <span className="text-gray-300">-</span>;
+                if (typeof value === 'boolean') return <span className="text-sm text-gray-600">{value ? 'Yes' : 'No'}</span>;
+                return <span className="text-sm text-gray-600 truncate max-w-[150px]" title={String(value)}>{String(value)}</span>;
         }
     };
 
