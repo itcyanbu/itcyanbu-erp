@@ -632,38 +632,67 @@ const ContactsPage = () => {
                         <div className="relative">
                             <button
                                 onClick={() => setIsFilterMenuOpen(!isFilterMenuOpen)}
-                                className={`flex items-center gap-2 px-4 py-2 text-[14px] font-medium border rounded-lg transition-all shadow-sm group rtl:flex-row-reverse ${isFilterMenuOpen ? 'bg-blue-50 border-blue-200 text-ghl-blue' : 'text-gray-600 bg-white border-gray-200 hover:bg-gray-50'}`}
+                                className={clsx(
+                                    "flex items-center gap-2 px-6 py-2.5 text-[16px] font-bold border rounded-xl transition-all shadow-sm group rtl:flex-row-reverse",
+                                    isFilterMenuOpen ? "bg-[#eff6ff] border-[#bfdbfe] text-[#2563eb]" : "bg-[#eff6ff] border-[#dbeafe] text-[#2563eb] hover:bg-blue-100"
+                                )}
                             >
-                                <span className="group-hover:text-ghl-blue transition-colors">{t('contacts.toolbar.more_filters', 'More Filters')}</span>
-                                <ListFilter size={18} className="text-ghl-blue" />
-                                <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-ghl-blue text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-white shadow-sm animate-bounce">1</span>
+                                <span className="transition-colors">{t('contacts.toolbar.more_filters', 'More Filters')}</span>
+                                <ListFilter size={20} className="text-[#2563eb]" />
+                                {activeFilters.length > 0 && (
+                                    <span className="absolute -top-3 -right-3 w-7 h-7 bg-[#2563eb] text-white text-[13px] font-black rounded-full flex items-center justify-center border-[3px] border-white shadow-md">
+                                        {activeFilters.length}
+                                    </span>
+                                )}
                             </button>
 
                             {isFilterMenuOpen && (
-                                <div className="absolute top-full right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 z-50 p-4 animate-in fade-in zoom-in-50 duration-200 text-left rtl:text-right">
-                                    <h3 className="text-sm font-bold text-gray-900 mb-3">{t('contacts.filters.add_filter', 'Add Filter')}</h3>
-                                    <div className="space-y-3">
+                                <div className="absolute top-[calc(100%+12px)] right-0 w-[280px] bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 p-6 animate-in fade-in zoom-in-95 duration-200 text-left rtl:text-right">
+                                    <h3 className="text-[19px] font-black text-[#111827] mb-6">{t('contacts.filters.add_filter', 'Add Filter')}</h3>
+
+                                    <div className="space-y-6">
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 mb-1 block">{t('contacts.filters.field', 'Field')}</label>
-                                            <select id="filter-field" className="w-full text-sm border-gray-200 rounded-lg focus:ring-ghl-blue">
-                                                <option value="name">Name</option>
-                                                <option value="email">Email</option>
-                                                <option value="tags">Tag</option>
-                                                <option value="company">Company</option>
-                                            </select>
+                                            <label className="text-[14px] font-bold text-gray-400 mb-2 block">{t('contacts.filters.field', 'Field')}</label>
+                                            <div className="relative group/select">
+                                                <select
+                                                    id="filter-field"
+                                                    className="w-full h-12 pl-4 pr-10 text-[16px] border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 appearance-none bg-white font-medium text-gray-900 cursor-pointer"
+                                                >
+                                                    <option value="name">Name</option>
+                                                    <option value="email">Email</option>
+                                                    <option value="phone">Phone</option>
+                                                    <option value="tags">Tag</option>
+                                                    <option value="company">Company</option>
+                                                </select>
+                                                <ChevronDown size={18} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none group-hover/select:text-gray-600 transition-colors" />
+                                            </div>
                                         </div>
+
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 mb-1 block">{t('contacts.filters.operator', 'Operator')}</label>
-                                            <select id="filter-operator" className="w-full text-sm border-gray-200 rounded-lg focus:ring-ghl-blue">
-                                                <option value="contains">Contains</option>
-                                                <option value="equals">Is</option>
-                                                <option value="starts_with">Starts With</option>
-                                            </select>
+                                            <label className="text-[14px] font-bold text-gray-400 mb-2 block">{t('contacts.filters.operator', 'Operator')}</label>
+                                            <div className="relative group/select">
+                                                <select
+                                                    id="filter-operator"
+                                                    className="w-full h-12 pl-4 pr-10 text-[16px] border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 appearance-none bg-white font-medium text-gray-900 cursor-pointer"
+                                                >
+                                                    <option value="contains">Contains</option>
+                                                    <option value="equals">Is</option>
+                                                    <option value="starts_with">Starts With</option>
+                                                </select>
+                                                <ChevronDown size={18} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none group-hover/select:text-gray-600 transition-colors" />
+                                            </div>
                                         </div>
+
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 mb-1 block">{t('contacts.filters.value', 'Value')}</label>
-                                            <input id="filter-value" type="text" className="w-full text-sm border-gray-200 rounded-lg focus:ring-ghl-blue" placeholder="Value..." />
+                                            <label className="text-[14px] font-bold text-gray-400 mb-2 block">{t('contacts.filters.value', 'Value')}</label>
+                                            <input
+                                                id="filter-value"
+                                                type="text"
+                                                className="w-full h-12 px-4 text-[16px] border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-medium placeholder:text-gray-300"
+                                                placeholder="Value..."
+                                            />
                                         </div>
+
                                         <button
                                             onClick={() => {
                                                 const field = (document.getElementById('filter-field') as HTMLSelectElement).value;
@@ -681,7 +710,7 @@ const ContactsPage = () => {
                                                     setIsFilterMenuOpen(false);
                                                 }
                                             }}
-                                            className="w-full bg-ghl-blue text-white py-2 rounded-lg text-sm font-bold hover:bg-blue-600 transition-colors"
+                                            className="w-full bg-[#1d4ed8] text-white h-14 rounded-xl text-[17px] font-black hover:bg-blue-800 transition-all active:scale-[0.98] shadow-lg shadow-blue-200 mt-2"
                                         >
                                             {t('contacts.filters.apply', 'Apply Filter')}
                                         </button>
