@@ -148,6 +148,30 @@ export const ManageFieldsSidebar: React.FC<ManageFieldsSidebarProps> = ({ isOpen
         setExpandedCategories(newSet);
     };
 
+    const getFieldId = (label: string) => {
+        if (label === 'Full Name') return 'name';
+        return label.toLowerCase().replace(/\s+/g, '_');
+    };
+
+    const isFieldVisible = (label: string) => {
+        const id = getFieldId(label);
+        return tempColumns.some(c => c.id === id && c.visible);
+    };
+
+    const handleFieldToggle = (label: string) => {
+        const id = getFieldId(label);
+        if (id === 'name') return; // Locked
+
+        setTempColumns(prev => {
+            const index = prev.findIndex(c => c.id === id);
+            if (index > -1) {
+                return prev.map((c, i) => i === index ? { ...c, visible: !c.visible } : c);
+            } else {
+                return [...prev, { id, label, visible: true }];
+            }
+        });
+    };
+
     const filteredCategories = useMemo(() => {
         if (!searchQuery) return FIELD_CATEGORIES;
         const query = searchQuery.toLowerCase();
@@ -235,13 +259,36 @@ export const ManageFieldsSidebar: React.FC<ManageFieldsSidebarProps> = ({ isOpen
                                         {expandedCategories.has(cat.name) ? <ChevronDown size={18} className="text-gray-400" /> : <ChevronRight size={18} className="text-gray-400" />}
                                     </button>
                                     {expandedCategories.has(cat.name) && (
-                                        <div className="pl-4 pr-2 pb-2 space-y-2 animate-in slide-in-from-top-2 duration-200">
-                                            {cat.fields.map(field => (
-                                                <div key={field} className="flex items-center gap-3 py-1">
-                                                    <button className="w-4 h-4 rounded border border-gray-300 hover:border-ghl-blue transition-colors" />
-                                                    <span className="text-[14px] text-gray-600">{field}</span>
-                                                </div>
-                                            ))}
+                                        <div className="pl-4 pr-2 pb-2 space-y-1 animate-in slide-in-from-top-2 duration-200">
+                                            {cat.fields.map(field => {
+                                                const visible = isFieldVisible(field);
+                                                const isLocked = getFieldId(field) === 'name';
+
+                                                return (
+                                                    <button
+                                                        key={field}
+                                                        onClick={() => handleFieldToggle(field)}
+                                                        className={clsx(
+                                                            "w-full flex items-center gap-3 py-2 px-2 rounded-lg transition-colors text-left",
+                                                            isLocked ? "cursor-not-allowed opacity-60" : "hover:bg-gray-50"
+                                                        )}
+                                                    >
+                                                        <div className={clsx(
+                                                            "w-4 h-4 rounded border flex items-center justify-center transition-all",
+                                                            visible ? "bg-ghl-blue border-ghl-blue" : "border-gray-300 bg-white"
+                                                        )}>
+                                                            {visible && <Check size={12} className="text-white" />}
+                                                        </div>
+                                                        <span className={clsx(
+                                                            "text-[14px] font-medium",
+                                                            visible ? "text-gray-900" : "text-gray-500"
+                                                        )}>
+                                                            {field}
+                                                        </span>
+                                                        {isLocked && <Lock size={12} className="text-gray-400 ml-auto" />}
+                                                    </button>
+                                                );
+                                            })}
                                         </div>
                                     )}
                                 </div>
