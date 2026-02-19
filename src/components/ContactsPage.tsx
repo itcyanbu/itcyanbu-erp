@@ -12,6 +12,7 @@ import ContactDetailSlideOver from '../components/ContactDetailSlideOver';
 import DialerModal from './DialerModal';
 import { type ColumnDef } from './ColumnManager';
 import { ManageFieldsSidebar } from './ManageFieldsSidebar';
+import { ImportWizard } from './contacts/import/ImportWizard';
 
 const ContactsPage = () => {
     const { contacts, searchQuery, deleteContact, setSearchQuery, addContact, updateContact } = useContacts();
@@ -23,6 +24,7 @@ const ContactsPage = () => {
     const [topTab, setTopTab] = useState('Smart Lists');
     const [activeListId, setActiveListId] = useState('all');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isImportWizardOpen, setIsImportWizardOpen] = useState(false);
     const [isDialerOpen, setIsDialerOpen] = useState(false);
     const [editingContact, setEditingContact] = useState<any>(null);
     const [selectedContact, setSelectedContact] = useState<any>(null);
@@ -422,14 +424,20 @@ const ContactsPage = () => {
                         <div className="flex items-center gap-2 mr-4">
                             {[
                                 { icon: Phone, color: '#10b981', onClick: () => setIsDialerOpen(true) },
-                                { icon: Zap, color: '#3b82f6' },
+                                { icon: Zap, color: '#3b82f6', onClick: () => setActiveActionModal('add_to_workflow') },
                                 { icon: HelpCircle, color: '#3b82f6', link: 'https://glow-guide-help-hub.lovable.app/' }
                             ].map((btn, idx) => {
                                 const Icon = btn.icon;
                                 return (
                                     <button
                                         key={idx}
-                                        onClick={btn.onClick}
+                                        onClick={() => {
+                                            if (btn.onClick) {
+                                                btn.onClick();
+                                            } else if (btn.link) {
+                                                window.open(btn.link, '_blank');
+                                            }
+                                        }}
                                         className="w-8 h-8 rounded-full flex items-center justify-center text-white shadow-sm hover:opacity-90 transition-opacity"
                                         style={{ backgroundColor: btn.color }}
                                     >
@@ -463,13 +471,16 @@ const ContactsPage = () => {
                     </div>
 
                     <div className="flex items-center gap-2.5">
-                        <button className="flex items-center gap-2 px-5 py-2.5 text-[14px] font-black text-[#4b5563] bg-white border border-[#e5e7eb] rounded-xl hover:bg-gray-50 transition-all shadow-sm">
+                        <button
+                            onClick={() => setIsImportWizardOpen(true)}
+                            className="flex items-center gap-2 px-5 py-2.5 text-[14px] font-black text-[#4b5563] bg-white border border-[#e5e7eb] rounded-xl hover:bg-gray-50 transition-all shadow-sm"
+                        >
                             <Download size={18} className="text-gray-400" />
                             {t('contacts.toolbar.import', 'Import')}
                         </button>
 
                         <button
-                            onClick={handleOpenModal}
+                            onClick={() => handleOpenModal()}
                             className="flex items-center gap-2 px-6 py-2.5 text-[14px] font-black text-white bg-[#0052cc] rounded-xl hover:bg-blue-700 transition-all shadow-[0_4px_12px_rgba(0,102,255,0.25)] active:scale-[0.98]"
                         >
                             <Plus size={20} />
@@ -599,7 +610,7 @@ const ContactsPage = () => {
                             </button>
 
                             {isFilterMenuOpen && (
-                                <div className="absolute top-[calc(100%+12px)] left-0 w-[300px] bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 p-6 animate-in fade-in zoom-in-95 duration-200">
+                                <div className="absolute top-[calc(100%+12px)] left-0 w-[300px] bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 p-6 animate-in fade-in zoom-in-95 duration-200 max-h-[45vh] overflow-y-auto">
                                     <h3 className="text-[19px] font-black text-[#111827] mb-6">Add Filter</h3>
 
                                     <div className="space-y-6 text-left">
@@ -719,6 +730,11 @@ const ContactsPage = () => {
                 initialData={editingContact}
             />
 
+            <ImportWizard
+                isOpen={isImportWizardOpen}
+                onClose={() => setIsImportWizardOpen(false)}
+            />
+
             <ContactDetailSlideOver
                 isOpen={!!selectedContact}
                 contact={selectedContact}
@@ -726,41 +742,69 @@ const ContactsPage = () => {
                 onEdit={(contact) => { setSelectedContact(null); handleOpenModal(contact); }}
             />
 
-            {/* Placeholder Action Modal */}
-            {
-                activeActionModal && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-                        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden text-left rtl:text-right">
-                            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-                                <h2 className="text-xl font-bold text-gray-900">{t(`contacts.toolbar.${activeActionModal}`)}</h2>
-                                <button onClick={() => setActiveActionModal(null)} className="p-2 hover:bg-gray-200 rounded-full transition-colors">
-                                    <X size={20} className="text-gray-500" />
-                                </button>
+            {activeActionModal && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden text-left rtl:text-right">
+                        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+                            <h2 className="text-xl font-bold text-gray-900">
+                                {activeActionModal === 'add_to_workflow' ? t('contacts.toolbar.add_to_workflow', 'Add to Workflow') : t(`contacts.toolbar.${activeActionModal}`)}
+                            </h2>
+                            <button onClick={() => setActiveActionModal(null)} className="p-2 hover:bg-gray-200 rounded-full transition-colors">
+                                <X size={20} className="text-gray-500" />
+                            </button>
+                        </div>
+
+                        {activeActionModal === 'add_to_workflow' ? (
+                            <div className="p-6">
+                                <p className="text-gray-600 mb-4 text-sm">Select a workflow to add the selected contacts to:</p>
+                                <div className="space-y-2 max-h-60 overflow-y-auto pr-2">
+                                    {['Nurture Sequence', 'Appointment Reminder', 'Birthday Promo', 'Webinar Follow-up', 'New Lead Onboarding'].map((wf) => (
+                                        <label key={wf} className="flex items-center gap-3 p-3 border border-gray-200 rounded-xl hover:bg-blue-50 hover:border-blue-200 cursor-pointer transition-colors group">
+                                            <input type="radio" name="workflow" className="w-4 h-4 text-ghl-blue focus:ring-ghl-blue border-gray-300" />
+                                            <div className="flex items-center gap-3">
+                                                <div className="p-1.5 bg-gray-100 rounded-lg group-hover:bg-blue-100 text-gray-400 group-hover:text-blue-600 transition-colors">
+                                                    <Zap size={16} />
+                                                </div>
+                                                <span className="font-bold text-gray-700 group-hover:text-gray-900">{wf}</span>
+                                            </div>
+                                        </label>
+                                    ))}
+                                </div>
+                                <div className="mt-4 p-3 bg-blue-50 text-blue-800 text-xs rounded-lg flex gap-2 items-start">
+                                    <div className="p-0.5 mt-0.5"><Zap size={12} fill="currentColor" /></div>
+                                    <div>
+                                        Contacts will be added to this workflow immediately. Ensure your workflow triggers are configured correctly.
+                                    </div>
+                                </div>
                             </div>
+                        ) : (
                             <div className="p-8 text-center">
                                 <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    {activeActionModal.includes('sms') ? <MessageSquare size={32} /> : activeActionModal.includes('email') ? <Mail size={32} /> : <ListFilter size={32} />}
+                                    {activeActionModal.includes('sms') ? <MessageSquare size={32} /> : activeActionModal.includes('email') ? <Mail size={32} /> : <Zap size={32} />}
                                 </div>
                                 <p className="text-gray-600 mb-6">{t('common.coming_soon')}</p>
                             </div>
-                            <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3 rtl:flex-row-reverse">
-                                <button onClick={() => setActiveActionModal(null)} className="px-4 py-2 text-sm font-bold text-gray-600 hover:text-gray-800">
-                                    {t('common.cancel')}
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        triggerToast(t('contacts.toolbar.action_triggered', { action: t(`contacts.toolbar.${activeActionModal}`) }));
-                                        setActiveActionModal(null);
-                                    }}
-                                    className="px-6 py-2 text-sm font-bold bg-ghl-blue text-white rounded-lg hover:bg-blue-600 shadow-md transition-all active:scale-95 flex items-center gap-2 rtl:flex-row-reverse"
-                                >
-                                    <Send size={16} />
-                                    {t('common.save')}
-                                </button>
-                            </div>
+                        )}
+
+                        <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3 rtl:flex-row-reverse">
+                            <button onClick={() => setActiveActionModal(null)} className="px-4 py-2 text-sm font-bold text-gray-600 hover:text-gray-800">
+                                {t('common.cancel')}
+                            </button>
+                            <button
+                                onClick={() => {
+                                    const action = activeActionModal === 'add_to_workflow' ? t('contacts.toolbar.add_to_workflow', 'Add to Workflow') : t(`contacts.toolbar.${activeActionModal}`);
+                                    triggerToast(t('contacts.toolbar.action_triggered', { action }));
+                                    setActiveActionModal(null);
+                                }}
+                                className="px-6 py-2 text-sm font-bold bg-ghl-blue text-white rounded-lg hover:bg-blue-600 shadow-md transition-all active:scale-95 flex items-center gap-2 rtl:flex-row-reverse"
+                            >
+                                <Send size={16} />
+                                {t('common.save')}
+                            </button>
                         </div>
                     </div>
-                )
+                </div>
+            )
             }
 
             {/* Save Smart List Modal */}

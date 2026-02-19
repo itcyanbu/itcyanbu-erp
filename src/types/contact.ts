@@ -8,6 +8,8 @@ export interface FieldConfig {
     options?: string[];
     isSystem?: boolean; // Cannot be deleted
     width?: 'full' | 'half';
+    group?: string;
+    objectType?: string; // e.g. 'contact'
 }
 
 export interface Contact {
@@ -38,6 +40,9 @@ export interface ContactContextType {
     setSearchQuery: (query: string) => void;
     addContact: (contact: any) => void;
     updateContact: (id: string, contact: Partial<Contact>) => void;
+    bulkAddContacts: (contacts: Partial<Contact>[], onProgress?: (progress: number) => void) => Promise<void>;
     deleteContact: (id: string) => void;
     updateFieldConfig: (newConfig: FieldConfig[]) => void;
+    addCustomField: (field: FieldConfig) => void;
+    deleteCustomField: (id: string) => void;
 }

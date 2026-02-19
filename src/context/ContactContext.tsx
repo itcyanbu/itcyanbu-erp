@@ -10,25 +10,25 @@ import { type FieldConfig } from '../types/contact';
 
 const defaultFieldConfig: FieldConfig[] = [
     // Standard Fields
-    { id: 'image', label: 'Contact Image', type: 'file', required: false, visible: true, order: 0, width: 'full', isSystem: true },
-    { id: 'firstName', label: 'First Name', type: 'text', required: true, visible: true, order: 1, width: 'half', isSystem: true },
-    { id: 'lastName', label: 'Last Name', type: 'text', required: false, visible: true, order: 2, width: 'half', isSystem: true },
-    { id: 'email', label: 'Email', type: 'email', required: false, visible: true, order: 3, width: 'full', isSystem: true },
-    { id: 'phone', label: 'Phone', type: 'phone', required: false, visible: true, order: 4, width: 'full', isSystem: true },
-    { id: 'contactType', label: 'Contact Type', type: 'select', required: false, visible: true, order: 5, width: 'full', options: ['Lead', 'Customer', 'Partner'], isSystem: true },
-    { id: 'timeZone', label: 'Time Zone', type: 'select', required: false, visible: true, order: 6, width: 'full', isSystem: true },
-    { id: 'dndAllChannels', label: 'DND All Channels', type: 'checkbox', required: false, visible: true, order: 7, width: 'full', isSystem: true },
-    { id: 'channels', label: 'Channels', type: 'checkbox', required: false, visible: true, order: 8, width: 'full', isSystem: true },
+    { id: 'image', label: 'Contact Image', type: 'file', required: false, visible: true, order: 0, width: 'full', isSystem: true, group: 'contact_info', objectType: 'contact' },
+    { id: 'firstName', label: 'First Name', type: 'text', required: true, visible: true, order: 1, width: 'half', isSystem: true, group: 'contact_info', objectType: 'contact' },
+    { id: 'lastName', label: 'Last Name', type: 'text', required: false, visible: true, order: 2, width: 'half', isSystem: true, group: 'contact_info', objectType: 'contact' },
+    { id: 'email', label: 'Email', type: 'email', required: false, visible: true, order: 3, width: 'full', isSystem: true, group: 'contact_info', objectType: 'contact' },
+    { id: 'phone', label: 'Phone', type: 'phone', required: false, visible: true, order: 4, width: 'full', isSystem: true, group: 'contact_info', objectType: 'contact' },
+    { id: 'contactType', label: 'Contact Type', type: 'select', required: false, visible: true, order: 5, width: 'full', options: ['Lead', 'Customer', 'Partner'], isSystem: true, group: 'contact_info', objectType: 'contact' },
+    { id: 'timeZone', label: 'Time Zone', type: 'select', required: false, visible: true, order: 6, width: 'full', isSystem: true, group: 'general_info', objectType: 'contact' },
+    { id: 'dndAllChannels', label: 'DND All Channels', type: 'checkbox', required: false, visible: true, order: 7, width: 'full', isSystem: true, group: 'general_info', objectType: 'contact' },
+    { id: 'channels', label: 'Channels', type: 'checkbox', required: false, visible: true, order: 8, width: 'full', isSystem: true, group: 'general_info', objectType: 'contact' },
 
     // Custom Fields (Message Group)
-    { id: 'dateOfBirth', label: 'Date of Birth', type: 'date', required: false, visible: false, order: 9, width: 'full' },
-    { id: 'marketingSource', label: 'How did you learn about our webinar?', type: 'text', required: false, visible: false, order: 10, width: 'full' },
-    { id: 'message', label: 'Your Message', type: 'text', required: false, visible: false, order: 11, width: 'full' },
-    { id: 'budget', label: 'Project Budget', type: 'text', required: false, visible: false, order: 12, width: 'full' },
-    { id: 'marketingStrategy', label: 'What marketing strategy piques your interest?', type: 'text', required: false, visible: false, order: 13, width: 'full' },
-    { id: 'apptTime', label: 'Proposed Appt Time', type: 'date', required: false, visible: false, order: 14, width: 'full' },
-    { id: 'contactMethod', label: 'How would you like to be contacted?', type: 'select', required: false, visible: false, order: 15, width: 'full', options: ['Email', 'Phone', 'SMS'] },
-    { id: 'questions', label: 'Please enter any questions you may have below so we can address them during the webinar.', type: 'text', required: false, visible: false, order: 16, width: 'full' },
+    { id: 'dateOfBirth', label: 'Date of Birth', type: 'date', required: false, visible: false, order: 9, width: 'full', group: 'general_info', objectType: 'contact' },
+    { id: 'marketingSource', label: 'How did you learn about our webinar?', type: 'text', required: false, visible: false, order: 10, width: 'full', group: 'additional_info', objectType: 'contact' },
+    { id: 'message', label: 'Your Message', type: 'text', required: false, visible: false, order: 11, width: 'full', group: 'additional_info', objectType: 'contact' },
+    { id: 'budget', label: 'Project Budget', type: 'text', required: false, visible: false, order: 12, width: 'full', group: 'additional_info', objectType: 'contact' },
+    { id: 'marketingStrategy', label: 'What marketing strategy piques your interest?', type: 'text', required: false, visible: false, order: 13, width: 'full', group: 'additional_info', objectType: 'contact' },
+    { id: 'apptTime', label: 'Proposed Appt Time', type: 'date', required: false, visible: false, order: 14, width: 'full', group: 'additional_info', objectType: 'contact' },
+    { id: 'contactMethod', label: 'How would you like to be contacted?', type: 'select', required: false, visible: false, order: 15, width: 'full', options: ['Email', 'Phone', 'SMS'], group: 'additional_info', objectType: 'contact' },
+    { id: 'questions', label: 'Please enter any questions you may have below so we can address them during the webinar.', type: 'text', required: false, visible: false, order: 16, width: 'full', group: 'additional_info', objectType: 'contact' },
 ];
 
 // Helper to map DB contact to App contact
@@ -74,7 +74,16 @@ const mapAppContactToDbContact = (appContact: any): any => {
 export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [contacts, setContacts] = useState<Contact[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
-    const [fieldConfig, setFieldConfig] = useState<FieldConfig[]>(defaultFieldConfig);
+    const [fieldConfig, setFieldConfig] = useState<FieldConfig[]>(() => {
+        // Load from localStorage on initial render
+        try {
+            const savedConfig = localStorage.getItem('ghl_field_config');
+            return savedConfig ? JSON.parse(savedConfig) : defaultFieldConfig;
+        } catch (e) {
+            console.error('Failed to load field config', e);
+            return defaultFieldConfig;
+        }
+    });
     const [synced, setSynced] = useState(false);
     const { user, isSupabaseEnabled } = useAuth();
 
@@ -91,6 +100,15 @@ export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children })
             migrateLocalDataToSupabase();
         }
     }, [user, isSupabaseEnabled, synced]);
+
+    // Persist field config whenever it changes
+    useEffect(() => {
+        try {
+            localStorage.setItem('ghl_field_config', JSON.stringify(fieldConfig));
+        } catch (e) {
+            console.error('Failed to save field config', e);
+        }
+    }, [fieldConfig]);
 
     const loadContacts = async () => {
         if (user && isSupabaseEnabled) {
@@ -121,7 +139,16 @@ export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children })
         const savedVersion = localStorage.getItem(versionKey);
 
         if (savedContacts && savedVersion === DATA_VERSION) {
-            setContacts(JSON.parse(savedContacts));
+            try {
+                setContacts(JSON.parse(savedContacts));
+            } catch (error) {
+                console.error('Failed to parse contacts from local storage:', error);
+                // Fallback to mocks if parsing fails
+                const mocks = generateMockContacts();
+                setContacts(mocks);
+                localStorage.setItem(storageKey, JSON.stringify(mocks));
+                localStorage.setItem(versionKey, DATA_VERSION);
+            }
         } else {
             const mocks = generateMockContacts();
             setContacts(mocks);
@@ -281,7 +308,6 @@ export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children })
 
             if (error) {
                 console.error('Failed to delete contact from Supabase:', error);
-                // Still remove locally even if cloud delete fails
             }
         }
 
@@ -293,8 +319,83 @@ export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children })
         });
     };
 
+    const bulkAddContacts = async (newContacts: Partial<Contact>[], onProgress?: (progress: number) => void) => {
+        const total = newContacts.length;
+        let processed = 0;
+
+        // Process in chunks of 50
+        const chunkSize = 50;
+        const chunks = [];
+        for (let i = 0; i < total; i += chunkSize) {
+            chunks.push(newContacts.slice(i, i + chunkSize));
+        }
+
+        const allNewContacts: Contact[] = [];
+
+        for (const chunk of chunks) {
+            const chunkContacts: Contact[] = chunk.map(contact => ({
+                id: Math.random().toString(36).substr(2, 9),
+                name: contact.name || `${contact.firstName || ''} ${contact.lastName || ''}`.trim(),
+                email: contact.email || '',
+                phone: contact.phone || '',
+                firstName: contact.firstName,
+                lastName: contact.lastName,
+                contactType: contact.contactType || 'Lead',
+                initials: (contact.firstName?.[0] || contact.name?.[0] || '?') + (contact.lastName?.[0] || contact.name?.split(' ')?.[1]?.[0] || '?'),
+                avatarColor: contact.avatarColor || 'bg-blue-100 text-blue-600',
+                tags: contact.tags || [],
+                dndAllChannels: contact.dndAllChannels || false,
+                createdAt: new Date().toISOString(),
+                lastActivity: new Date().toISOString(),
+                customFields: contact.customFields || {}
+            }));
+
+            // Optimistically update local state for this chunk
+            setContacts(prev => [...chunkContacts, ...prev]);
+            allNewContacts.push(...chunkContacts);
+
+            // Background sync to Supabase (if enabled)
+            if (user && isSupabaseEnabled) {
+                const dbContacts = chunkContacts.map(mapAppContactToDbContact);
+                const { error } = await contactsService.bulkCreate(dbContacts);
+                if (error) {
+                    console.error('Failed to bulk create contacts in Supabase', error);
+                }
+            } else {
+                // Local storage save for this chunk
+                // We need to wait a tick to allow UI to update
+                await new Promise(resolve => setTimeout(resolve, 0));
+            }
+
+            processed += chunk.length;
+            if (onProgress) {
+                onProgress(Math.round((processed / total) * 100));
+            }
+
+            // Allow UI to breathe
+            await new Promise(resolve => setTimeout(resolve, 50));
+        }
+
+        // Final save to storage for local-only mode
+        if (!user || !isSupabaseEnabled) {
+            saveToStorage([...allNewContacts, ...contacts]);
+        }
+    };
+
     const updateFieldConfig = (newConfig: FieldConfig[]) => {
         setFieldConfig(newConfig);
+    };
+
+    const addCustomField = (field: FieldConfig) => {
+        setFieldConfig(prev => {
+            // Find max order
+            const maxOrder = Math.max(...prev.map(f => f.order), 0);
+            return [...prev, { ...field, order: maxOrder + 1 }];
+        });
+    };
+
+    const deleteCustomField = (id: string) => {
+        setFieldConfig(prev => prev.filter(f => f.id !== id || f.isSystem));
     };
 
     const value = useMemo(() => ({
@@ -305,7 +406,10 @@ export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children })
         addContact,
         updateContact,
         deleteContact,
-        updateFieldConfig
+        bulkAddContacts,
+        updateFieldConfig,
+        addCustomField,
+        deleteCustomField
     }), [contacts, searchQuery, fieldConfig]);
 
     return (

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Video, HelpCircle, Box, FileText, Globe, Play, Users, Factory, ArrowLeft, ChevronLeft, ChevronRight, Settings, BookOpen, Bot, Zap, Gauge, Target, MessageSquare, ShieldCheck } from 'lucide-react';
+import { Video, HelpCircle, Box, FileText, Globe, Play, Users, Factory, ArrowLeft, ChevronLeft, ChevronRight, Settings, BookOpen, Bot, Zap, Gauge, Target, MessageSquare, ShieldCheck, Maximize } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 
@@ -123,6 +123,14 @@ const AiSolutionsPage = () => {
         { src: '/cctv/vision2.jpg', title: t('ai_solutions.real_time') },
     ];
 
+    const cctvVideos = [
+        { src: '/cctv/airport_video_clean_no_audio.mp4', title: 'تحليل حركة المطارات' },
+        { src: '/cctv/lane_detection_clean_no_audio.mp4', title: 'تتبع المسارات والازدحام' },
+        { src: '/cctv/theft_detection_clean_no_audio.mp4', title: 'كشف السرقة والأنشطة المشبوهة' },
+        { src: '/cctv/employees.mp4', title: 'مراقبة أداء الموظفين' },
+        { src: '/cctv/waste_sorting.mp4', title: 'الفرز الآلي للنفايات' },
+    ];
+
     const handleBack = () => {
         if (currentView === 'cctv-ai' && cctvSubView !== 'overview') {
             setCctvSubView('overview');
@@ -203,32 +211,207 @@ const AiSolutionsPage = () => {
 
                 if (cctvSubView === 'case-study') {
                     return (
-                        <div className="space-y-8 animate-in fade-in duration-300">
-                            {cctvImages.map((img, idx) => (
-                                <div key={idx} className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-                                    <h3 className="text-lg font-semibold text-gray-900 mb-4">{img.title}</h3>
-                                    <div className="rounded-lg overflow-hidden bg-gray-100 cursor-zoom-in" onClick={() => setSelectedImageIndex(idx)}>
-                                        <img
-                                            src={img.src}
-                                            alt={img.title}
-                                            className="w-full h-auto object-contain hover:scale-[1.01] transition-transform duration-300"
-                                        />
+                        <div className="space-y-12 animate-in fade-in duration-300 max-w-6xl mx-auto pb-20">
+                            {/* Videos Section */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                {cctvVideos.map((video, idx) => (
+                                    <div key={`video-${idx}`} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 overflow-hidden group hover:border-blue-200 transition-all duration-300">
+                                        <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-3">
+                                            <div className="w-1.5 h-6 bg-blue-500 rounded-full"></div>
+                                            {video.title}
+                                        </h3>
+                                        <div className="rounded-xl overflow-hidden bg-slate-900 aspect-video relative shadow-inner border border-gray-100">
+                                            <video
+                                                src={video.src}
+                                                controls
+                                                className="w-full h-full object-contain"
+                                                playsInline
+                                            />
+                                        </div>
                                     </div>
+                                ))}
+                            </div>
+
+                            <div className="relative">
+                                <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                                    <div className="w-full border-t border-gray-200"></div>
                                 </div>
-                            ))}
+                                <div className="relative flex justify-center">
+                                    <span className="bg-gray-50/50 px-4 text-sm font-semibold text-gray-500 uppercase tracking-widest">Vision Analysis Highlights</span>
+                                </div>
+                            </div>
+
+                            {/* Images Section */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                {cctvImages.map((img, idx) => (
+                                    <div key={`img-${idx}`} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 group hover:border-indigo-200 transition-all duration-300">
+                                        <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-3">
+                                            <div className="w-1.5 h-6 bg-indigo-500 rounded-full"></div>
+                                            {img.title}
+                                        </h3>
+                                        <div
+                                            className="rounded-xl overflow-hidden bg-gray-50 cursor-zoom-in relative aspect-video border border-gray-100"
+                                            onClick={() => setSelectedImageIndex(idx)}
+                                        >
+                                            <img
+                                                src={img.src}
+                                                alt={img.title}
+                                                className="w-full h-full object-cover group-hover:scale-[1.05] transition-transform duration-700"
+                                            />
+                                            <div className="absolute inset-0 bg-black/0 group-hover:bg-slate-900/20 transition-all duration-300 flex items-center justify-center">
+                                                <div className="w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                                                    <Maximize className="text-indigo-600" size={24} />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     );
                 }
 
+
                 return (
-                    <div className="flex flex-col items-center justify-center p-12 text-center animate-in fade-in duration-300 bg-white rounded-xl border border-gray-200 shadow-sm">
-                        <div className="bg-blue-50 p-6 rounded-full mb-6">
-                            <Settings className="w-16 h-16 text-blue-500" />
+                    <div className="animate-in fade-in duration-300 space-y-6" dir="rtl">
+                        <div className="flex items-center gap-3 mb-2">
+                            <div className="bg-blue-50 p-3 rounded-xl">
+                                <Settings className="w-7 h-7 text-blue-500" />
+                            </div>
+                            <div>
+                                <h2 className="text-xl font-bold text-gray-900">خدمات الذكاء الاصطناعي للمراقبة</h2>
+                                <p className="text-sm text-gray-500">تحليل ذكي في الوقت الفعلي باستخدام رؤية الحاسوب</p>
+                            </div>
                         </div>
-                        <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('ai_solutions.services')}</h2>
-                        <p className="text-gray-500">{t('ai_solutions.cctv_services_desc')}</p>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {[
+                                {
+                                    icon: '👥',
+                                    title: 'إحصاء الزبائن',
+                                    desc: 'إحصاء دقيق للزبائن الداخلين والخارجين. يقوم نظام رؤية حاسوبية بإحصاء عدد الزبائن داخل المطعم في الوقت الفعلي وتتبع حركتهم.',
+                                    color: 'bg-blue-50 border-blue-100',
+                                    iconBg: 'bg-blue-100',
+                                },
+                                {
+                                    icon: '⏱️',
+                                    title: 'مراقبة الطوابير وأوقات الانتظار',
+                                    desc: 'تحليل تلقائي لطول الطابور ووقت الانتظار لكل زبون، مع تنبيهات فورية في حالة الازدحام.',
+                                    color: 'bg-amber-50 border-amber-100',
+                                    iconBg: 'bg-amber-100',
+                                },
+                                {
+                                    icon: '🧤',
+                                    title: 'مراقبة معدات الوقاية الشخصية',
+                                    desc: 'يكشف عن الأقنعة والقفازات وأغطية الرأس والمآزر ومؤشرات النظافة لدى طاقم المطبخ.',
+                                    color: 'bg-green-50 border-green-100',
+                                    iconBg: 'bg-green-100',
+                                },
+                                {
+                                    icon: '🧾',
+                                    title: 'مراقبة سلوك أمين الصندوق',
+                                    desc: 'يكشف عن تناول الطعام والتدخين والجلوس واستخدام الهاتف والابتعاد عن منضدة أمين الصندوق.',
+                                    color: 'bg-red-50 border-red-100',
+                                    iconBg: 'bg-red-100',
+                                },
+                                {
+                                    icon: '📊',
+                                    title: 'تقدير عمر وجنس الموظف',
+                                    desc: 'إحصائيات دقيقة في الوقت الفعلي مفيدة للتسويق وتحسين تجربة العملاء.',
+                                    color: 'bg-purple-50 border-purple-100',
+                                    iconBg: 'bg-purple-100',
+                                },
+                                {
+                                    icon: '🪑',
+                                    title: 'مراقبة الطاولات',
+                                    desc: 'يحدد تلقائيًا حالة كل طاولة (تنظيف، شاغرة، محجوزة) وينبهك عند الحاجة إلى التنظيف.',
+                                    color: 'bg-teal-50 border-teal-100',
+                                    iconBg: 'bg-teal-100',
+                                },
+                                {
+                                    icon: '🪪',
+                                    title: 'التعرف على وجوه الموظفين',
+                                    desc: 'نظام حضور ذكي بدون بصمات، يعتمد على كاميرات المطعم.',
+                                    color: 'bg-indigo-50 border-indigo-100',
+                                    iconBg: 'bg-indigo-100',
+                                },
+                                {
+                                    icon: '🚨',
+                                    title: 'تنبيهات ذكية للازدحام',
+                                    desc: 'تنبيهات فورية وذكية عند اكتشاف الازدحام أو الطوابير الطويلة.',
+                                    color: 'bg-orange-50 border-orange-100',
+                                    iconBg: 'bg-orange-100',
+                                },
+                            ].map((service, idx) => (
+                                <div
+                                    key={idx}
+                                    className={`flex items-start gap-4 p-5 rounded-2xl border ${service.color} hover:shadow-md transition-all duration-200 hover:-translate-y-0.5`}
+                                >
+                                    <div className={`text-2xl w-12 h-12 flex items-center justify-center rounded-xl ${service.iconBg} shrink-0`}>
+                                        {service.icon}
+                                    </div>
+                                    <div>
+                                        <h3 className="font-bold text-gray-900 mb-1">{service.title}</h3>
+                                        <p className="text-sm text-gray-600 leading-relaxed">{service.desc}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Intro Banner */}
+                        <div className="bg-gradient-to-l from-blue-600 to-indigo-700 rounded-2xl p-6 text-white">
+                            <p className="text-lg font-bold mb-1">✅ تم التثبيت بنجاح حتى الآن.</p>
+                            <p className="text-blue-100 font-semibold">أصبح الأمن أسهل! تتوفر العديد من أنظمة الحماية.</p>
+                        </div>
+
+                        {/* FAQ Cards */}
+                        <div className="space-y-4">
+                            {[
+                                {
+                                    icon: '🤖',
+                                    q: 'ما هو itcyanbu ai؟',
+                                    a: 'هو نظام مراقبة مدعوم بالذكاء الاصطناعي، يحلل بث الكاميرات المباشر في الوقت الفعلي لاكتشاف الأحداث المهمة، وإنشاء تنبيهات ذكية، وتوفير لوحات تحكم تساعدك على مراقبة موقعك واتخاذ قرارات أسرع وأفضل.',
+                                    color: 'border-blue-200 bg-blue-50/60',
+                                },
+                                {
+                                    icon: '⚡',
+                                    q: 'كيف يختلف عن أنظمة المراقبة التقليدية؟',
+                                    a: 'مع الأنظمة التقليدية، يجب على شخص ما مراقبة الشاشات باستمرار ومراجعة التسجيلات يدويًا. يستخدم itcyanbu ai الذكاء الاصطناعي للمراقبة التلقائية على مدار الساعة، وتصفية الأنشطة العادية، واكتشاف الأحداث غير المعتادة، وتحويل ساعات من الفيديو إلى تنبيهات ورؤى واضحة.',
+                                    color: 'border-amber-200 bg-amber-50/60',
+                                },
+                                {
+                                    icon: '📷',
+                                    q: 'هل أحتاج إلى استبدال كاميراتي الحالية؟',
+                                    a: 'في معظم الحالات، لا. itcyanbu ai مصمم للعمل مع معظم أنظمة الكاميرات الحديثة القائمة على بروتوكول الإنترنت. نقوم ببساطة بالاتصال ببنيتك التحتية الحالية ونساعدك على تحقيق أقصى استفادة من الكاميرات الموجودة لديك.',
+                                    color: 'border-green-200 bg-green-50/60',
+                                },
+                                {
+                                    icon: '🎯',
+                                    q: 'ما الأنشطة التي يمكن للنظام رصدها؟',
+                                    a: 'مع itcyanbu ai يمكن ضبط النظام لرصد حالات مثل: التواجد في المناطق المحظورة، والتجمعات غير المعتادة، والتنقل خلال ساعات غير مصرح بها، والتسكع في المناطق الحساسة، وغيرها من الأنماط التي قد تؤثر على السلامة والأمن والعمليات — وذلك حسب احتياجات موقعك.',
+                                    color: 'border-purple-200 bg-purple-50/60',
+                                },
+                                {
+                                    icon: '🔒',
+                                    q: 'كيف يتعامل النظام مع الخصوصية والأمن؟',
+                                    a: 'نولي أهمية قصوى للخصوصية والأمن. تُدار بثوث الفيديو والبيانات ذات الصلة وفقًا لضوابط صارمة للتحكم في الوصول والتسجيل وممارسات أمنية دقيقة، مما يضمن وصول المستخدمين المصرح لهم فقط إلى المعلومات، وأن النظام يلبي متطلبات البيئات المهنية.',
+                                    color: 'border-indigo-200 bg-indigo-50/60',
+                                },
+                            ].map((faq, idx) => (
+                                <div key={idx} className={`p-5 rounded-2xl border-2 ${faq.color}`}>
+                                    <div className="flex items-start gap-3">
+                                        <span className="text-2xl shrink-0">{faq.icon}</span>
+                                        <div>
+                                            <h4 className="font-bold text-gray-900 mb-2">{faq.q}</h4>
+                                            <p className="text-sm text-gray-700 leading-relaxed">{faq.a}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 );
+
             case 'industry-ai':
                 return (
                     <div className="flex flex-col items-center justify-center p-12 text-center animate-in fade-in duration-300 bg-white rounded-xl border border-gray-200 shadow-sm">
@@ -258,6 +441,16 @@ const AiSolutionsPage = () => {
                             >
                                 {t('ai_solutions.launch_wonder_sphere')}
                             </button>
+
+                            <a
+                                href="/docs/itcyanbu-IIoT-Communication-Platform.pdf"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-orange-50 border-2 border-orange-200 text-orange-700 font-semibold rounded-xl hover:bg-orange-100 hover:border-orange-400 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 group"
+                            >
+                                <FileText size={18} className="group-hover:scale-110 transition-transform" />
+                                itcyanbu – IIoT Communication Platform
+                            </a>
                         </div>
                     </div>
                 );

@@ -41,7 +41,11 @@ const Header = () => {
                 </button>
 
                 {/* Help & Notifications */}
-                <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors relative">
+                <button
+                    onClick={() => window.open('https://glow-guide-help-hub.lovable.app/', '_blank')}
+                    className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors relative"
+                    title={t('common.help')}
+                >
                     <HelpCircle size={20} />
                 </button>
                 <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors relative">

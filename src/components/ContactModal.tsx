@@ -2,17 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { X, Settings, Plus, Trash2 } from 'lucide-react';
 import { useContacts } from '../context/ContactContext';
 import FieldConfigPanel from './FieldConfigPanel';
-import type { FieldConfig } from '../types/contact';
+import type { FieldConfig, Contact } from '../types/contact';
 
 interface ContactModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSubmit: (data: any) => void;
-    initialData?: {
-        name: string;
-        email: string;
-        phone: string;
-    } | null;
+    initialData?: Partial<Contact> | null;
 }
 
 const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, onSubmit, initialData }) => {
@@ -20,63 +16,67 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, onSubmit, 
     const [isConfiguring, setIsConfiguring] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
 
-    const [formData, setFormData] = useState<any>({
-        firstName: '',
-        lastName: '',
-        emails: [''],
-        phones: [''],
-        contactType: '',
-        timeZone: '',
-        dndAllChannels: false,
-        channels: {
-            email: false,
-            text: false,
-            callsVoicemail: false,
-            whatsapp: false,
-            inboundCallsSms: false,
-        },
-        image: null as File | null,
-        // Custom fields
-        dateOfBirth: '',
-        marketingSource: '',
-        message: '',
-        budget: '',
-        marketingStrategy: '',
-        apptTime: '',
-        contactMethod: '',
-        questions: '',
-    });
+    const [formData, setFormData] = useState<any>({});
 
     useEffect(() => {
-        setIsSaving(false); // Reset saving state whenever modal opens/data changes
+        setIsSaving(false);
+
+        // Initialize form data based on fieldConfig and initialData
+        const newFormData: any = {
+            firstName: '',
+            lastName: '',
+            emails: [''],
+            phones: [''],
+            contactType: '',
+            timeZone: '',
+            dndAllChannels: false,
+            channels: {
+                email: false,
+                text: false,
+                callsVoicemail: false,
+                whatsapp: false,
+                inboundCallsSms: false,
+            },
+            image: null,
+        };
+
+        // Initialize dynamic fields
+        fieldConfig.forEach(field => {
+            if (!field.isSystem) {
+                newFormData[field.id] = field.type === 'checkbox' ? false : '';
+            }
+        });
+
         if (initialData) {
-            const [firstName, ...lastNameParts] = initialData.name.split(' ');
-            setFormData((prev: any) => ({
-                ...prev,
-                firstName: firstName || '',
-                lastName: lastNameParts.join(' ') || '',
+            const name = initialData.name || '';
+            const [firstName, ...lastNameParts] = name.split(' ');
+
+            // Merge initial standard data
+            Object.assign(newFormData, {
+                firstName: initialData.firstName || firstName || '',
+                lastName: initialData.lastName || lastNameParts.join(' ') || '',
                 emails: [initialData.email || ''],
                 phones: [initialData.phone || ''],
-            }));
-        } else {
-            setFormData((prev: any) => ({
-                ...prev,
-                firstName: '',
-                lastName: '',
-                emails: [''],
-                phones: [''],
-                // Reset custom fields
-                dateOfBirth: '',
-                marketingSource: '',
-                message: '',
-                budget: '',
-                marketingStrategy: '',
-                apptTime: '',
-                contactMethod: '',
-                questions: '',
-            }));
+                contactType: initialData.contactType || '',
+                timeZone: initialData.timeZone || '',
+                dndAllChannels: initialData.dndAllChannels || false,
+            });
+
+            // Merge custom fields from initialData if they exist
+            if (initialData.customFields) {
+                Object.assign(newFormData, initialData.customFields);
+            } else {
+                // Fallback for flat structure if used previously
+                fieldConfig.forEach(field => {
+                    if (!field.isSystem && initialData[field.id] !== undefined) {
+                        newFormData[field.id] = initialData[field.id];
+                    }
+                });
+            }
         }
-    }, [initialData, isOpen]);
+
+        setFormData(newFormData);
+    }, [initialData, isOpen, fieldConfig]);
 
     if (!isOpen) return null;
 
@@ -98,38 +98,43 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, onSubmit, 
         setIsSaving(true);
 
         try {
-            // Simulate network request/processing time for better UX
+            // Simulate network request
             await new Promise(resolve => setTimeout(resolve, 1000));
 
+            // Separate standard fields from custom fields
+            const customFields: any = {};
+
+            fieldConfig.forEach(field => {
+                if (!field.isSystem) {
+                    customFields[field.id] = formData[field.id];
+                }
+            });
+
             const data = {
+                firstName: formData.firstName,
+                lastName: formData.lastName,
                 name: `${formData.firstName} ${formData.lastName}`.trim(),
                 emails: formData.emails.filter((e: string) => e),
                 phones: formData.phones.filter((p: string) => p),
                 contactType: formData.contactType,
                 timeZone: formData.timeZone,
                 dndAllChannels: formData.dndAllChannels,
-                channels: Object.entries(formData.channels)
+                channels: Object.entries(formData.channels || {})
                     .filter(([_, v]) => v)
                     .map(([k, _]) => k),
-                // Include custom fields
-                dateOfBirth: formData.dateOfBirth,
-                marketingSource: formData.marketingSource,
-                message: formData.message,
-                budget: formData.budget,
-                marketingStrategy: formData.marketingStrategy,
-                apptTime: formData.apptTime,
-                contactMethod: formData.contactMethod,
-                questions: formData.questions,
+                customFields: customFields,
+                // Spread custom fields at root level too for backward compatibility if needed by consumers
+                ...customFields
             };
 
             onSubmit(data);
 
             if (!addAnother) {
-                // Keep isSaving true until the component unmounts/closes for smooth transition
                 onClose();
             } else {
                 setIsSaving(false);
-                setFormData({
+                // Reset form to defaults
+                const resetData: any = {
                     firstName: '',
                     lastName: '',
                     emails: [''],
@@ -145,19 +150,17 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, onSubmit, 
                         inboundCallsSms: false,
                     },
                     image: null,
-                    dateOfBirth: '',
-                    marketingSource: '',
-                    message: '',
-                    budget: '',
-                    marketingStrategy: '',
-                    apptTime: '',
-                    contactMethod: '',
-                    questions: '',
+                };
+                fieldConfig.forEach(field => {
+                    if (!field.isSystem) {
+                        resetData[field.id] = field.type === 'checkbox' ? false : '';
+                    }
                 });
+                setFormData(resetData);
             }
         } catch (error) {
             console.error('Error submitting form:', error);
-            setIsSaving(false); // Ensure spinner stops on error
+            setIsSaving(false);
         }
     };
 
@@ -482,7 +485,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, onSubmit, 
                                     </div>
 
                                     {/* Content */}
-                                    <div className="relative flex-1 px-6 py-6 overflow-y-auto">
+                                    <div className="relative flex-1 min-h-0 overflow-y-auto px-6 py-6">
                                         <form id="contact-form" onSubmit={e => handleSubmit(e, false)} className="grid grid-cols-2 gap-4">
                                             {fieldConfig.filter(f => f.visible).sort((a, b) => a.order - b.order).map(field => renderField(field))}
                                         </form>

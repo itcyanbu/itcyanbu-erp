@@ -12,7 +12,8 @@
     "language": "Language",
     "cancel": "Cancel",
     "save": "Save",
-    "of": "of"
+    "of": "of",
+    "sign_out": "Sign Out"
   },
   "sidebar": {
     "launchpad": "Launchpad",
