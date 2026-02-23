@@ -224,7 +224,90 @@
         "new_invoice": "فاتورة جديدة",
         "new_recurring_invoice": "فاتورة متكررة جديدة",
         "import_invoices": "استيراد الفواتير باستخدام CSV",
-        "type": "النوع"
+        "type": "النوع",
+        "frequency": "التكرار",
+        "frequencies": {
+            "weekly": "أسبوعياً",
+            "monthly": "شهرياً",
+            "quarterly": "ربع سنوي",
+            "yearly": "سنوياً"
+        },
+        "status_types": {
+            "paid": "تم الدفع",
+            "pending": "قيد الانتظار",
+            "overdue": "متأخر",
+            "success": "ناجح",
+            "refunded": "مسترد",
+            "failed": "فاشل",
+            "active": "نشط",
+            "past_due": "متأخر السداد",
+            "canceled": "ملغي",
+            "expired": "منتهي الصلاحية",
+            "paused": "متوقف مؤقتاً",
+            "draft": "مسودة",
+            "sent": "تم الإرسال",
+            "accepted": "تم القبول",
+            "declined": "مرفوض",
+            "disabled": "معطل"
+        },
+        "invoice_types": {
+            "one_time": "مرة واحدة",
+            "recurring": "متكرر"
+        },
+        "labels": {
+            "customer": "العميل",
+            "plan": "الخطة",
+            "next_billing": "الفاتورة القادمة",
+            "usage": "الاستخدام",
+            "expires": "ينتهي في",
+            "visits": "الزيارات",
+            "conversions": "التحويلات",
+            "product_name": "اسم المنتج",
+            "sales": "المبيعات",
+            "total_revenue": "إجمالي الإيرادات",
+            "value": "القيمة",
+            "discount": "الخصم",
+            "code": "الرمز",
+            "actions": "الإجراءات",
+            "percentage": "نسبة مئوية",
+            "fixed_amount": "مبلغ ثابت"
+        },
+        "modals": {
+            "create_invoice": "إنشاء فاتورة",
+            "new_payment_link": "رابط دفع جديد",
+            "create_product": "إنشاء منتج",
+            "new_proposal": "مقترح جديد",
+            "create_coupon": "إنشاء قسيمة",
+            "create_subscription": "إنشاء اشتراك",
+            "send_one_time": "إرسال فاتورة لمرة واحدة",
+            "send_recurring": "إرسال فواتير متكررة",
+            "import_csv": "استيراد ملف CSV",
+            "select_frequency": "اختر التكرار"
+        }
+    },
+    "contacts_modal": {
+        "edit_title": "تعديل جهة الاتصال",
+        "add_title": "إضافة جهة اتصال جديدة",
+        "upload_image": "تحميل صورة",
+        "customize_form": "تخصيص النموذج",
+        "add_email": "إضافة بريد",
+        "add_phone": "إضافة هاتف",
+        "save_and_add": "حفظ وإضافة آخر",
+        "saving": "جاري الحفظ...",
+        "photo_placeholder": "الصورة",
+        "fields": {
+            "image": "صورة جهة الاتصال",
+            "first_name": "الاسم الأول",
+            "last_name": "اسم العائلة",
+            "email": "البريد الإلكتروني",
+            "phone": "الهاتف",
+            "type": "نوع جهة الاتصال",
+            "timezone": "المنطقة الزمنية",
+            "dnd": "عدم الإزعاج لجميع القنوات",
+            "channels": "القنوات",
+            "select_opt": "اختر",
+            "please_select": "يرجى الاختيار"
+        }
     },
     "marketing": {
         "title": "التسويق",

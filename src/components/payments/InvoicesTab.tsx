@@ -23,8 +23,8 @@ const InvoicesTab = () => {
         setIsDropdownOpen(false);
     };
 
-    const handleSaveInvoice = (newInvoice: any) => {
-        setInvoices([newInvoice, ...invoices]);
+    const handleSaveInvoice = (invoice: { id: string; client: string; amount: string; status: string; date: string; type: string }) => {
+        setInvoices([invoice, ...invoices]);
     };
 
     return (
@@ -104,7 +104,7 @@ const InvoicesTab = () => {
                                 </div>
                                 <div>
                                     <div className="font-semibold text-gray-900 text-sm">{t('payments.new_invoice')}</div>
-                                    <div className="text-xs text-gray-500">Send a one-time invoice</div>
+                                    <div className="text-xs text-gray-500">{t('payments.modals.send_one_time')}</div>
                                 </div>
                             </button>
 
@@ -117,7 +117,7 @@ const InvoicesTab = () => {
                                 </div>
                                 <div>
                                     <div className="font-semibold text-gray-900 text-sm">{t('payments.new_recurring_invoice')}</div>
-                                    <div className="text-xs text-gray-500">Send recurring invoices</div>
+                                    <div className="text-xs text-gray-500">{t('payments.modals.send_recurring')}</div>
                                 </div>
                             </button>
 
@@ -129,7 +129,7 @@ const InvoicesTab = () => {
                                 </div>
                                 <div>
                                     <div className="font-semibold text-gray-900 text-sm">{t('payments.import_invoices')}</div>
-                                    <div className="text-xs text-gray-500">Import CSV file</div>
+                                    <div className="text-xs text-gray-500">{t('payments.modals.import_csv')}</div>
                                 </div>
                             </button>
                         </div>
@@ -167,7 +167,7 @@ const InvoicesTab = () => {
                                     <td className="py-4 px-6 text-sm text-gray-500">
                                         <div className="flex items-center gap-1.5">
                                             {invoice.type === 'recurring' ? <RefreshCw size={14} className="text-blue-500" /> : <Check size={14} className="text-gray-400" />}
-                                            {invoice.type === 'recurring' ? 'Recurring' : 'One-time'}
+                                            {invoice.type === 'recurring' ? t('payments.invoice_types.recurring') : t('payments.invoice_types.one_time')}
                                         </div>
                                     </td>
                                     <td className="py-4 px-6">
@@ -175,7 +175,7 @@ const InvoicesTab = () => {
                                             invoice.status === 'Overdue' ? 'bg-red-100 text-red-700' :
                                                 'bg-orange-100 text-orange-700'
                                             }`}>
-                                            {invoice.status}
+                                            {t(`payments.status_types.${invoice.status.toLowerCase()}`)}
                                         </span>
                                     </td>
                                     <td className="py-4 px-6 text-sm text-gray-500">{invoice.date}</td>

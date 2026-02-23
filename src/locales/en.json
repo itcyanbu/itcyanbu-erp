@@ -224,7 +224,88 @@
     "new_invoice": "New Invoice",
     "new_recurring_invoice": "New Recurring Invoice",
     "import_invoices": "Import Invoices using CSV",
-    "type": "Type"
+    "type": "Type",
+    "frequency": "Frequency",
+    "frequencies": {
+      "weekly": "Weekly",
+      "monthly": "Monthly",
+      "quarterly": "Quarterly",
+      "yearly": "Yearly"
+    },
+    "status_types": {
+      "paid": "Paid",
+      "pending": "Pending",
+      "overdue": "Overdue",
+      "success": "Success",
+      "refunded": "Refunded",
+      "failed": "Failed",
+      "active": "Active",
+      "past_due": "Past Due",
+      "canceled": "Canceled",
+      "expired": "Expired",
+      "paused": "Paused",
+      "draft": "Draft",
+      "sent": "Sent",
+      "accepted": "Accepted",
+      "declined": "Declined",
+      "disabled": "Disabled"
+    },
+    "invoice_types": {
+      "one_time": "One-time",
+      "recurring": "Recurring"
+    },
+    "labels": {
+      "customer": "Customer",
+      "plan": "Plan",
+      "next_billing": "Next Billing",
+      "usage": "Usage",
+      "expires": "Expires",
+      "visits": "Visits",
+      "conversions": "Conversions",
+      "product_name": "Product Name",
+      "sales": "Sales",
+      "total_revenue": "Total Revenue",
+      "value": "Value",
+      "discount": "Discount",
+      "code": "Code",
+      "actions": "Actions"
+    },
+    "modals": {
+      "create_invoice": "Create Invoice",
+      "new_payment_link": "New Payment Link",
+      "create_product": "Create Product",
+      "new_proposal": "New Proposal",
+      "create_coupon": "Create Coupon",
+      "create_subscription": "Create Subscription",
+      "send_one_time": "Send a one-time invoice",
+      "send_recurring": "Send recurring invoices",
+      "import_csv": "Import CSV file",
+      "select_frequency": "Select frequency"
+    }
+  },
+  "contacts_modal": {
+    "edit_title": "Edit Contact",
+    "add_title": "Add New Contact",
+    "upload_image": "Upload Image",
+    "customize_form": "Customize form",
+    "add_email": "Add Email",
+    "add_phone": "Add Phone",
+    "save_and_add": "Save and Add Another",
+    "saving": "Saving...",
+    "photo_placeholder": "Photo",
+    "fields": {
+      "image": "Contact Image",
+      "first_name": "First Name",
+      "last_name": "Last Name",
+      "email": "Email",
+      "phone": "Phone",
+      "type": "Contact Type",
+      "timezone": "Time Zone",
+      "dnd": "DND All Channels",
+      "channels": "Channels",
+      "select_opt": "Select",
+      "please_select": "Please Select"
+    }
   },
   "marketing": {
     "title": "Marketing",

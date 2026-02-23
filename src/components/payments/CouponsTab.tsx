@@ -19,7 +19,7 @@ const CouponsTab = () => {
                 </div>
                 <button className="bg-ghl-blue text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors flex items-center gap-2 rtl:flex-row-reverse">
                     <Ticket size={16} />
-                    Create Coupon
+                    {t('payments.modals.create_coupon')}
                 </button>
             </div>
 
@@ -40,7 +40,7 @@ const CouponsTab = () => {
                 {coupons.map((coupon, i) => (
                     <div key={i} className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
                         <div className={`absolute top-0 left-0 w-1 h-full ${coupon.status === 'Active' ? 'bg-green-500' :
-                                coupon.status === 'Expired' ? 'bg-gray-300' : 'bg-orange-400'
+                            coupon.status === 'Expired' ? 'bg-gray-300' : 'bg-orange-400'
                             }`}></div>
 
                         <div className="flex justify-between items-start mb-4 rtl:flex-row-reverse">
@@ -55,27 +55,29 @@ const CouponsTab = () => {
 
                         <div className="mb-4 text-center py-2">
                             <div className="text-2xl font-bold text-gray-900">{coupon.discount}</div>
-                            <div className="text-xs text-gray-500 uppercase tracking-wider mt-1">{coupon.type}</div>
+                            <div className="text-xs text-gray-500 uppercase tracking-wider mt-1">
+                                {coupon.type === 'Percentage' ? t('payments.labels.percentage') : t('payments.labels.fixed_amount')}
+                            </div>
                         </div>
 
                         <div className="border-t border-gray-100 pt-3 flex flex-col gap-2">
                             <div className="flex justify-between text-sm rtl:flex-row-reverse">
-                                <span className="text-gray-500">Usage</span>
+                                <span className="text-gray-500">{t('payments.labels.usage')}</span>
                                 <span className="font-medium text-gray-700">{coupon.usage}</span>
                             </div>
                             <div className="flex justify-between text-sm rtl:flex-row-reverse">
-                                <span className="text-gray-500">Expires</span>
+                                <span className="text-gray-500">{t('payments.labels.expires')}</span>
                                 <span className="font-medium text-gray-700">{coupon.expiry}</span>
                             </div>
                             <div className="flex justify-between items-center text-sm mt-1 rtl:flex-row-reverse">
-                                <span className="text-gray-500">Status</span>
+                                <span className="text-gray-500">{t('payments.status')}</span>
                                 <span className={`flex items-center gap-1.5 font-medium ${coupon.status === 'Active' ? 'text-green-600' :
-                                        coupon.status === 'Expired' ? 'text-gray-500' : 'text-orange-600'
+                                    coupon.status === 'Expired' ? 'text-gray-500' : 'text-orange-600'
                                     }`}>
                                     {coupon.status === 'Active' && <CheckCircle size={14} />}
                                     {coupon.status === 'Expired' && <XCircle size={14} />}
                                     {coupon.status === 'Paused' && <Clock size={14} />}
-                                    {coupon.status}
+                                    {t(`payments.status_types.${coupon.status.toLowerCase()}`)}
                                 </span>
                             </div>
                         </div>

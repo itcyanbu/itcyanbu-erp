@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 interface CreateInvoiceModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSave: (invoice: any) => void;
+    onSave: (invoice: { id: string; client: string; amount: string; status: string; date: string; type: string }) => void;
     initialType?: 'one-time' | 'recurring';
 }
 
@@ -63,7 +63,7 @@ const CreateInvoiceModal = ({ isOpen, onClose, onSave, initialType = 'one-time' 
                             className={`flex-1 py-1.5 text-sm font-medium rounded-md transition-all ${type === 'one-time' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
                                 }`}
                         >
-                            One-time
+                            {t('payments.invoice_types.one_time')}
                         </button>
                         <button
                             type="button"
@@ -71,7 +71,7 @@ const CreateInvoiceModal = ({ isOpen, onClose, onSave, initialType = 'one-time' 
                             className={`flex-1 py-1.5 text-sm font-medium rounded-md transition-all ${type === 'recurring' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'
                                 }`}
                         >
-                            Recurring
+                            {t('payments.invoice_types.recurring')}
                         </button>
                     </div>
 
@@ -123,17 +123,17 @@ const CreateInvoiceModal = ({ isOpen, onClose, onSave, initialType = 'one-time' 
                     {type === 'recurring' && (
                         <div className="space-y-1.5 animate-in fade-in slide-in-from-top-2">
                             <label className="text-xs font-semibold text-gray-500 uppercase">
-                                Frequency
+                                {t('payments.frequency')}
                             </label>
                             <select
                                 value={frequency}
                                 onChange={(e) => setFrequency(e.target.value)}
                                 className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-all text-sm"
                             >
-                                <option>Weekly</option>
-                                <option>Monthly</option>
-                                <option>Quarterly</option>
-                                <option>Yearly</option>
+                                <option value="Weekly">{t('payments.frequencies.weekly')}</option>
+                                <option value="Monthly">{t('payments.frequencies.monthly')}</option>
+                                <option value="Quarterly">{t('payments.frequencies.quarterly')}</option>
+                                <option value="Yearly">{t('payments.frequencies.yearly')}</option>
                             </select>
                         </div>
                     )}
@@ -149,11 +149,11 @@ const CreateInvoiceModal = ({ isOpen, onClose, onSave, initialType = 'one-time' 
                                     type="button"
                                     onClick={() => setStatus(s)}
                                     className={`px-3 py-2 rounded-lg text-sm font-medium border transition-all ${status === s
-                                            ? 'bg-blue-50 border-blue-200 text-blue-700 shadow-sm'
-                                            : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+                                        ? 'bg-blue-50 border-blue-200 text-blue-700 shadow-sm'
+                                        : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
                                         }`}
                                 >
-                                    {s}
+                                    {t(`payments.status_types.${s.toLowerCase()}`)}
                                 </button>
                             ))}
                         </div>
@@ -166,14 +166,14 @@ const CreateInvoiceModal = ({ isOpen, onClose, onSave, initialType = 'one-time' 
                             onClick={onClose}
                             className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded-lg transition-colors"
                         >
-                            Cancel
+                            {t('common.cancel')}
                         </button>
                         <button
                             type="submit"
                             className="px-6 py-2 bg-ghl-blue text-white text-sm font-bold rounded-lg shadow-lg hover:bg-blue-600 hover:shadow-blue-200/50 transition-all flex items-center gap-2"
                         >
                             <Check size={16} />
-                            Create Invoice
+                            {t('payments.modals.create_invoice')}
                         </button>
                     </div>
                 </form>

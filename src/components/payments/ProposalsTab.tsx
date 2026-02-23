@@ -19,7 +19,7 @@ const ProposalsTab = () => {
                 </div>
                 <button className="bg-ghl-blue text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors flex items-center gap-2 rtl:flex-row-reverse">
                     <FileText size={16} />
-                    New Proposal
+                    {t('payments.modals.new_proposal')}
                 </button>
             </div>
 
@@ -45,20 +45,20 @@ const ProposalsTab = () => {
                                 <p className="text-gray-500 text-sm mt-1">{prop.client}</p>
                             </div>
                             <span className={`px-2.5 py-1 text-xs font-bold rounded-md flex items-center gap-1 ${prop.status === 'Accepted' ? 'bg-green-100 text-green-700' :
-                                    prop.status === 'Sent' ? 'bg-blue-100 text-blue-700' :
-                                        prop.status === 'Declined' ? 'bg-red-100 text-red-700' :
-                                            'bg-gray-100 text-gray-600'
+                                prop.status === 'Sent' ? 'bg-blue-100 text-blue-700' :
+                                    prop.status === 'Declined' ? 'bg-red-100 text-red-700' :
+                                        'bg-gray-100 text-gray-600'
                                 }`}>
                                 {prop.status === 'Accepted' && <CheckCircle size={12} />}
                                 {prop.status === 'Sent' && <Clock size={12} />}
                                 {prop.status === 'Declined' && <XCircle size={12} />}
-                                {prop.status}
+                                {t(`payments.status_types.${prop.status.toLowerCase()}`)}
                             </span>
                         </div>
 
                         <div className="flex items-end justify-between border-t border-gray-100 pt-3 rtl:flex-row-reverse">
                             <div className="text-left rtl:text-right">
-                                <p className="text-xs text-gray-400 uppercase tracking-wide">Value</p>
+                                <p className="text-xs text-gray-400 uppercase tracking-wide">{t('payments.labels.value')}</p>
                                 <p className="text-lg font-bold text-gray-900">{prop.value}</p>
                             </div>
                             <button className="text-gray-400 hover:text-gray-600 p-1 hover:bg-gray-50 rounded">

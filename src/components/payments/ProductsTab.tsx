@@ -1,4 +1,4 @@
-import { Search, Package, MoreHorizontal, Image as ImageIcon } from 'lucide-react';
+import { Search, Box, MoreHorizontal, Image as ImageIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 const ProductsTab = () => {
@@ -18,8 +18,8 @@ const ProductsTab = () => {
                     <h2 className="text-xl font-semibold text-gray-900">{t('payments.tabs.products')}</h2>
                 </div>
                 <button className="bg-ghl-blue text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors flex items-center gap-2 rtl:flex-row-reverse">
-                    <Package size={16} />
-                    Create Product
+                    <Box size={16} />
+                    {t('payments.modals.create_product')}
                 </button>
             </div>
 
@@ -41,11 +41,11 @@ const ProductsTab = () => {
                     <table className="w-full text-left rtl:text-right">
                         <thead className="bg-gray-50">
                             <tr>
-                                <th className="py-3 px-6 text-xs font-bold text-gray-500 uppercase">Product Name</th>
-                                <th className="py-3 px-6 text-xs font-bold text-gray-500 uppercase">Type</th>
-                                <th className="py-3 px-6 text-xs font-bold text-gray-500 uppercase">Price</th>
-                                <th className="py-3 px-6 text-xs font-bold text-gray-500 uppercase">Sales</th>
-                                <th className="py-3 px-6 text-xs font-bold text-gray-500 uppercase">Total Revenue</th>
+                                <th className="py-3 px-6 text-xs font-bold text-gray-500 uppercase">{t('payments.labels.product_name')}</th>
+                                <th className="py-3 px-6 text-xs font-bold text-gray-500 uppercase">{t('payments.type')}</th>
+                                <th className="py-3 px-6 text-xs font-bold text-gray-500 uppercase">{t('payments.amount')}</th>
+                                <th className="py-3 px-6 text-xs font-bold text-gray-500 uppercase">{t('payments.labels.sales')}</th>
+                                <th className="py-3 px-6 text-xs font-bold text-gray-500 uppercase">{t('payments.labels.total_revenue')}</th>
                                 <th className="py-3 px-4 w-10"></th>
                             </tr>
                         </thead>
@@ -62,7 +62,7 @@ const ProductsTab = () => {
                                     </td>
                                     <td className="py-4 px-6 text-sm text-gray-600">
                                         <span className="bg-blue-50 text-blue-700 px-2 py-1 rounded text-xs font-medium border border-blue-100">
-                                            {product.type}
+                                            {t(`payments.status_types.${product.type.toLowerCase()}`)}
                                         </span>
                                     </td>
                                     <td className="py-4 px-6 text-sm font-semibold text-gray-900">{product.price}</td>

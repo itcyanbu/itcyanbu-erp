@@ -23,7 +23,7 @@ const SubscriptionsTab = () => {
                 </div>
                 <button className="bg-ghl-blue text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors flex items-center gap-2 rtl:flex-row-reverse">
                     <RefreshCcw size={16} />
-                    Create Subscription
+                    {t('payments.modals.create_subscription')}
                 </button>
             </div>
 
@@ -33,13 +33,13 @@ const SubscriptionsTab = () => {
                     <Search className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                     <input
                         type="text"
-                        placeholder="Search subscriptions..."
+                        placeholder={t('common.search') + "..."}
                         className="w-full pl-10 pr-4 rtl:pl-4 rtl:pr-10 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-ghl-blue text-sm text-left rtl:text-right"
                     />
                 </div>
                 <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 text-sm font-medium text-gray-600 transition-colors rtl:flex-row-reverse">
                     <Filter size={18} />
-                    <span>Filter</span>
+                    <span>{t('contacts.toolbar.more_filters')}</span>
                 </button>
             </div>
 
@@ -49,11 +49,11 @@ const SubscriptionsTab = () => {
                     <table className="w-full text-left rtl:text-right">
                         <thead className="bg-gray-50">
                             <tr>
-                                <th className="py-3 px-6 text-xs font-bold text-gray-500 uppercase">Customer</th>
-                                <th className="py-3 px-6 text-xs font-bold text-gray-500 uppercase">Plan</th>
-                                <th className="py-3 px-6 text-xs font-bold text-gray-500 uppercase">Amount</th>
-                                <th className="py-3 px-6 text-xs font-bold text-gray-500 uppercase">Status</th>
-                                <th className="py-3 px-6 text-xs font-bold text-gray-500 uppercase">Next Billing</th>
+                                <th className="py-3 px-6 text-xs font-bold text-gray-500 uppercase">{t('payments.labels.customer')}</th>
+                                <th className="py-3 px-6 text-xs font-bold text-gray-500 uppercase">{t('payments.labels.plan')}</th>
+                                <th className="py-3 px-6 text-xs font-bold text-gray-500 uppercase">{t('payments.amount')}</th>
+                                <th className="py-3 px-6 text-xs font-bold text-gray-500 uppercase">{t('payments.status')}</th>
+                                <th className="py-3 px-6 text-xs font-bold text-gray-500 uppercase">{t('payments.labels.next_billing')}</th>
                                 <th className="py-3 px-4 w-10"></th>
                             </tr>
                         </thead>
@@ -75,7 +75,7 @@ const SubscriptionsTab = () => {
                                             sub.status === 'Past Due' ? 'bg-red-100 text-red-700' :
                                                 'bg-gray-100 text-gray-700'
                                             }`}>
-                                            {sub.status}
+                                            {t(`payments.status_types.${sub.status.toLowerCase().replace(' ', '_')}`)}
                                         </span>
                                     </td>
                                     <td className="py-4 px-6 text-sm text-gray-500">{sub.next_billing}</td>

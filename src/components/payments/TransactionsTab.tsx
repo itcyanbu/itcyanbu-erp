@@ -67,10 +67,10 @@ const TransactionsTab = () => {
                                     <td className="py-4 px-6 text-sm text-gray-500">{txn.date}</td>
                                     <td className="py-4 px-6">
                                         <span className={`inline-flex px-2 py-1 text-xs font-bold rounded-full ${txn.status === 'Success' ? 'bg-green-100 text-green-700' :
-                                                txn.status === 'Refunded' ? 'bg-gray-100 text-gray-700' :
-                                                    'bg-red-100 text-red-700'
+                                            txn.status === 'Refunded' ? 'bg-gray-100 text-gray-700' :
+                                                'bg-red-100 text-red-700'
                                             }`}>
-                                            {txn.status}
+                                            {t(`payments.status_types.${txn.status.toLowerCase()}`)}
                                         </span>
                                     </td>
                                 </tr>

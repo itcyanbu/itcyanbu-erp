@@ -71,24 +71,26 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule = 'Contacts', onModuleCh
         <div className="w-20 lg:w-64 h-full bg-[#1e293b] flex flex-col shrink-0 border-r border-[#334155] transition-all duration-300 relative">
 
             {/* Top Profile Section */}
-            <div className="p-4 border-b border-[#334155]">
-                <div className="flex justify-between items-center mb-4">
-                    <button
-                        onClick={toggleLanguage}
-                        className="bg-blue-600 hover:bg-blue-700 text-white text-[10px] px-2 py-1 rounded font-bold transition-all shadow-sm"
-                    >
-                        {i18n.language === 'ar' ? 'English' : 'العربية'}
-                    </button>
-                    <span className="text-[10px] text-slate-500 font-mono uppercase">{i18n.language}</span>
-                </div>
-
+            <div className="p-4 border-b border-[#334155] bg-slate-800/50">
                 <div className="flex items-center gap-3 relative group">
-                    <div className="w-10 h-10 rounded-full border border-slate-700 overflow-hidden shadow-sm flex items-center justify-center bg-slate-800">
-                        <img src={profileLogo} alt="Logo" className="w-full h-full object-cover" />
+                    <div className="w-10 h-10 rounded-xl bg-white p-1 shadow-lg ring-1 ring-white/20 overflow-hidden shrink-0 transform transition-transform group-hover:scale-110 duration-300">
+                        <img src={profileLogo} alt="Logo" className="w-full h-full object-contain" />
                     </div>
                     <div className="hidden lg:block overflow-hidden flex-1">
-                        <h2 className="text-white font-bold text-sm truncate">{profileName}</h2>
-                        <p className="text-[#94a3b8] text-xs font-medium">Agency Account</p>
+                        <h2 className="text-white font-bold text-xs tracking-wide uppercase truncate">
+                            {profileName}
+                        </h2>
+                        <div className="flex items-center gap-2 mt-0.5">
+                            <span className="text-[9px] font-black text-ghl-blue tracking-tighter uppercase px-1.5 py-0.5 rounded bg-ghl-blue/10 border border-ghl-blue/20">
+                                Agency
+                            </span>
+                            <button
+                                onClick={toggleLanguage}
+                                className="text-[9px] text-[#94a3b8] hover:text-white font-mono uppercase bg-slate-700/50 px-1.5 py-0.5 rounded transition-colors"
+                            >
+                                {i18n.language}
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -126,50 +128,60 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule = 'Contacts', onModuleCh
             </nav>
 
             {/* Bottom Footer Section */}
-            <div className="p-4 border-t border-[#334155]">
+            <div className="p-3 border-t border-[#334155]">
                 <button
                     onClick={() => onModuleChange?.('Settings')}
                     className={clsx(
-                        "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#94a3b8] hover:bg-slate-800 hover:text-white transition-all group mb-4",
+                        "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[#94a3b8] hover:bg-slate-800 hover:text-white transition-all group mb-2",
                         activeModule === 'Settings' && "bg-blue-600/10 text-blue-400"
                     )}
                 >
-                    <Settings size={20} className="group-hover:rotate-45 transition-transform duration-300" />
+                    <Settings size={18} className="group-hover:rotate-45 transition-transform duration-300" />
                     <span className="hidden lg:block text-sm font-medium">{t('common.settings')}</span>
                 </button>
 
                 {/* Contact Info */}
-                <div className="hidden lg:block pt-4 border-t border-[#334155/50]">
-                    <div className="flex flex-col gap-2">
-                        <div className="flex items-center gap-3 text-[#94a3b8] hover:text-white transition-colors group">
-                            <Phone size={16} className="shrink-0" />
-                            <span className="text-xs">+966545450613</span>
-                        </div>
+                <div className="hidden lg:block pt-3 border-t border-[#334155/30]">
+                    <div className="grid grid-cols-1 gap-1.5">
+                        <a
+                            href="tel:+966545450613"
+                            className="flex items-center gap-2 text-[#94a3b8] hover:text-white transition-colors group"
+                        >
+                            <Phone size={14} className="shrink-0" />
+                            <span className="text-[11px]">+966545450613</span>
+                        </a>
 
-                        <div className="flex items-center gap-3 text-[#94a3b8] hover:text-white transition-colors group">
-                            <MessageCircle size={16} className="shrink-0" />
-                            <span className="text-xs">+966545450613</span>
-                        </div>
+                        <a
+                            href="https://wa.me/966545450613"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 text-[#94a3b8] hover:text-white transition-colors group"
+                        >
+                            <MessageCircle size={14} className="shrink-0" />
+                            <span className="text-[11px]">+966545450613</span>
+                        </a>
 
-                        <div className="flex items-center gap-3 text-[#94a3b8] hover:text-white transition-colors group">
-                            <Mail size={16} className="shrink-0" />
-                            <span className="text-xs">itc@itcyanbu.net</span>
-                        </div>
+                        <a
+                            href="mailto:itc@itcyanbu.net"
+                            className="flex items-center gap-2 text-[#94a3b8] hover:text-white transition-colors group"
+                        >
+                            <Mail size={14} className="shrink-0" />
+                            <span className="text-[11px] truncate">itc@itcyanbu.net</span>
+                        </a>
 
                         <a
                             href="https://preview--itcyanbu-digital-blueprint.lovable.app/"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-3 text-[#94a3b8] hover:text-white transition-colors group"
+                            className="flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors group mt-1"
                         >
-                            <Info size={16} className="shrink-0" />
-                            <span className="text-xs">Who are we ?</span>
+                            <Info size={14} className="shrink-0" />
+                            <span className="text-[11px] border-b border-blue-400/30">Who are we ?</span>
                         </a>
 
-                        <div className="mt-4 text-[10px] text-[#64748b] leading-relaxed pl-1">
+                        <div className="mt-2 text-[9px] text-[#64748b] leading-tight pl-1 border-l border-[#334155] ml-1">
                             <p>Saudi Arabia - Royal Commission of Yanbu</p>
-                            <p>Sumairi Area - Bustan Market</p>
-                            <p>B. 2, Office 18</p>
+                            <p>Sumairi Area - Office 18</p>
                         </div>
                     </div>
                 </div>

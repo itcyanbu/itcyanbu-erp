@@ -18,7 +18,7 @@ const PaymentLinksTab = () => {
                 </div>
                 <button className="bg-ghl-blue text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors flex items-center gap-2 rtl:flex-row-reverse">
                     <LinkIcon size={16} />
-                    New Payment Link
+                    {t('payments.modals.new_payment_link')}
                 </button>
             </div>
 
@@ -28,7 +28,7 @@ const PaymentLinksTab = () => {
                     <Search className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                     <input
                         type="text"
-                        placeholder="Search payment links..."
+                        placeholder={t('common.search') + "..."}
                         className="w-full pl-10 pr-4 rtl:pl-4 rtl:pr-10 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-ghl-blue text-sm text-left rtl:text-right"
                     />
                 </div>
@@ -56,19 +56,19 @@ const PaymentLinksTab = () => {
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-10">
+                        <div className="flex items-center gap-10 rtl:flex-row-reverse">
                             <div className="text-center">
                                 <div className="text-lg font-bold text-gray-900">{link.visits}</div>
-                                <div className="text-xs text-gray-500 uppercase">Visits</div>
+                                <div className="text-xs text-gray-500 uppercase">{t('payments.labels.visits')}</div>
                             </div>
                             <div className="text-center">
                                 <div className="text-lg font-bold text-gray-900">{link.conversions}</div>
-                                <div className="text-xs text-gray-500 uppercase">Paid</div>
+                                <div className="text-xs text-gray-500 uppercase">{t('payments.labels.conversions')}</div>
                             </div>
                             <div className="text-center">
                                 <span className={`inline-flex px-3 py-1 text-xs font-bold rounded-full ${link.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
                                     }`}>
-                                    {link.status}
+                                    {t(`payments.status_types.${link.status.toLowerCase()}`)}
                                 </span>
                             </div>
                             <button className="text-gray-400 hover:text-gray-600">
