@@ -13,6 +13,7 @@ import DialerModal from './DialerModal';
 import { type ColumnDef } from './ColumnManager';
 import { ManageFieldsSidebar } from './ManageFieldsSidebar';
 import { ImportWizard } from './contacts/import/ImportWizard';
+import type { Contact } from '../types/contact';
 
 const ContactsPage = () => {
     const { contacts, searchQuery, deleteContact, setSearchQuery, addContact, updateContact } = useContacts();
@@ -42,6 +43,8 @@ const ContactsPage = () => {
         value: string;
     }
 
+    type SortOption = 'newest' | 'oldest' | 'name_asc' | 'name_desc';
+
     interface SmartList {
         id: string;
         name: string;
@@ -50,6 +53,8 @@ const ContactsPage = () => {
     }
 
     const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
+    const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
+    const [sortBy, setSortBy] = useState<SortOption>('newest');
     const [activeFilters, setActiveFilters] = useState<Filter[]>([]);
     const DEFAULT_COLUMNS: ColumnDef[] = [
         { id: 'name', label: 'Name', visible: true },
@@ -103,12 +108,16 @@ const ContactsPage = () => {
     const [newSmartListName, setNewSmartListName] = useState('');
     const [showSaveListModal, setShowSaveListModal] = useState(false);
     const [isColumnMenuOpen, setIsColumnMenuOpen] = useState(false);
+    const [openBulkActionId, setOpenBulkActionId] = useState<number | null>(null);
 
     // Mock Data for Tabs
     const [bulkActions] = useState([
-        { id: 1, name: 'Send SMS', status: 'Completed', created: '2026-02-01 10:00', completed: '2026-02-01 10:05', user: 'Admin' },
-        { id: 2, name: 'Add Tag: VIP', status: 'In Progress', created: '2026-02-01 18:30', completed: '-', user: 'Sales' },
-        { id: 3, name: 'Bulk Email', status: 'Failed', created: '2026-01-31 15:00', completed: '2026-01-31 15:10', user: 'Admin' },
+        { id: 1, actionLabel: 'Export', operation: 'Export', status: 'Complete', user: 'SN', userName: 'Samer Nasser', createdAdt: 'Jun 02 2025 03:49 PM', completedAdt: '-', avatarColor: 'bg-purple-100 text-purple-600' },
+        { id: 2, actionLabel: '26_May_2025_5_33_PM', operation: 'Delete', status: 'Complete', user: 'AL', userName: 'Ahmed Lotfy', createdAdt: 'May 26 2025 09:05 AM', completedAdt: 'May 26 2025 09:05 AM', avatarColor: 'bg-blue-100 text-blue-600' },
+        { id: 3, actionLabel: '20_May_2025_12_36_PM', operation: 'Delete', status: 'Complete', user: 'SN', userName: 'Samer Nasser', createdAdt: 'May 20 2025 03:36 PM', completedAdt: 'May 20 2025 03:36 PM', avatarColor: 'bg-purple-100 text-purple-600' },
+        { id: 4, actionLabel: '20_May_2025_12_35_PM', operation: 'Delete', status: 'Complete', user: 'SN', userName: 'Samer Nasser', createdAdt: 'May 20 2025 03:35 PM', completedAdt: 'May 20 2025 03:35 PM', avatarColor: 'bg-purple-100 text-purple-600' },
+        { id: 5, actionLabel: '20_May_2025_12_26_PM', operation: 'Delete', status: 'Complete', user: 'SN', userName: 'Samer Nasser', createdAdt: 'May 20 2025 03:26 PM', completedAdt: 'May 20 2025 03:26 PM', avatarColor: 'bg-purple-100 text-purple-600' },
+        { id: 6, actionLabel: '08_May_2025_12_05_PM', operation: 'Delete', status: 'Complete', user: 'HM', userName: 'Hassan Mahmoud', createdAdt: 'May 08 2025 04:05 PM', completedAdt: 'May 08 2025 04:05 PM', avatarColor: 'bg-green-100 text-green-600' },
     ]);
 
     const [deletedContacts] = useState([
@@ -156,13 +165,22 @@ const ContactsPage = () => {
         });
     };
 
-    const filteredContacts = (() => {
+    const sortedContacts = (() => {
         const query = searchQuery || localSearch;
         const baseContacts = contacts.filter(contact =>
             contact.name.toLowerCase().includes(query.toLowerCase()) ||
             contact.email.toLowerCase().includes(query.toLowerCase())
         );
-        return applyFilters(baseContacts, activeFilters);
+        const filtered = applyFilters(baseContacts, activeFilters);
+
+        const result = [...filtered];
+        switch (sortBy) {
+            case 'name_asc': result.sort((a, b) => a.name.localeCompare(b.name)); break;
+            case 'name_desc': result.sort((a, b) => b.name.localeCompare(a.name)); break;
+            case 'oldest': result.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()); break;
+            default: result.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()); break;
+        }
+        return result;
     })();
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -214,40 +232,155 @@ const ContactsPage = () => {
         switch (topTab) {
             case 'Bulk Actions':
                 return (
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                        <table className="w-full text-left rtl:text-right">
-                            <thead className="bg-gray-50 border-b border-gray-100">
-                                <tr>
-                                    <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">{t('contacts.bulk_actions.name')}</th>
-                                    <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">{t('contacts.bulk_actions.status')}</th>
-                                    <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">{t('contacts.bulk_actions.created')}</th>
-                                    <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">{t('contacts.bulk_actions.completed')}</th>
-                                    <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">{t('contacts.bulk_actions.user')}</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-50">
-                                {bulkActions.map(action => (
-                                    <tr key={action.id} className="hover:bg-gray-50 transition-colors">
-                                        <td className="px-6 py-4 text-sm font-medium text-gray-900 flex items-center gap-3 rtl:flex-row-reverse">
-                                            <div className="w-8 h-8 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center">
-                                                <Clock size={16} />
-                                            </div>
-                                            {action.name}
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${action.status === 'Completed' ? 'bg-green-100 text-green-700' :
-                                                action.status === 'In Progress' ? 'bg-blue-100 text-blue-700' : 'bg-red-100 text-red-700'
-                                                }`}>
-                                                {action.status}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4 text-sm text-gray-500">{action.created}</td>
-                                        <td className="px-6 py-4 text-sm text-gray-500">{action.completed}</td>
-                                        <td className="px-6 py-4 text-sm text-gray-500">{action.user}</td>
+                    <div className="flex flex-col gap-6">
+                        <div className="flex flex-col gap-1">
+                            <h2 className="text-[24px] font-black text-gray-900">Bulk Actions</h2>
+                            <p className="text-[14px] text-gray-500">View detailed statistics and progress information for your bulk action request</p>
+                        </div>
+
+                        {/* Filter Toolbar */}
+                        <div className="flex flex-wrap gap-3 items-center bg-gray-50/30 p-4 rounded-xl border border-gray-100">
+                            <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 h-10 min-w-[200px]">
+                                <Clock size={16} className="text-gray-400" />
+                                <input type="text" placeholder="14 / 04 / 2025" className="text-[13px] font-bold outline-none w-full" />
+                            </div>
+                            <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 h-10 min-w-[200px]">
+                                <Clock size={16} className="text-gray-400" />
+                                <input type="text" placeholder="15 / 10 / 2025" className="text-[13px] font-bold outline-none w-full" />
+                            </div>
+                            <div className="relative group/select">
+                                <select className="h-10 pl-10 pr-8 bg-white border border-gray-200 rounded-lg text-[13px] font-bold text-gray-600 appearance-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 outline-none min-w-[150px]">
+                                    <option>All Status</option>
+                                </select>
+                                <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                                <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                            </div>
+                            <div className="relative group/select">
+                                <select className="h-10 pl-10 pr-8 bg-white border border-gray-200 rounded-lg text-[13px] font-bold text-gray-600 appearance-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 outline-none min-w-[150px]">
+                                    <option>All Actions</option>
+                                </select>
+                                <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                                <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                            </div>
+                            <div className="relative group/select">
+                                <select className="h-10 pl-10 pr-8 bg-white border border-gray-200 rounded-lg text-[13px] font-bold text-gray-600 appearance-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 outline-none min-w-[150px]">
+                                    <option>All Users</option>
+                                </select>
+                                <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                                <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                            </div>
+                        </div>
+
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                            <table className="w-full text-left rtl:text-right">
+                                <thead className="bg-[#f9fafb] border-b border-gray-100">
+                                    <tr>
+                                        <th className="px-6 py-4 text-[13px] font-black text-gray-500 uppercase tracking-wider">Action Label</th>
+                                        <th className="px-6 py-4 text-[13px] font-black text-gray-500 uppercase tracking-wider">Operation</th>
+                                        <th className="px-6 py-4 text-[13px] font-black text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th className="px-6 py-4 text-[13px] font-black text-gray-500 uppercase tracking-wider">User</th>
+                                        <th className="px-6 py-4 text-[13px] font-black text-gray-500 uppercase tracking-wider">Created (ADT)</th>
+                                        <th className="px-6 py-4 text-[13px] font-black text-gray-500 uppercase tracking-wider">Completed (ADT)</th>
+                                        <th className="px-6 py-4 text-[13px] font-black text-gray-500 uppercase tracking-wider">Statistics</th>
+                                        <th className="px-6 py-4 text-[13px] font-black text-gray-500 uppercase tracking-wider">Actions</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody className="divide-y divide-gray-50">
+                                    {bulkActions.map(action => (
+                                        <tr key={action.id} className="hover:bg-gray-50 transition-colors">
+                                            <td className="px-6 py-4 text-[13px] font-bold text-gray-900">{action.actionLabel}</td>
+                                            <td className="px-6 py-4 text-[13px] font-bold text-gray-600">{action.operation}</td>
+                                            <td className="px-6 py-4">
+                                                <span className="px-3 py-1 bg-green-50 text-green-700 rounded-lg text-[11px] font-black border border-green-100 uppercase">
+                                                    {action.status}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className="flex items-center gap-2">
+                                                    <div className={`w-7 h-7 ${action.avatarColor} rounded-full flex items-center justify-center text-[10px] font-black`}>
+                                                        {action.user}
+                                                    </div>
+                                                    <span className="text-[13px] font-bold text-gray-600">{action.userName}</span>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 text-[13px] font-bold text-gray-500">{action.createdAdt}</td>
+                                            <td className="px-6 py-4 text-[13px] font-bold text-gray-500">{action.completedAdt}</td>
+                                            <td className="px-6 py-4">
+                                                <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-400 hover:text-ghl-blue">
+                                                    <Zap size={16} /> {/* Using Zap for statistics icon as placeholder for BarChart */}
+                                                </button>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className="relative">
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setOpenBulkActionId(openBulkActionId === action.id ? null : action.id);
+                                                        }}
+                                                        className={clsx(
+                                                            "p-2 hover:bg-gray-100 rounded-lg transition-colors",
+                                                            openBulkActionId === action.id ? "text-ghl-blue bg-blue-50" : "text-gray-400"
+                                                        )}
+                                                    >
+                                                        <MoreVertical size={16} />
+                                                    </button>
+
+                                                    {openBulkActionId === action.id && (
+                                                        <>
+                                                            <div
+                                                                className="fixed inset-0 z-[60]"
+                                                                onClick={() => setOpenBulkActionId(null)}
+                                                            />
+                                                            <div className="absolute right-0 top-[calc(100%+4px)] w-[180px] bg-white rounded-xl shadow-xl border border-gray-100 z-[70] py-1.5 animate-in fade-in zoom-in-95 duration-200">
+                                                                <button
+                                                                    onClick={() => {
+                                                                        triggerToast(`Viewing details for ${action.actionLabel}`);
+                                                                        setOpenBulkActionId(null);
+                                                                    }}
+                                                                    className="w-full px-4 py-2 text-left text-[13px] font-bold text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                                                                >
+                                                                    <HelpCircle size={14} className="text-gray-400" />
+                                                                    View Details
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => {
+                                                                        triggerToast(`Starting download for ${action.actionLabel} log`);
+                                                                        setOpenBulkActionId(null);
+                                                                    }}
+                                                                    className="w-full px-4 py-2 text-left text-[13px] font-bold text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                                                                >
+                                                                    <Download size={14} className="text-gray-400" />
+                                                                    Download Log
+                                                                </button>
+                                                                <div className="my-1 border-t border-gray-100" />
+                                                                <button
+                                                                    onClick={() => {
+                                                                        triggerToast(`Action ${action.actionLabel} deleted`);
+                                                                        setOpenBulkActionId(null);
+                                                                    }}
+                                                                    className="w-full px-4 py-2 text-left text-[13px] font-bold text-red-600 hover:bg-red-50 flex items-center gap-2"
+                                                                >
+                                                                    <Trash2 size={14} />
+                                                                    Delete Action
+                                                                </button>
+                                                            </div>
+                                                        </>
+                                                    )}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                            {/* Pagination Footer */}
+                            <div className="px-6 py-4 border-t border-gray-100 bg-[#f9fafb] flex items-center justify-between">
+                                <span className="text-[13px] font-bold text-gray-500 italic">Page 1</span>
+                                <div className="flex gap-2">
+                                    <button className="px-4 py-2 border border-gray-200 rounded-lg text-[12px] font-black text-gray-400 bg-white hover:bg-gray-50 cursor-not-allowed">Previous</button>
+                                    <button className="px-4 py-2 border border-gray-200 rounded-lg text-[12px] font-black text-gray-400 bg-white hover:bg-gray-50 cursor-not-allowed">Next</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 );
 
@@ -366,10 +499,10 @@ const ContactsPage = () => {
                                 </div>
                             )}
                             <ContactTable
-                                data={filteredContacts}
+                                data={sortedContacts}
                                 columns={columns}
                                 onEdit={handleOpenModal}
-                                onRowClick={(contact) => setSelectedContact(contact)}
+                                onRowClick={(contact: Contact) => setSelectedContact(contact)}
                                 selectedIds={selectedIds}
                                 onSelectionChange={handleSelectionChange}
                                 onSelectAll={handleSelectAll}
@@ -389,7 +522,7 @@ const ContactsPage = () => {
         }
     };
 
-    const topTabs = ['Contacts', 'Smart Lists', 'Bulk Actions', 'Tasks', 'Companies'];
+    const topTabs = ['Contacts', 'Smart Lists', 'Bulk Actions', 'Restore', 'Tasks', 'Companies', 'Manage Smart Lists'];
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     return (
@@ -397,9 +530,9 @@ const ContactsPage = () => {
             {/* Header Structure */}
             <div className="flex flex-col bg-white border-b border-gray-200">
                 {/* Top Row: Navigation Tabs */}
-                <div className="px-6 flex items-center justify-between h-14 border-b border-gray-100">
+                <div className="px-6 flex items-center justify-between h-11 border-b border-gray-100">
                     <div className="flex items-center h-full gap-2 overflow-x-auto no-scrollbar">
-                        <span className="text-gray-900 font-bold mr-6 text-[15px]">Contacts</span>
+                        <span className="text-gray-900 font-bold mr-6 text-[14px]">Contacts</span>
                         <div className="flex items-center h-full gap-1">
                             {topTabs.map(tab => (
                                 <button
@@ -456,16 +589,16 @@ const ContactsPage = () => {
                     </div>
                 </div>
 
-                {/* Info Banner */}
-                <div className="px-6 py-2.5 bg-gray-50/50 text-[13px] text-gray-500 italic border-b border-gray-100">
+                {/* Info Banner - Keeping only one */}
+                <div className="px-6 py-2 bg-gray-50/50 text-[12px] text-gray-500 italic border-b border-gray-100">
                     The 'Manage Smart Lists' & 'Restore' menu options are moving! From Jan 05, 2026, you'll find it under the actions menu (⋮) next to the Add Contact Button.
                 </div>
 
                 {/* Title Row with Upper Action Row */}
-                <div className="px-6 py-5 flex items-center justify-between">
+                <div className="px-6 py-3 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <h1 className="text-[22px] font-black text-[#111827]">Contacts</h1>
-                        <span className="bg-[#eff6ff] text-[#2563eb] px-3 py-1 rounded-full text-[13px] font-black border border-[#dbeafe] h-7 flex items-center">
+                        <h1 className="text-[20px] font-black text-[#111827]">Contacts</h1>
+                        <span className="bg-[#eff6ff] text-[#2563eb] px-3 py-0.5 rounded-full text-[12px] font-black border border-[#dbeafe] h-6 flex items-center">
                             {contacts.length} Contacts
                         </span>
                     </div>
@@ -473,37 +606,37 @@ const ContactsPage = () => {
                     <div className="flex items-center gap-2.5">
                         <button
                             onClick={() => setIsImportWizardOpen(true)}
-                            className="flex items-center gap-2 px-5 py-2.5 text-[14px] font-black text-[#4b5563] bg-white border border-[#e5e7eb] rounded-xl hover:bg-gray-50 transition-all shadow-sm"
+                            className="flex items-center gap-2 px-4 h-9 text-[13px] font-black text-[#4b5563] bg-white border border-[#e5e7eb] rounded-xl hover:bg-gray-50 transition-all shadow-sm"
                         >
-                            <Download size={18} className="text-gray-400" />
+                            <Download size={16} className="text-gray-400" />
                             {t('contacts.toolbar.import', 'Import')}
                         </button>
 
                         <button
                             onClick={() => handleOpenModal()}
-                            className="flex items-center gap-2 px-6 py-2.5 text-[14px] font-black text-white bg-[#0052cc] rounded-xl hover:bg-blue-700 transition-all shadow-[0_4px_12px_rgba(0,102,255,0.25)] active:scale-[0.98]"
+                            className="flex items-center gap-2 px-5 h-9 text-[13px] font-black text-white bg-[#0052cc] rounded-xl hover:bg-blue-700 transition-all shadow-[0_4px_12px_rgba(0,102,255,0.25)] active:scale-[0.98]"
                         >
-                            <Plus size={20} />
+                            <Plus size={18} />
                             {t('contacts.toolbar.add_contact', 'Add Contact')}
                         </button>
 
                         <div className="relative">
                             <button
                                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                                className="w-11 h-11 flex items-center justify-center text-gray-400 hover:text-gray-900 bg-white border border-[#e5e7eb] rounded-xl hover:bg-gray-50 transition-all"
+                                className="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-gray-900 bg-white border border-[#e5e7eb] rounded-xl hover:bg-gray-50 transition-all"
                             >
-                                <MoreVertical size={20} />
+                                <MoreVertical size={18} />
                             </button>
 
                             {isMenuOpen && (
-                                <div className="absolute top-[calc(100%+8px)] right-0 w-56 bg-white rounded-xl shadow-2xl border border-gray-100 z-50 p-2 animate-in fade-in zoom-in-95 duration-200">
+                                <div className="absolute top-[calc(100%+8px)] right-0 w-64 bg-white rounded-xl shadow-2xl border border-gray-100 z-50 p-2 animate-in fade-in zoom-in-95 duration-200">
                                     <button className="w-full flex items-center gap-3 px-3 py-2.5 text-[14px] font-bold text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
                                         <RefreshCcw size={16} className="text-gray-400" />
-                                        Restore
+                                        Sync Contacts
                                     </button>
                                     <button className="w-full flex items-center gap-3 px-3 py-2.5 text-[14px] font-bold text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
                                         <LayoutGrid size={16} className="text-gray-400" />
-                                        Manage Smart Lists
+                                        Export Smart List
                                     </button>
                                 </div>
                             )}
@@ -511,49 +644,6 @@ const ContactsPage = () => {
                     </div>
                 </div>
 
-                {/* Smart List Tabs Row */}
-                <div className="px-6 flex items-center justify-between h-11 border-b border-gray-50">
-                    <div className="flex items-center h-full gap-1 overflow-x-auto no-scrollbar">
-                        {smartLists.map(list => (
-                            <button
-                                key={list.id}
-                                onClick={() => handleTabChange(list.id)}
-                                className={clsx(
-                                    "px-4 h-full flex items-center gap-2 text-[14px] font-black transition-all relative group",
-                                    (topTab === 'Smart Lists' || topTab === 'Contacts') && activeListId === list.id ? "text-ghl-blue after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2.5px] after:bg-ghl-blue" : "text-gray-400 hover:text-gray-900"
-                                )}
-                            >
-                                <LayoutGrid size={14} className={clsx(activeListId === list.id ? "text-ghl-blue" : "text-gray-300 group-hover:text-gray-500")} />
-                                {list.name}
-                            </button>
-                        ))}
-                        <button
-                            onClick={() => setShowSaveListModal(true)}
-                            className="px-4 h-full flex items-center gap-2 text-[14px] font-black text-gray-400 hover:text-gray-600 transition-all"
-                        >
-                            <Plus size={18} className="text-gray-300" />
-                            Add Smart List
-                        </button>
-                    </div>
-
-                    <div className="flex items-center h-full gap-4">
-                        <button className="flex items-center gap-2 text-[13px] font-black text-gray-400 hover:text-gray-700 transition-colors">
-                            <LayoutGrid size={16} />
-                            Customise List
-                        </button>
-                        <div className="w-[1px] h-4 bg-gray-200" />
-                        <button
-                            onClick={() => {
-                                console.log('Opening Manage Fields sidebar');
-                                setIsColumnMenuOpen(true);
-                            }}
-                            className="flex items-center gap-2 text-[13px] font-black text-[#2563eb] hover:text-blue-700 transition-colors"
-                        >
-                            <Settings size={16} />
-                            Manage Fields
-                        </button>
-                    </div>
-                </div>
             </div>
 
             {/* Sub-Header / Toolbars */}
@@ -589,29 +679,68 @@ const ContactsPage = () => {
                     </div>
                 )}
 
+                {/* Smart List Tabs Row */}
+                <div className="px-6 flex items-center justify-between border-b border-gray-100 bg-white min-h-[44px]">
+                    <div className="flex items-center gap-5">
+                        {smartLists.map(list => (
+                            <button
+                                key={list.id}
+                                onClick={() => handleTabChange(list.id)}
+                                className={clsx(
+                                    "px-1 py-1.5 text-[13px] font-black border-b-2 transition-all flex items-center gap-2 h-[44px]",
+                                    activeListId === list.id ? "border-ghl-blue text-ghl-blue" : "border-transparent text-gray-400 hover:text-gray-600"
+                                )}
+                            >
+                                <LayoutGrid size={15} />
+                                {list.name}
+                            </button>
+                        ))}
+                        <button className="flex items-center gap-2 text-[13px] font-black text-gray-400 hover:text-gray-600 px-1 py-1.5 transition-colors h-[44px]">
+                            <Plus size={15} />
+                            Add Smart List
+                        </button>
+                    </div>
+
+                    <div className="flex items-center gap-5">
+                        <button className="flex items-center gap-2 text-[13px] font-black text-gray-400 hover:text-ghl-blue transition-colors">
+                            <LayoutGrid size={15} />
+                            Customise List
+                        </button>
+                        <button
+                            onClick={() => setIsColumnMenuOpen(true)}
+                            className="flex items-center gap-2 text-[13px] font-black text-ghl-blue hover:text-blue-700 transition-colors"
+                        >
+                            <Settings size={15} />
+                            Manage Fields
+                        </button>
+                    </div>
+                </div>
+
+                {/* Removed duplicate Relocation Info Banner from here (line 720) */}
+
                 {/* Filter & Search Toolbar */}
-                <div className="px-6 py-4 flex items-center justify-between border-b border-gray-100">
+                <div className="px-6 py-3 flex items-center justify-between bg-white border-b border-gray-100">
                     <div className="flex items-center gap-3">
                         <div className="relative">
                             <button
                                 onClick={() => setIsFilterMenuOpen(!isFilterMenuOpen)}
                                 className={clsx(
-                                    "flex items-center gap-3 px-5 py-2.5 text-[15px] font-black border rounded-xl transition-all shadow-sm group",
-                                    isFilterMenuOpen ? "bg-[#eff6ff] border-[#bfdbfe] text-[#2563eb]" : "bg-white border-[#e5e7eb] text-[#2563eb] hover:bg-blue-50/50"
+                                    "flex items-center gap-2 px-5 h-10 text-[13px] font-black border rounded-xl transition-all shadow-sm group",
+                                    isFilterMenuOpen ? "bg-[#eff6ff] border-[#bfdbfe] text-[#2563eb]" : "bg-white border-gray-200 text-[#2563eb] hover:bg-blue-50/50"
                                 )}
                             >
-                                <ListFilter size={18} className="text-[#2563eb]" />
+                                <ListFilter size={16} className="text-[#2563eb]" />
                                 <span className="transition-colors">Advanced Filters ({activeFilters.length > 0 ? activeFilters.length : '10'})</span>
-                                {activeFilters.length > 0 && (
-                                    <span className="absolute -top-2.5 -right-2.5 w-6 h-6 bg-[#2563eb] text-white text-[11px] font-black rounded-full flex items-center justify-center border-2 border-white shadow-sm">
-                                        {activeFilters.length}
-                                    </span>
-                                )}
                             </button>
 
                             {isFilterMenuOpen && (
                                 <div className="absolute top-[calc(100%+12px)] left-0 w-[300px] bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 p-6 animate-in fade-in zoom-in-95 duration-200 max-h-[45vh] overflow-y-auto">
-                                    <h3 className="text-[19px] font-black text-[#111827] mb-6">Add Filter</h3>
+                                    <div className="flex items-center justify-between mb-6">
+                                        <h3 className="text-[19px] font-black text-[#111827]">Add Filter</h3>
+                                        <button onClick={() => setIsFilterMenuOpen(false)} className="text-gray-400 hover:text-gray-600">
+                                            <X size={20} />
+                                        </button>
+                                    </div>
 
                                     <div className="space-y-6 text-left">
                                         <div>
@@ -674,23 +803,51 @@ const ContactsPage = () => {
                             )}
                         </div>
 
-                        <button className="flex items-center gap-2 px-6 py-2.5 text-[15px] font-black text-[#4b5563] bg-white border border-[#e5e7eb] rounded-xl hover:bg-gray-50 transition-all shadow-sm">
-                            <RefreshCcw size={18} className="text-gray-400" />
-                            Sort
-                        </button>
+                        <div className="relative">
+                            <button
+                                onClick={() => setIsSortMenuOpen(!isSortMenuOpen)}
+                                className={clsx(
+                                    "flex items-center gap-2 px-6 h-10 text-[13px] font-black transition-all shadow-sm bg-white border border-gray-200 rounded-xl hover:bg-gray-50",
+                                    isSortMenuOpen ? "border-ghl-blue text-ghl-blue" : "text-gray-500"
+                                )}
+                            >
+                                <RefreshCcw size={16} className={clsx(isSortMenuOpen ? "text-ghl-blue" : "text-gray-400")} />
+                                Sort
+                            </button>
+
+                            {isSortMenuOpen && (
+                                <div className="absolute top-[calc(100%+8px)] left-0 w-[200px] bg-white rounded-xl shadow-xl border border-gray-100 z-50 py-2 animate-in fade-in zoom-in-95 duration-200">
+                                    {(['newest', 'oldest', 'name_asc', 'name_desc'] as SortOption[]).map((option) => (
+                                        <button
+                                            key={option}
+                                            onClick={() => {
+                                                setSortBy(option);
+                                                setIsSortMenuOpen(false);
+                                            }}
+                                            className={clsx(
+                                                "w-full px-4 py-2.5 text-left text-[13px] font-bold hover:bg-gray-50 transition-colors",
+                                                sortBy === option ? "text-ghl-blue bg-blue-50/50" : "text-gray-600"
+                                            )}
+                                        >
+                                            {option === 'newest' ? 'Newest First' :
+                                                option === 'oldest' ? 'Oldest First' :
+                                                    option === 'name_asc' ? 'Name (A-Z)' : 'Name (Z-A)'}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     </div>
 
-                    <div className="flex items-center gap-4 rtl:flex-row-reverse">
-                        <div className="relative group">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-ghl-blue transition-colors" size={18} />
-                            <input
-                                type="text"
-                                placeholder="Search Contacts"
-                                className="h-12 pl-12 pr-4 w-72 border border-gray-100 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 text-[15px] font-bold placeholder:text-gray-300 bg-white transition-all shadow-sm"
-                                value={localSearch}
-                                onChange={handleSearchChange}
-                            />
-                        </div>
+                    <div className="relative group">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-ghl-blue transition-colors" size={16} />
+                        <input
+                            type="text"
+                            placeholder="Search Contacts"
+                            className="h-10 pl-11 pr-4 w-[350px] border border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 text-[13px] font-bold placeholder:text-gray-300 bg-white transition-all shadow-sm"
+                            value={localSearch}
+                            onChange={handleSearchChange}
+                        />
                     </div>
                 </div>
 

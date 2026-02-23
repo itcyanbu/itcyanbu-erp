@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Eye, EyeOff, Globe, Info, Loader2, Smartphone, Check } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const LoginPage = () => {
     const { signIn, signUp, signInWithGoogle, isSupabaseEnabled } = useAuth();
+    const { t, i18n } = useTranslation();
 
     const [isSignUp, setIsSignUp] = useState(false);
     const [email, setEmail] = useState('');
@@ -13,6 +15,11 @@ const LoginPage = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
+
+    const toggleLanguage = () => {
+        const newLang = i18n.language === 'ar' ? 'en' : 'ar';
+        i18n.changeLanguage(newLang);
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -28,12 +35,12 @@ const LoginPage = () => {
             if (error) {
                 setError(error.message);
             } else if (isSignUp) {
-                setSuccess('Check your email for confirmation link!');
+                setSuccess(t('login.success_signup'));
                 setEmail('');
                 setPassword('');
             }
         } catch (err: any) {
-            setError(err.message || 'An error occurred');
+            setError(err.message || t('login.error_generic'));
         } finally {
             setLoading(false);
         }
@@ -50,13 +57,10 @@ const LoginPage = () => {
                 setLoading(false);
             }
         } catch (err: any) {
-            setError(err.message || 'An error occurred');
+            setError(err.message || t('login.error_generic'));
             setLoading(false);
         }
     };
-
-    // Bypass Supabase check to allow UI to render (Demo Mode support)
-    // if (!isSupabaseEnabled) { ... }
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4 font-sans">
@@ -66,30 +70,34 @@ const LoginPage = () => {
                 {!isSupabaseEnabled && (
                     <div className="mb-6 p-3 bg-orange-50 border border-orange-100 rounded-lg text-xs text-orange-600 flex items-center gap-2">
                         <Info size={14} className="shrink-0" />
-                        <span>Demo Mode: Supabase keys missing. Login simulation only.</span>
+                        <span>{t('login.demo_mode_warning')}</span>
                     </div>
                 )}
 
                 {/* Header */}
                 <div className="flex justify-between items-start mb-8">
-                    <h1 className="text-3xl font-semibold text-gray-900">
-                        {isSignUp ? 'Sign up' : 'Log in'}
+                    <h1 className="text-3xl font-semibold text-gray-900 rtl:text-right">
+                        {isSignUp ? t('login.signup_title') : t('login.login_title')}
                     </h1>
-                    <button className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 hover:bg-gray-100 rounded-full text-sm font-medium text-gray-600 transition-colors">
+                    <button
+                        onClick={toggleLanguage}
+                        className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 hover:bg-gray-100 rounded-full text-sm font-medium text-gray-600 transition-colors"
+                        title={i18n.language === 'ar' ? 'Switch to English' : 'Switch to Arabic'}
+                    >
                         <Globe size={16} className="text-blue-600" />
-                        <span>English</span>
+                        <span>{i18n.language === 'ar' ? t('login.arabic') : t('login.english')}</span>
                     </button>
                 </div>
 
                 {/* Messages */}
                 {error && (
-                    <div className="mb-6 p-4 bg-red-50 text-red-600 rounded-xl text-sm flex items-start gap-3">
+                    <div className="mb-6 p-4 bg-red-50 text-red-600 rounded-xl text-sm flex items-start gap-3 rtl:text-right">
                         <Info size={18} className="shrink-0 mt-0.5" />
                         {error}
                     </div>
                 )}
                 {success && (
-                    <div className="mb-6 p-4 bg-green-50 text-green-600 rounded-xl text-sm flex items-start gap-3">
+                    <div className="mb-6 p-4 bg-green-50 text-green-600 rounded-xl text-sm flex items-start gap-3 rtl:text-right">
                         <Check size={18} className="shrink-0 mt-0.5" />
                         {success}
                     </div>
@@ -104,8 +112,8 @@ const LoginPage = () => {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
-                            className="w-full px-5 py-3.5 bg-gray-50 border border-transparent focus:bg-white focus:border-blue-500 rounded-2xl outline-none text-gray-900 placeholder:text-gray-400 transition-all"
-                            placeholder="Please enter an email address."
+                            className="w-full px-5 py-3.5 bg-gray-50 border border-transparent focus:bg-white focus:border-blue-500 rounded-2xl outline-none text-gray-900 placeholder:text-gray-400 transition-all rtl:text-right"
+                            placeholder={t('login.email_placeholder')}
                         />
                     </div>
 
@@ -117,10 +125,10 @@ const LoginPage = () => {
                             onChange={(e) => setPassword(e.target.value)}
                             required
                             minLength={6}
-                            className="w-full px-5 py-3.5 bg-gray-50 border border-transparent focus:bg-white focus:border-blue-500 rounded-2xl outline-none text-gray-900 placeholder:text-gray-400 transition-all pr-24" // pr-24 for icons
-                            placeholder="Please enter your password"
+                            className="w-full px-5 py-3.5 bg-gray-50 border border-transparent focus:bg-white focus:border-blue-500 rounded-2xl outline-none text-gray-900 placeholder:text-gray-400 transition-all pr-24 rtl:pl-24 rtl:pr-5 rtl:text-right"
+                            placeholder={t('login.password_placeholder')}
                         />
-                        <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-3 text-gray-400">
+                        <div className="absolute right-4 rtl:right-auto rtl:left-4 top-1/2 -translate-y-1/2 flex items-center gap-3 text-gray-400 rtl:flex-row-reverse">
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
@@ -135,7 +143,7 @@ const LoginPage = () => {
 
                     {/* Options Row */}
                     {!isSignUp && (
-                        <div className="flex items-center justify-between pt-1">
+                        <div className="flex items-center justify-between pt-1 rtl:flex-row-reverse">
                             <label className="flex items-center gap-3 cursor-pointer group">
                                 <div className={`w-5 h-5 rounded-md border flex items-center justify-center transition-colors ${rememberMe ? 'bg-blue-600 border-blue-600' : 'border-gray-300 bg-white group-hover:border-blue-400'}`}>
                                     {rememberMe && <Check size={14} className="text-white bg-blue-600" strokeWidth={3} />}
@@ -146,10 +154,10 @@ const LoginPage = () => {
                                     checked={rememberMe}
                                     onChange={(e) => setRememberMe(e.target.checked)}
                                 />
-                                <span className="text-sm text-gray-600 select-none">Remember me</span>
+                                <span className="text-sm text-gray-600 select-none">{t('login.remember_me')}</span>
                             </label>
                             <button type="button" className="text-sm font-medium text-blue-600 hover:text-blue-700">
-                                Forgot password?
+                                {t('login.forgot_password')}
                             </button>
                         </div>
                     )}
@@ -163,7 +171,7 @@ const LoginPage = () => {
                         {loading ? (
                             <Loader2 className="animate-spin" size={20} />
                         ) : (
-                            isSignUp ? 'Sign up' : 'Log in'
+                            isSignUp ? t('login.signup_btn') : t('login.login_btn')
                         )}
                     </button>
                 </form>
@@ -171,7 +179,7 @@ const LoginPage = () => {
                 {/* Divider */}
                 <div className="flex items-center gap-4 my-8">
                     <div className="h-px bg-gray-200 flex-1"></div>
-                    <span className="text-gray-400 text-sm">or</span>
+                    <span className="text-gray-400 text-sm">{t('login.or')}</span>
                     <div className="h-px bg-gray-200 flex-1"></div>
                 </div>
 
@@ -188,20 +196,20 @@ const LoginPage = () => {
                             <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
                             <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                         </svg>
-                        <span className="text-sm font-medium text-gray-700">{isSupabaseEnabled ? 'Google' : 'Google (Demo)'}</span>
+                        <span className="text-sm font-medium text-gray-700">{isSupabaseEnabled ? t('login.google') : `${t('login.google')} (${t('login.demo_mode') || 'Demo'})`}</span>
                     </button>
                     <button
                         className="flex items-center justify-center gap-2 px-4 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
                     >
                         <Smartphone size={20} className="text-gray-500" />
-                        <span className="text-sm font-medium text-gray-700">Phone number</span>
+                        <span className="text-sm font-medium text-gray-700">{t('login.phone_number')}</span>
                     </button>
                 </div>
 
                 {/* Footer Switch */}
                 <div className="mt-8 text-center">
                     <p className="text-gray-500 text-sm">
-                        {isSignUp ? "Already have an ITC account?" : "Don't have an ITC account?"}{' '}
+                        {isSignUp ? t('login.already_have_account') : t('login.no_account')}{' '}
                         <button
                             onClick={() => {
                                 setIsSignUp(!isSignUp);
@@ -210,7 +218,7 @@ const LoginPage = () => {
                             }}
                             className="text-blue-600 font-semibold hover:text-blue-700 hover:underline"
                         >
-                            {isSignUp ? 'Log in' : 'Sign up now'}
+                            {isSignUp ? t('login.login_btn') : t('login.signup_now')}
                         </button>
                     </p>
                 </div>
