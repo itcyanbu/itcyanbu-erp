@@ -3,7 +3,7 @@ import type { ReactElement } from 'react';
 import { MapPin, Box, ArrowLeft, RefreshCw, Users, LayoutGrid, Globe } from 'lucide-react';
 import { Wrapper, Status } from '@googlemaps/react-wrapper';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, useTexture, Sphere } from '@react-three/drei';
+import { OrbitControls, useTexture, Sphere, PerspectiveCamera } from '@react-three/drei';
 import * as THREE from 'three';
 
 // Optional: A simple 3D viewer component using react-three-fiber to make the generated interior look like a 360-viewer or 3D object
@@ -15,9 +15,10 @@ const InteriorSphere = ({ imgUrl }: { imgUrl: string }) => {
     texture.magFilter = THREE.LinearFilter;
     texture.generateMipmaps = false;
     texture.colorSpace = THREE.SRGBColorSpace;
+    texture.anisotropy = 16;
 
     return (
-        <Sphere args={[500, 64, 64]} scale={[-1, 1, 1]}>
+        <Sphere args={[500, 128, 128]} scale={[-1, 1, 1]}>
             <meshBasicMaterial map={texture} side={THREE.BackSide} />
         </Sphere>
     );
@@ -26,7 +27,8 @@ const InteriorSphere = ({ imgUrl }: { imgUrl: string }) => {
 // Optional: A simple 3D viewer component using react-three-fiber to make the generated interior look like a 360-viewer or 3D object
 const InteriorViewer = ({ imgUrl, fov = 75 }: { imgUrl: string, fov?: number }) => {
     return (
-        <Canvas camera={{ position: [0, 0, 0], fov }}>
+        <Canvas dpr={[1, 2]} gl={{ antialias: true }}>
+            <PerspectiveCamera makeDefault position={[0, 0, 0]} fov={fov} />
             <ambientLight intensity={1.5} />
             {/* Mapping our generated 2D image onto the inside of a sphere to fake a 360 tour for demonstration */}
             <Suspense fallback={null}>
@@ -166,7 +168,17 @@ export const PropertyTourPage = () => {
                 </div>
 
                 {/* State 2: 3D Interior View */}
-                <div className={`absolute inset-0 transition-opacity duration-1000 ${viewState === 'interior' ? 'opacity-100 z-0' : 'opacity-0 -z-10'}`}>
+                <div
+                    className={`absolute inset-0 transition-opacity duration-1000 ${viewState === 'interior' ? 'opacity-100 z-0' : 'opacity-0 -z-10'}`}
+                    onWheel={(e) => {
+                        if (viewState === 'interior') {
+                            setZoom(prev => {
+                                const newZoom = e.deltaY > 0 ? prev + 5 : prev - 5;
+                                return Math.max(30, Math.min(110, newZoom));
+                            });
+                        }
+                    }}
+                >
 
                     {/* Zoom UI Overlay */}
                     <div className="absolute right-6 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-2 p-2 bg-black/40 backdrop-blur-md rounded-xl border border-white/10">
