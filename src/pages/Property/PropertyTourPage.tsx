@@ -116,9 +116,6 @@ export const PropertyTourPage = () => {
             <div className="absolute top-0 left-0 right-0 z-10 bg-gradient-to-b from-black/70 to-transparent p-6 flex justify-between items-start pointer-events-none">
                 <div className="text-white">
                     <h1 className="text-3xl font-bold tracking-tight shadow-sm">Camp 7 Flat Tour</h1>
-                    <p className="opacity-90 flex items-center gap-2 mt-1">
-                        <MapPin size={16} /> King Abdulaziz University, Jeddah
-                    </p>
                 </div>
 
                 <div className="flex gap-3 pointer-events-auto">
@@ -174,7 +171,7 @@ export const PropertyTourPage = () => {
                         if (viewState === 'interior') {
                             setZoom(prev => {
                                 const newZoom = e.deltaY > 0 ? prev + 5 : prev - 5;
-                                return Math.max(30, Math.min(110, newZoom));
+                                return Math.max(30, Math.min(95, newZoom));
                             });
                         }
                     }}
@@ -197,7 +194,7 @@ export const PropertyTourPage = () => {
                             <RefreshCw size={18} />
                         </button>
                         <button
-                            onClick={() => setZoom(prev => Math.min(110, prev + 10))}
+                            onClick={() => setZoom(prev => Math.min(95, prev + 10))}
                             className="w-10 h-10 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-lg text-white transition-colors border border-white/5"
                             title="Zoom Out"
                         >
