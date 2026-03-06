@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, Suspense } from 'react';
 import type { ReactElement } from 'react';
-import { MapPin, Box, ArrowLeft, RefreshCw } from 'lucide-react';
+import { MapPin, Box, ArrowLeft, RefreshCw, Users, LayoutGrid, Globe } from 'lucide-react';
 import { Wrapper, Status } from '@googlemaps/react-wrapper';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, useTexture, Sphere } from '@react-three/drei';
@@ -30,6 +30,10 @@ const InteriorViewer = ({ imgUrl }: { imgUrl: string }) => {
                 enablePan={false}
                 target={[0, 0, 0]}
                 rotateSpeed={-0.5}
+                minDistance={0.01}
+                maxDistance={100}
+                minPolarAngle={Math.PI / 6}
+                maxPolarAngle={Math.PI - Math.PI / 6}
             />
         </Canvas>
     );
@@ -84,6 +88,18 @@ const MapRenderStatus = (status: Status): ReactElement => {
 
 export const PropertyTourPage = () => {
     const [viewState, setViewState] = useState<'map' | 'interior'>('map');
+    const [currentRoom, setCurrentRoom] = useState('hall');
+
+    const rooms = [
+        { id: 'hall', name: 'Big Hall', img: '/hall.png', icon: Box },
+        { id: 'master', name: 'Main Bedroom', img: '/master_bedroom.png', icon: MapPin },
+        { id: 'kids', name: 'Kids Bedroom', img: '/kids_room.png', icon: Users },
+        { id: 'kitchen', name: 'Kitchen', img: '/kitchen.png', icon: LayoutGrid },
+        { id: 'balcony', name: 'Balcony', img: '/balcony.png', icon: Globe },
+    ];
+
+    const currentRoomData = rooms.find(r => r.id === currentRoom) || rooms[0];
+
     // NOTE: Replace this with your actual Google Maps API key
     const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "";
 
@@ -147,13 +163,27 @@ export const PropertyTourPage = () => {
 
                 {/* State 2: 3D Interior View */}
                 <div className={`absolute inset-0 transition-opacity duration-1000 ${viewState === 'interior' ? 'opacity-100 z-0' : 'opacity-0 -z-10'}`}>
-                    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 bg-black/60 backdrop-blur-md px-6 py-3 rounded-full text-sm text-white border border-white/10 pointer-events-none">
-                        Drag to look around the conceptual 3D space
+                    {/* Room Selector UI */}
+                    <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-20 flex gap-2 bg-black/40 backdrop-blur-xl p-2 rounded-2xl border border-white/10 overflow-x-auto max-w-[90vw] no-scrollbar">
+                        {rooms.map(room => (
+                            <button
+                                key={room.id}
+                                onClick={() => setCurrentRoom(room.id)}
+                                className={`flex flex-col items-center min-w-[80px] p-2 rounded-xl transition-all ${currentRoom === room.id ? 'bg-blue-600 text-white shadow-lg scale-105' : 'text-slate-400 hover:text-white hover:bg-white/10'}`}
+                            >
+                                <room.icon size={18} />
+                                <span className="text-[10px] font-bold mt-1 uppercase whitespace-nowrap">{room.name}</span>
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 bg-black/60 backdrop-blur-md px-6 py-3 rounded-full text-xs text-white/80 border border-white/10 pointer-events-none">
+                        Drag to look around • Scroll to zoom
                     </div>
 
                     {/* Rendering the generated concept image as a panoramic environment */}
-                    <Suspense fallback={<div className="flex items-center justify-center h-full text-white bg-slate-900">Loading 3D Interior...</div>}>
-                        <InteriorViewer imgUrl="/interior_design_3d.png" />
+                    <Suspense fallback={<div className="flex items-center justify-center h-full text-white bg-slate-900">Loading {currentRoomData.name}...</div>}>
+                        <InteriorViewer imgUrl={currentRoomData.img} />
                     </Suspense>
                 </div>
 
