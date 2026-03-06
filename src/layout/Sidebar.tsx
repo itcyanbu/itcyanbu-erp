@@ -19,6 +19,7 @@ import {
     Image,
     Facebook,
     Settings,
+    MapPin,
     Brain,
     Phone,
     Mail,
@@ -41,6 +42,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule = 'Contacts', onModuleCh
     const [profileLogo] = useState('/itc-logo.jpg');
 
     const menuItems = [
+        { icon: MapPin, label: '3D Tour', id: 'Property Tour', tKey: '3D Tour' },
         { icon: Rocket, label: 'Launchpad', id: 'Launchpad', tKey: 'sidebar.launchpad' },
         { icon: BarChart3, label: 'Dashboard', id: 'Dashboard', tKey: 'sidebar.dashboard' },
         { icon: MessageSquare, label: 'Conversations', id: 'Conversations', tKey: 'sidebar.conversations' },

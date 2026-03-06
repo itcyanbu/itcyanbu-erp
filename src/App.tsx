@@ -32,6 +32,7 @@ import AffiliatePortalPage from './pages/AffiliatePortalPage';
 import AgencyAnalyticsPage from './pages/AgencyAnalyticsPage';
 import MediaLibraryPage from './pages/MediaLibraryPage';
 import FacebookGroupPage from './pages/FacebookGroupPage';
+import { PropertyTourPage } from './pages/Property/PropertyTourPage';
 import { Loader2 } from 'lucide-react';
 import WorkflowBuilder from './pages/WorkflowBuilder';
 
@@ -94,6 +95,8 @@ function App() {
         return <SuppliersServicesPage />;
       case 'Webinar':
         return <WebinarPage />;
+      case 'Property Tour':
+        return <PropertyTourPage />;
       default:
         return <ContactsPage />;
     }
