@@ -7,16 +7,24 @@ import { OrbitControls, useTexture, Sphere } from '@react-three/drei';
 import * as THREE from 'three';
 
 // Optional: A simple 3D viewer component using react-three-fiber to make the generated interior look like a 360-viewer or 3D object
-const InteriorViewer = ({ imgUrl }: { imgUrl: string }) => {
+const InteriorSphere = ({ imgUrl }: { imgUrl: string }) => {
     const texture = useTexture(imgUrl);
+    return (
+        <Sphere args={[500, 60, 40]} scale={[-1, 1, 1]}>
+            <meshBasicMaterial map={texture} side={THREE.BackSide} />
+        </Sphere>
+    );
+};
 
+// Optional: A simple 3D viewer component using react-three-fiber to make the generated interior look like a 360-viewer or 3D object
+const InteriorViewer = ({ imgUrl }: { imgUrl: string }) => {
     return (
         <Canvas camera={{ position: [0, 0, 0.1], fov: 75 }}>
             <ambientLight intensity={1.5} />
             {/* Mapping our generated 2D image onto the inside of a sphere to fake a 360 tour for demonstration */}
-            <Sphere args={[500, 60, 40]} scale={[-1, 1, 1]}>
-                <meshBasicMaterial map={texture} side={THREE.BackSide} />
-            </Sphere>
+            <Suspense fallback={null}>
+                <InteriorSphere imgUrl={imgUrl} />
+            </Suspense>
             <OrbitControls
                 enableZoom={true}
                 enablePan={false}
