@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { MapPin, Box, ArrowLeft, RefreshCw, X } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import type { ReactElement } from 'react';
+import { MapPin, Box, ArrowLeft, RefreshCw } from 'lucide-react';
 import { Wrapper, Status } from '@googlemaps/react-wrapper';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, useTexture, Box as DreiBox, Sphere } from '@react-three/drei';
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls, useTexture, Sphere } from '@react-three/drei';
 import * as THREE from 'three';
 
 // Optional: A simple 3D viewer component using react-three-fiber to make the generated interior look like a 360-viewer or 3D object
@@ -29,14 +30,14 @@ const InteriorViewer = ({ imgUrl }: { imgUrl: string }) => {
 // Map component
 const SimpleMap = ({ onMarkerClick }: { onMarkerClick: () => void }) => {
     const ref = useRef<HTMLDivElement>(null);
-    const [map, setMap] = useState<google.maps.Map>();
+    const [map, setMap] = useState<any>();
 
     // Use the coordinates for the requested location: Camp 7, King Abdulaziz University, Jeddah
     const center = { lat: 21.4930, lng: 39.2450 };
 
     useEffect(() => {
         if (ref.current && !map) {
-            const newMap = new window.google.maps.Map(ref.current, {
+            const newMap = new (window as any).google.maps.Map(ref.current, {
                 center,
                 zoom: 17,
                 mapTypeId: 'satellite',
@@ -45,11 +46,11 @@ const SimpleMap = ({ onMarkerClick }: { onMarkerClick: () => void }) => {
                 disableDefaultUI: false,
             });
 
-            const marker = new window.google.maps.Marker({
+            const marker = new (window as any).google.maps.Marker({
                 position: center,
                 map: newMap,
                 title: "Camp 7 Virtual Tour",
-                animation: window.google.maps.Animation.DROP,
+                animation: (window as any).google.maps.Animation.DROP,
             });
 
             marker.addListener('click', () => {
@@ -67,10 +68,10 @@ const SimpleMap = ({ onMarkerClick }: { onMarkerClick: () => void }) => {
     return <div ref={ref} id="map" className="w-full h-full" />;
 };
 
-const MapRenderStatus = (status: Status) => {
+const MapRenderStatus = (status: Status): ReactElement => {
     if (status === Status.LOADING) return <div className="flex justify-center items-center h-full text-white bg-slate-900">Loading Maps...</div>;
     if (status === Status.FAILURE) return <div className="flex justify-center items-center h-full text-red-500 bg-slate-900">Error loading maps. Ensure you have a valid API Key.</div>;
-    return null;
+    return <></>;
 };
 
 export const PropertyTourPage = () => {
