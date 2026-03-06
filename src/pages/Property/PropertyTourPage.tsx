@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import type { ReactElement } from 'react';
 import { MapPin, Box, ArrowLeft, RefreshCw } from 'lucide-react';
 import { Wrapper, Status } from '@googlemaps/react-wrapper';
@@ -144,7 +144,9 @@ export const PropertyTourPage = () => {
                     </div>
 
                     {/* Rendering the generated concept image as a panoramic environment */}
-                    <InteriorViewer imgUrl="/interior_design_3d.png" />
+                    <Suspense fallback={<div className="flex items-center justify-center h-full text-white bg-slate-900">Loading 3D Interior...</div>}>
+                        <InteriorViewer imgUrl="/interior_design_3d.png" />
+                    </Suspense>
                 </div>
 
             </div>
