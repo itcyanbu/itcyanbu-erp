@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, Suspense } from 'react';
 import type { ReactElement } from 'react';
-import { MapPin, Box, ArrowLeft, RefreshCw, Users, LayoutGrid, Globe } from 'lucide-react';
+import { MapPin, Box, ArrowLeft, RefreshCw, Users, LayoutGrid, Globe, Droplet, Archive } from 'lucide-react';
 import { Wrapper, Status } from '@googlemaps/react-wrapper';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, useTexture, Sphere, PerspectiveCamera } from '@react-three/drei';
@@ -158,6 +158,9 @@ export const PropertyTourPage = () => {
         { id: 'kids', name: 'Kids Bedroom', img: '/kids_room.png', icon: Users },
         { id: 'kitchen', name: 'Kitchen', img: '/kitchen.png', icon: LayoutGrid },
         { id: 'balcony', name: 'Balcony', img: '/balcony.png', icon: Globe },
+        { id: 'bath1', name: 'Main Bath', img: '/interior_design_3d.png', icon: Droplet },
+        { id: 'bath2', name: 'Common Bath', img: '/interior_design_3d.png', icon: Droplet },
+        { id: 'store', name: 'Store Room', img: '/interior_design_3d.png', icon: Archive },
     ];
 
     const currentRoomData = rooms.find(r => r.id === currentRoom) || rooms[0];
