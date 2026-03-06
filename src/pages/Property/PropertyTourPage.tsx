@@ -9,31 +9,34 @@ import * as THREE from 'three';
 // Optional: A simple 3D viewer component using react-three-fiber to make the generated interior look like a 360-viewer or 3D object
 const InteriorSphere = ({ imgUrl }: { imgUrl: string }) => {
     const texture = useTexture(imgUrl);
+
+    // Improve texture rendering quality
+    texture.minFilter = THREE.LinearFilter;
+    texture.magFilter = THREE.LinearFilter;
+    texture.generateMipmaps = false;
+    texture.colorSpace = THREE.SRGBColorSpace;
+
     return (
-        <Sphere args={[500, 60, 40]} scale={[-1, 1, 1]}>
+        <Sphere args={[500, 64, 64]} scale={[-1, 1, 1]}>
             <meshBasicMaterial map={texture} side={THREE.BackSide} />
         </Sphere>
     );
 };
 
 // Optional: A simple 3D viewer component using react-three-fiber to make the generated interior look like a 360-viewer or 3D object
-const InteriorViewer = ({ imgUrl }: { imgUrl: string }) => {
+const InteriorViewer = ({ imgUrl, fov = 75 }: { imgUrl: string, fov?: number }) => {
     return (
-        <Canvas camera={{ position: [0, 0, 0.1], fov: 75 }}>
+        <Canvas camera={{ position: [0, 0, 0], fov }}>
             <ambientLight intensity={1.5} />
             {/* Mapping our generated 2D image onto the inside of a sphere to fake a 360 tour for demonstration */}
             <Suspense fallback={null}>
                 <InteriorSphere imgUrl={imgUrl} />
             </Suspense>
             <OrbitControls
-                enableZoom={true}
+                enableZoom={false} // Disable default zoom to handle FOV zoom via UI/State
                 enablePan={false}
-                target={[0, 0, 0]}
+                target={[0, 0, -0.01]}
                 rotateSpeed={-0.5}
-                minDistance={0.01}
-                maxDistance={100}
-                minPolarAngle={Math.PI / 6}
-                maxPolarAngle={Math.PI - Math.PI / 6}
             />
         </Canvas>
     );
@@ -89,6 +92,7 @@ const MapRenderStatus = (status: Status): ReactElement => {
 export const PropertyTourPage = () => {
     const [viewState, setViewState] = useState<'map' | 'interior'>('map');
     const [currentRoom, setCurrentRoom] = useState('hall');
+    const [zoom, setZoom] = useState(75); // FOV based zoom (75 is normal, 30 is zoomed in, 100 is zoomed out)
 
     const rooms = [
         { id: 'hall', name: 'Big Hall', img: '/hall.png', icon: Box },
@@ -163,6 +167,32 @@ export const PropertyTourPage = () => {
 
                 {/* State 2: 3D Interior View */}
                 <div className={`absolute inset-0 transition-opacity duration-1000 ${viewState === 'interior' ? 'opacity-100 z-0' : 'opacity-0 -z-10'}`}>
+
+                    {/* Zoom UI Overlay */}
+                    <div className="absolute right-6 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-2 p-2 bg-black/40 backdrop-blur-md rounded-xl border border-white/10">
+                        <button
+                            onClick={() => setZoom(prev => Math.max(30, prev - 10))}
+                            className="w-10 h-10 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-lg text-white transition-colors border border-white/5"
+                            title="Zoom In"
+                        >
+                            <span className="text-xl font-bold">+</span>
+                        </button>
+                        <button
+                            onClick={() => setZoom(75)}
+                            className="w-10 h-10 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-lg text-white transition-colors border border-white/5"
+                            title="Reset Zoom"
+                        >
+                            <RefreshCw size={18} />
+                        </button>
+                        <button
+                            onClick={() => setZoom(prev => Math.min(110, prev + 10))}
+                            className="w-10 h-10 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-lg text-white transition-colors border border-white/5"
+                            title="Zoom Out"
+                        >
+                            <span className="text-xl font-bold">-</span>
+                        </button>
+                    </div>
+
                     {/* Room Selector UI */}
                     <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-20 flex gap-2 bg-black/40 backdrop-blur-xl p-2 rounded-2xl border border-white/10 overflow-x-auto max-w-[90vw] no-scrollbar">
                         {rooms.map(room => (
@@ -178,12 +208,12 @@ export const PropertyTourPage = () => {
                     </div>
 
                     <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 bg-black/60 backdrop-blur-md px-6 py-3 rounded-full text-xs text-white/80 border border-white/10 pointer-events-none">
-                        Drag to look around • Scroll to zoom
+                        Drag to look around • Use buttons to zoom
                     </div>
 
                     {/* Rendering the generated concept image as a panoramic environment */}
                     <Suspense fallback={<div className="flex items-center justify-center h-full text-white bg-slate-900">Loading {currentRoomData.name}...</div>}>
-                        <InteriorViewer imgUrl={currentRoomData.img} />
+                        <InteriorViewer imgUrl={currentRoomData.img} fov={zoom} />
                     </Suspense>
                 </div>
 
