@@ -10,16 +10,59 @@ import * as THREE from 'three';
 const InteriorSphere = ({ imgUrl }: { imgUrl: string }) => {
     const texture = useTexture(imgUrl);
 
-    // Improve texture rendering quality
+    // Maximize texture quality
     texture.minFilter = THREE.LinearFilter;
     texture.magFilter = THREE.LinearFilter;
     texture.generateMipmaps = false;
     texture.colorSpace = THREE.SRGBColorSpace;
     texture.anisotropy = 16;
+    texture.needsUpdate = true;
+
+    // Custom sharpening shader to enhance edges of low-res textures
+    const shaderArgs = {
+        uniforms: {
+            tDiffuse: { value: texture },
+            resolution: { value: new THREE.Vector2(2048, 1024) }, // Assumed draft resolution
+            sharpness: { value: 0.5 }
+        },
+        vertexShader: `
+            varying vec2 vUv;
+            void main() {
+                vUv = uv;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
+        `,
+        fragmentShader: `
+            uniform sampler2D tDiffuse;
+            uniform vec2 resolution;
+            uniform float sharpness;
+            varying vec2 vUv;
+
+            void main() {
+                vec2 step = 1.0 / resolution;
+                vec3 center = texture2D(tDiffuse, vUv).rgb;
+                vec3 top    = texture2D(tDiffuse, vUv + vec2(0.0, step.y)).rgb;
+                vec3 bottom = texture2D(tDiffuse, vUv + vec2(0.0, -step.y)).rgb;
+                vec3 left   = texture2D(tDiffuse, vUv + vec2(-step.x, 0.0)).rgb;
+                vec3 right  = texture2D(tDiffuse, vUv + vec2(step.x, 0.0)).rgb;
+
+                // Edge detection
+                vec3 edge = 4.0 * center - (top + bottom + left + right);
+                
+                // Add sharpened edges back to the original
+                vec3 result = center + edge * sharpness;
+                
+                gl_FragColor = vec4(result, 1.0);
+            }
+        `
+    };
 
     return (
         <Sphere args={[500, 128, 128]} scale={[-1, 1, 1]}>
-            <meshBasicMaterial map={texture} side={THREE.BackSide} />
+            <shaderMaterial
+                args={[shaderArgs]}
+                side={THREE.BackSide}
+            />
         </Sphere>
     );
 };
@@ -27,9 +70,22 @@ const InteriorSphere = ({ imgUrl }: { imgUrl: string }) => {
 // Optional: A simple 3D viewer component using react-three-fiber to make the generated interior look like a 360-viewer or 3D object
 const InteriorViewer = ({ imgUrl, fov = 75 }: { imgUrl: string, fov?: number }) => {
     return (
-        <Canvas dpr={[1, 2]} gl={{ antialias: true }}>
+        <Canvas
+            dpr={Math.min(window.devicePixelRatio, 2)}
+            gl={{
+                antialias: true,
+                alpha: false,
+                stencil: false,
+                depth: true,
+                powerPreference: "high-performance"
+            }}
+            style={{
+                filter: 'contrast(1.05) brightness(1.05) saturate(1.05) sharpness(1.1)',
+                WebkitFilter: 'contrast(1.05) brightness(1.05) saturate(1.05)', // Fallback
+            }}
+        >
             <PerspectiveCamera makeDefault position={[0, 0, 0]} fov={fov} />
-            <ambientLight intensity={1.5} />
+            <ambientLight intensity={2.0} />
             {/* Mapping our generated 2D image onto the inside of a sphere to fake a 360 tour for demonstration */}
             <Suspense fallback={null}>
                 <InteriorSphere imgUrl={imgUrl} />
@@ -38,7 +94,7 @@ const InteriorViewer = ({ imgUrl, fov = 75 }: { imgUrl: string, fov?: number }) 
                 enableZoom={false} // Disable default zoom to handle FOV zoom via UI/State
                 enablePan={false}
                 target={[0, 0, -0.01]}
-                rotateSpeed={-0.5}
+                rotateSpeed={-0.4}
             />
         </Canvas>
     );
