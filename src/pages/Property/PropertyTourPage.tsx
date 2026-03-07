@@ -1,10 +1,19 @@
-import { useState, useEffect, useRef, Suspense } from 'react';
-import type { ReactElement } from 'react';
+import { useState, Suspense } from 'react';
 import { MapPin, Box, ArrowLeft, RefreshCw, Users, LayoutGrid, Globe, Droplet, Archive } from 'lucide-react';
-import { Wrapper, Status } from '@googlemaps/react-wrapper';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, useTexture, Sphere, PerspectiveCamera } from '@react-three/drei';
 import * as THREE from 'three';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+
+// Fix for default marker icons in React Leaflet
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+    iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+    iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+});
 
 const InteriorSphere = ({ imgUrl }: { imgUrl: string }) => {
     const texture = useTexture(imgUrl);
@@ -74,25 +83,19 @@ const InteriorViewer = ({ imgUrl, fov, roomKey, isPanorama }: { imgUrl: string; 
         : <FlatViewer imgUrl={imgUrl} />
 );
 
-const SimpleMap = ({ onMarkerClick }: { onMarkerClick: () => void }) => {
-    const ref = useRef<HTMLDivElement>(null);
-    const [map, setMap] = useState<any>();
-    const center = { lat: 21.493, lng: 39.245 };
-    useEffect(() => {
-        if (ref.current && !map) {
-            const m = new (window as any).google.maps.Map(ref.current, { center, zoom: 17, mapTypeId: 'satellite', tilt: 45, heading: 90 });
-            const mk = new (window as any).google.maps.Marker({ position: center, map: m, animation: (window as any).google.maps.Animation.DROP });
-            mk.addListener('click', () => { m.setZoom(20); setTimeout(onMarkerClick, 1000); });
-            setMap(m);
-        }
-    }, [ref, map, onMarkerClick]);
-    return <div ref={ref} id="map" className="w-full h-full" />;
-};
-
-const MapStatus = (s: Status): ReactElement => {
-    if (s === Status.LOADING) return <div className="flex items-center justify-center h-full text-white bg-slate-900">Loading Maps…</div>;
-    if (s === Status.FAILURE) return <div className="flex items-center justify-center h-full text-red-500 bg-slate-900">Maps error.</div>;
-    return <></>;
+const LeafletMap = ({ onMarkerClick }: { onMarkerClick: () => void }) => {
+    const center: [number, number] = [21.493, 39.245];
+    return (
+        <MapContainer center={center} zoom={16} style={{ height: '100%', width: '100%' }}>
+            <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            <Marker position={center} eventHandlers={{ click: onMarkerClick }}>
+                <Popup>Click to enter 3D Tour</Popup>
+            </Marker>
+        </MapContainer>
+    );
 };
 
 const ROOMS = [
@@ -113,7 +116,6 @@ export const PropertyTourPage = () => {
     const [fov, setFov] = useState(75);
 
     const room = ROOMS.find(r => r.id === roomId) ?? ROOMS[0];
-    const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
 
     const switchRoom = (id: string) => {
         const r = ROOMS.find(x => x.id === id) ?? ROOMS[0];
@@ -144,19 +146,7 @@ export const PropertyTourPage = () => {
             <div className="flex-1 relative bg-slate-900 w-full h-full text-white">
 
                 <div className={`absolute inset-0 transition-opacity duration-700 ${view === 'map' ? 'opacity-100 z-0' : 'opacity-0 -z-10'}`}>
-                    {apiKey
-                        ? <Wrapper apiKey={apiKey} render={MapStatus}><SimpleMap onMarkerClick={() => setView('interior')} /></Wrapper>
-                        : (
-                            <div className="flex flex-col items-center justify-center h-full gap-4">
-                                <p className="text-xl">Add VITE_GOOGLE_MAPS_API_KEY to .env</p>
-                                <div className="bg-slate-700 rounded-xl flex items-center justify-center w-96 h-48 cursor-pointer group" onClick={() => setView('interior')}>
-                                    <div className="bg-blue-600 px-6 py-3 rounded-full group-hover:scale-110 transition-transform flex items-center gap-2 font-bold">
-                                        <MapPin size={20} /> Click to Enter
-                                    </div>
-                                </div>
-                            </div>
-                        )
-                    }
+                    <LeafletMap onMarkerClick={() => setView('interior')} />
                 </div>
 
                 <div
