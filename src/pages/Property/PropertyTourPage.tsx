@@ -1,9 +1,9 @@
-import { useState, Suspense } from 'react';
-import { MapPin, Box, ArrowLeft, RefreshCw, Users, LayoutGrid, Globe, Droplet, Archive } from 'lucide-react';
+import { useState, useEffect, Suspense } from 'react';
+import { MapPin, Box, ArrowLeft, RefreshCw, Users, LayoutGrid, Globe, Droplet, Archive, Map as MapIcon, Castle, DoorOpen, Compass } from 'lucide-react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, useTexture, Sphere, PerspectiveCamera } from '@react-three/drei';
 import * as THREE from 'three';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
@@ -63,7 +63,7 @@ const InteriorSphere = ({ imgUrl }: { imgUrl: string }) => {
     );
 };
 
-// Flat 2D viewer for non-panoramic photos (e.g. portrait bathroom shots)
+// Flat 2D viewer for non-panoramic photos
 const FlatViewer = ({ imgUrl }: { imgUrl: string }) => (
     <div style={{ position: 'absolute', inset: 0, background: '#0f172a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <img src={imgUrl} alt="Room view" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', borderRadius: '12px', boxShadow: '0 0 80px rgba(0,0,0,0.8)' }} />
@@ -83,17 +83,36 @@ const InteriorViewer = ({ imgUrl, fov, roomKey, isPanorama }: { imgUrl: string; 
         : <FlatViewer imgUrl={imgUrl} />
 );
 
-const LeafletMap = ({ onMarkerClick }: { onMarkerClick: () => void }) => {
-    const center: [number, number] = [21.493, 39.245];
+const MapAnimationController = ({ step }: { step: number }) => {
+    const map = useMap();
+    useEffect(() => {
+        if (step === 0) {
+            // Start wide (Saudi Arabia)
+            map.setView([23.8859, 45.0792], 5);
+        } else if (step === 1) {
+            // General region flight
+            map.flyTo([22.5, 40.5], 7, { duration: 1.5 });
+        } else if (step === 2) {
+            // Camp 7 area
+            map.flyTo([21.493, 39.245], 14, { duration: 1.8 });
+        } else if (step >= 3) {
+            // Camp 7 Flat Tour exact building
+            map.flyTo([21.493, 39.245], 18, { duration: 2.0 });
+        }
+    }, [step, map]);
+    return null;
+};
+
+const LeafletMap = ({ step }: { step: number }) => {
     return (
-        <MapContainer center={center} zoom={16} style={{ height: '100%', width: '100%' }}>
-            <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-            <Marker position={center} eventHandlers={{ click: onMarkerClick }}>
-                <Popup>Click to enter 3D Tour</Popup>
-            </Marker>
+        <MapContainer center={[23.8859, 45.0792]} zoom={5} style={{ height: '100%', width: '100%' }} zoomControl={false} attributionControl={false}>
+            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+            <MapAnimationController step={step} />
+            {step >= 3 && (
+                <Marker position={[21.493, 39.245]}>
+                    <Popup>Camp 7 Flat</Popup>
+                </Marker>
+            )}
         </MapContainer>
     );
 };
@@ -111,11 +130,13 @@ const ROOMS = [
 ];
 
 export const PropertyTourPage = () => {
-    const [view, setView] = useState<'map' | 'interior'>('map');
+    // Sequence state: 0=Start, 1=Regional Map, 2=Area Map, 3=Flat Tour, 4=Interior
+    const [step, setStep] = useState(0);
     const [roomId, setRoomId] = useState('hall');
     const [fov, setFov] = useState(75);
 
     const room = ROOMS.find(r => r.id === roomId) ?? ROOMS[0];
+    const isInterior = step === 4;
 
     const switchRoom = (id: string) => {
         const r = ROOMS.find(x => x.id === id) ?? ROOMS[0];
@@ -123,35 +144,58 @@ export const PropertyTourPage = () => {
         setFov(r.defaultFov); // reset FOV to each room's natural default
     };
 
+    const getButtonConfig = () => {
+        switch (step) {
+            case 0: return { label: 'OpenStreetMap', icon: MapIcon, color: 'bg-blue-600 hover:bg-blue-700' };
+            case 1: return { label: 'camp 7 area', icon: Compass, color: 'bg-emerald-600 hover:bg-emerald-700' };
+            case 2: return { label: 'Camp 7 Flat Tour', icon: Castle, color: 'bg-indigo-600 hover:bg-indigo-700' };
+            case 3: return { label: 'Enter 3D Interior', icon: DoorOpen, color: 'bg-orange-600 hover:bg-orange-700 hover:scale-105 transition-transform' };
+            default: return { label: 'Inside', icon: Box, color: 'bg-blue-600' };
+        }
+    };
+
+    const activeBtn = getButtonConfig();
+
     return (
         <div className="flex flex-col h-screen bg-slate-50 relative overflow-hidden font-sans">
 
-            <div className="absolute top-0 left-0 right-0 z-10 bg-gradient-to-b from-black/70 to-transparent p-6 flex justify-between items-start pointer-events-none">
+            <div className="absolute top-0 left-0 right-0 z-20 bg-gradient-to-b from-black/70 to-transparent p-6 flex justify-between items-start pointer-events-none">
                 <div className="text-white">
                     <h1 className="text-3xl font-bold tracking-tight">Camp 7 Flat Tour</h1>
-                    {view === 'interior' && <p className="text-sm text-white/60 mt-1">{room.name}</p>}
+                    {isInterior && <p className="text-sm text-white/60 mt-1">{room.name}</p>}
                 </div>
                 <div className="flex gap-3 pointer-events-auto">
-                    {view === 'interior' && (
-                        <button onClick={() => setView('map')} className="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2">
+                    {isInterior && (
+                        <button onClick={() => setStep(3)} className="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2">
                             <ArrowLeft size={18} /> Back to Map
                         </button>
                     )}
-                    <button onClick={() => setView(v => v === 'map' ? 'interior' : 'map')} className="bg-blue-600 hover:bg-blue-700 shadow-lg text-white px-5 py-2 rounded-lg font-semibold flex items-center gap-2">
-                        {view === 'map' ? <><Box size={18} /> Enter 3D Interior</> : <><MapPin size={18} /> View Location</>}
-                    </button>
                 </div>
             </div>
 
             <div className="flex-1 relative bg-slate-900 w-full h-full text-white">
 
-                <div className={`absolute inset-0 transition-opacity duration-700 ${view === 'map' ? 'opacity-100 z-0' : 'opacity-0 -z-10'}`}>
-                    <LeafletMap onMarkerClick={() => setView('interior')} />
+                {/* Map Layer (Visible until step 4) */}
+                <div className={`absolute inset-0 transition-opacity duration-1000 ${isInterior ? 'opacity-0 -z-10' : 'opacity-100 z-0'}`}>
+                    <LeafletMap step={step} />
+
+                    {/* Centered Action Button Overlay */}
+                    {!isInterior && (
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+                            <button
+                                onClick={() => setStep(s => Math.min(4, s + 1))}
+                                className={`pointer-events-auto shadow-2xl text-white px-8 py-4 rounded-2xl font-bold text-xl flex items-center gap-3 transition-colors ${activeBtn.color}`}
+                            >
+                                <activeBtn.icon size={28} /> {activeBtn.label}
+                            </button>
+                        </div>
+                    )}
                 </div>
 
+                {/* 3D Interior Layer (Visible only on step 4) */}
                 <div
-                    className={`absolute inset-0 transition-opacity duration-700 ${view === 'interior' ? 'opacity-100 z-0' : 'opacity-0 -z-10'}`}
-                    onWheel={e => { if (view === 'interior') setFov(p => Math.max(30, Math.min(120, p + (e.deltaY > 0 ? 5 : -5)))); }}
+                    className={`absolute inset-0 transition-opacity duration-1000 ${isInterior ? 'opacity-100 z-10' : 'opacity-0 -z-10 pointer-events-none'}`}
+                    onWheel={e => { if (isInterior) setFov(p => Math.max(30, Math.min(120, p + (e.deltaY > 0 ? 5 : -5)))); }}
                 >
                     <div className="absolute right-6 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-2 p-2 bg-black/40 backdrop-blur-md rounded-xl border border-white/10">
                         <button onClick={() => setFov(p => Math.max(30, p - 10))} className="w-10 h-10 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-lg text-white text-xl font-bold">+</button>
