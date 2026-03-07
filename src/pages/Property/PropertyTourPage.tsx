@@ -181,7 +181,7 @@ export const PropertyTourPage = () => {
 
                     {/* Centered Action Button Overlay */}
                     {!isInterior && (
-                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-[9999]">
                             <button
                                 onClick={() => setStep(s => Math.min(4, s + 1))}
                                 className={`pointer-events-auto shadow-2xl text-white px-8 py-4 rounded-2xl font-bold text-xl flex items-center gap-3 transition-colors ${activeBtn.color}`}
