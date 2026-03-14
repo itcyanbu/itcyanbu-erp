@@ -205,12 +205,12 @@ export const PropertyTourPage = () => {
                         <button onClick={() => setFov(p => Math.min(120, p + 10))} className="w-10 h-10 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-lg text-white text-xl font-bold">−</button>
                     </div>
 
-                    <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-20 flex gap-2 bg-black/40 backdrop-blur-xl p-2 rounded-2xl border border-white/10 overflow-x-auto max-w-[90vw] no-scrollbar">
+                    <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-20 flex gap-1.5 bg-black/40 backdrop-blur-xl p-1.5 rounded-2xl border border-white/10 overflow-x-auto max-w-[95vw] no-scrollbar">
                         {ROOMS.map(r => (
                             <button key={r.id} onClick={() => switchRoom(r.id)}
-                                className={`flex flex-col items-center min-w-[80px] p-2 rounded-xl transition-all ${roomId === r.id ? 'bg-blue-600 text-white shadow-lg scale-105' : 'text-slate-400 hover:text-white hover:bg-white/10'}`}>
-                                <r.icon size={18} />
-                                <span className="text-[10px] font-bold mt-1 uppercase whitespace-nowrap">{r.name}</span>
+                                className={`flex flex-col items-center min-w-[70px] px-2 py-1.5 rounded-xl transition-all ${roomId === r.id ? 'bg-blue-600 text-white shadow-lg scale-105' : 'text-slate-400 hover:text-white hover:bg-white/10'}`}>
+                                <r.icon size={16} />
+                                <span className="text-[9px] font-bold mt-1 uppercase whitespace-nowrap text-center leading-tight">{r.name}</span>
                             </button>
                         ))}
                     </div>
