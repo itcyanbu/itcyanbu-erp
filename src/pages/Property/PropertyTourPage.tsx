@@ -118,14 +118,13 @@ const LeafletMap = ({ step }: { step: number }) => {
 };
 
 const ROOMS = [
-    { id: 'hall', name: 'Big Hall', img: '/hall.png', icon: Box, defaultFov: 75, isPanorama: true },
+    { id: 'hall', name: 'Big Hall', img: '/hall_panorama.jpg', icon: Box, defaultFov: 75, isPanorama: true },
     { id: 'apartment_simple_360', name: 'Simple Apartment (360°)', img: '/apartment_360_simple.png', icon: Castle, defaultFov: 75, isPanorama: true },
     { id: 'apartment_simple_still', name: 'Simple Marketing Still', img: '/apartment_marketing_simple.png', icon: Globe, defaultFov: 75, isPanorama: false },
-    { id: 'master', name: 'Main Bedroom', img: '/master_bedroom.png', icon: MapPin, defaultFov: 75, isPanorama: true },
-    { id: 'kids', name: 'Kids Bedroom', img: '/kids_room.png', icon: Users, defaultFov: 75, isPanorama: true },
-    { id: 'kitchen', name: 'Kitchen', img: '/kitchen.png', icon: LayoutGrid, defaultFov: 75, isPanorama: true },
-    { id: 'balcony', name: 'Balcony', img: '/balcony.png', icon: Globe, defaultFov: 75, isPanorama: true },
-    // Bath rooms: real equirectangular 360° panorama (Greg Zaal / Poly Haven, CC0)
+    { id: 'master', name: 'Main Bedroom', img: '/master_bedroom_panorama.jpg', icon: MapPin, defaultFov: 75, isPanorama: true },
+    { id: 'kids', name: 'Kids Bedroom', img: '/kids_room_panorama.jpg', icon: Users, defaultFov: 75, isPanorama: true },
+    { id: 'kitchen', name: 'Kitchen', img: '/kitchen_panorama.jpg', icon: LayoutGrid, defaultFov: 75, isPanorama: true },
+    { id: 'balcony', name: 'Balcony', img: '/balcony_panorama.jpg', icon: Globe, defaultFov: 75, isPanorama: true },
     { id: 'bath1', name: 'Main Bath', img: '/bath_panorama.jpg', icon: Droplet, defaultFov: 75, isPanorama: true },
     { id: 'bath2', name: 'Common Bath', img: '/bath_panorama.jpg', icon: Droplet, defaultFov: 75, isPanorama: true },
     { id: 'store', name: 'Store Room', img: '/store_pro.png', icon: Archive, defaultFov: 90, isPanorama: true },
