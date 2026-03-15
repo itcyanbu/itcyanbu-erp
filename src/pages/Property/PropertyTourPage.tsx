@@ -120,7 +120,6 @@ const LeafletMap = ({ step }: { step: number }) => {
 const ROOMS = [
     { id: 'hall', name: 'Big Hall', img: '/hall_panorama.jpg', icon: Box, defaultFov: 75, isPanorama: true },
     { id: 'apartment_simple_360', name: 'Simple Apartment (360°)', img: '/apartment_360_simple.png', icon: Castle, defaultFov: 75, isPanorama: true },
-    { id: 'apartment_simple_still', name: 'Simple Marketing Still', img: '/apartment_marketing_simple.png', icon: Globe, defaultFov: 75, isPanorama: false },
     { id: 'master', name: 'Main Bedroom', img: '/master_bedroom_panorama.jpg', icon: MapPin, defaultFov: 75, isPanorama: true },
     { id: 'kids', name: 'Kids Bedroom', img: '/kids_room_panorama.jpg', icon: Users, defaultFov: 75, isPanorama: true },
     { id: 'kitchen', name: 'Kitchen', img: '/kitchen_panorama.jpg', icon: LayoutGrid, defaultFov: 75, isPanorama: true },
