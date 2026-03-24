@@ -2,6 +2,49 @@ import { useState, useEffect } from 'react';
 import { Video, HelpCircle, Box, FileText, Globe, Play, Users, Factory, ArrowLeft, ChevronLeft, ChevronRight, Settings, BookOpen, Bot, Zap, Gauge, Target, MessageSquare, ShieldCheck, Maximize } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls, Sphere, PerspectiveCamera } from '@react-three/drei';
+import * as THREE from 'three';
+
+// ---------------------------------------------------------------------------
+// 360° Video sphere for Services tab
+// ---------------------------------------------------------------------------
+const VideoSphere = ({ url }: { url: string }) => {
+    const [video] = useState(() => {
+        const vid = document.createElement("video");
+        vid.src = url;
+        vid.crossOrigin = "Anonymous";
+        vid.loop = true;
+        vid.muted = true;
+        vid.playsInline = true;
+        vid.play();
+        return vid;
+    });
+
+    return (
+        <Sphere args={[500, 64, 64]} scale={[-1, 1, 1]}>
+            <meshBasicMaterial side={THREE.BackSide}>
+                <videoTexture attach="map" args={[video]} colorSpace={THREE.SRGBColorSpace} />
+            </meshBasicMaterial>
+        </Sphere>
+    );
+};
+
+const ServicesTourViewer = () => {
+    return (
+        <div className="absolute inset-0 bg-black rounded-2xl overflow-hidden shadow-xl border border-gray-200" style={{ minHeight: '600px' }}>
+            <Canvas dpr={Math.min(window.devicePixelRatio, 2)} gl={{ antialias: true, alpha: false }}>
+                <PerspectiveCamera makeDefault position={[0, 0, 0]} fov={75} />
+                <VideoSphere url="/hi_7.mp4" />
+                <OrbitControls enableZoom={true} enablePan={false} target={[0, 0, -0.01]} rotateSpeed={-0.4} />
+            </Canvas>
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 bg-black/60 backdrop-blur-md px-6 py-3 rounded-full text-xs text-white/80 border border-white/10 pointer-events-none">
+                Drag to look around • 360° Video Tour
+            </div>
+        </div>
+    );
+};
+
 
 const AiSolutionsPage = () => {
     const { t } = useTranslation();
@@ -115,6 +158,7 @@ const AiSolutionsPage = () => {
         { id: 'cctv-ai', label: t('ai_solutions.cctv_ai'), icon: Video, color: 'text-blue-500', bg: 'bg-blue-50' },
         { id: 'industry-ai', label: t('ai_solutions.industry_ai'), icon: Factory, color: 'text-orange-500', bg: 'bg-orange-50' },
         { id: 'ai-employee-1', label: t('ai_solutions.ai_employee'), icon: Users, color: 'text-green-500', bg: 'bg-green-50' },
+        { id: 'services-tour', label: 'Services', icon: Maximize, color: 'text-teal-500', bg: 'bg-teal-50' },
         { id: 'help', label: t('ai_solutions.helps'), icon: HelpCircle, color: 'text-pink-500', bg: 'bg-pink-50' },
     ];
 
@@ -270,8 +314,27 @@ const AiSolutionsPage = () => {
                         </div>
                     );
                 }
+                return null;
 
+            case 'services-tour':
+                return (
+                    <div className="animate-in fade-in duration-500 space-y-6 flex flex-col items-center">
+                        <div className="flex items-center gap-3 mb-2 w-full">
+                            <div className="bg-teal-50 p-3 rounded-xl">
+                                <Maximize className="w-7 h-7 text-teal-500" />
+                            </div>
+                            <div>
+                                <h2 className="text-xl font-bold text-gray-900">3D & 360° Services Tour</h2>
+                                <p className="text-sm text-gray-500">Explore our apartment walkthrough in 360 degrees</p>
+                            </div>
+                        </div>
+                        <div className="w-full relative h-[75vh]">
+                            <ServicesTourViewer />
+                        </div>
+                    </div>
+                );
 
+            case 'cctv-services-overview': // Fallback for previous block layout
                 return (
                     <div className="animate-in fade-in duration-300 space-y-6" dir="rtl">
                         <div className="flex items-center gap-3 mb-2">
