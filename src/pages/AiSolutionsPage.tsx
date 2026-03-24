@@ -743,7 +743,7 @@ const AiSolutionsPage = () => {
                                 <ArrowLeft size={20} />
                             </button>
                         )}
-                        <h1 className="text-2xl font-bold text-gray-900">{t('ai_solutions.title')}</h1>
+                        <h1 className="text-2xl font-bold text-gray-900">{t('ai_solutions.title')} (v1.1)</h1>
                     </div>
                     <p className="text-gray-500 mt-1">{t('ai_solutions.subtitle')}</p>
                 </div>
