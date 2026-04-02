@@ -108,7 +108,7 @@ const ROOMS = [
 ];
 
 export const PropertyTourPage = () => {
-    const [view, setView] = useState<'map' | 'interior'>('map');
+    const [view, setView] = useState<'map' | 'interior'>(window.location.search.includes('tour') ? 'interior' : 'map');
     const [roomId, setRoomId] = useState('hall');
     const [fov, setFov] = useState(75);
 

@@ -37,7 +37,7 @@ import { Loader2 } from 'lucide-react';
 import WorkflowBuilder from './pages/WorkflowBuilder';
 
 function App() {
-  const [activeModule, setActiveModule] = useState('Contacts');
+  const [activeModule, setActiveModule] = useState(window.location.search.includes('tour') ? 'Property Tour' : 'Contacts');
   const { user, isSupabaseEnabled, loading } = useAuth();
 
   if (loading) {
