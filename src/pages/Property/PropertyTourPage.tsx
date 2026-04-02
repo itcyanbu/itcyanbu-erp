@@ -102,7 +102,7 @@ const ROOMS = [
     { id: 'kitchen', name: 'Kitchen', img: '/kitchen.png', icon: LayoutGrid, defaultFov: 110, isPanorama: true },
     { id: 'balcony', name: 'Balcony', img: '/balcony.png', icon: Globe, defaultFov: 110, isPanorama: true },
     // Bath rooms: real equirectangular 360° panorama (Greg Zaal / Poly Haven, CC0)
-    { id: 'bath1', name: 'Main Bath', img: '/bath_panorama.jpg', icon: Droplet, defaultFov: 110, isPanorama: true },
+    { id: 'bath1', name: 'Main Bath', img: '/bath_panorama.jpg', icon: Droplet, defaultFov: 140, isPanorama: true },
     { id: 'bath2', name: 'Common Bath', img: '/bath_panorama.jpg', icon: Droplet, defaultFov: 110, isPanorama: true },
     { id: 'store', name: 'Store Room', img: '/store_pro.png', icon: Archive, defaultFov: 110, isPanorama: true },
 ];
