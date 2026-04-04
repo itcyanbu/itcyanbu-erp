@@ -1,49 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Video, HelpCircle, Box, FileText, Globe, Play, Users, Factory, ArrowLeft, ChevronLeft, ChevronRight, Settings, BookOpen, Bot, Zap, Gauge, Target, MessageSquare, ShieldCheck, Maximize } from 'lucide-react';
+import { Video, HelpCircle, Box, FileText, Globe, Play, Users, Factory, ArrowLeft, ChevronLeft, ChevronRight, BookOpen, Bot, Zap, Gauge, Target, MessageSquare, ShieldCheck, Maximize } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
-import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Sphere, PerspectiveCamera } from '@react-three/drei';
-import * as THREE from 'three';
 
-// ---------------------------------------------------------------------------
-// 360° Video sphere for Services tab
-// ---------------------------------------------------------------------------
-const VideoSphere = ({ url }: { url: string }) => {
-    const [video] = useState(() => {
-        const vid = document.createElement("video");
-        vid.src = url;
-        vid.crossOrigin = "Anonymous";
-        vid.loop = true;
-        vid.muted = true;
-        vid.playsInline = true;
-        vid.play();
-        return vid;
-    });
 
-    return (
-        <Sphere args={[500, 64, 64]} scale={[-1, 1, 1]}>
-            <meshBasicMaterial side={THREE.BackSide}>
-                <videoTexture attach="map" args={[video]} colorSpace={THREE.SRGBColorSpace} />
-            </meshBasicMaterial>
-        </Sphere>
-    );
-};
-
-const ServicesTourViewer = () => {
-    return (
-        <div className="absolute inset-0 bg-black rounded-2xl overflow-hidden shadow-xl border border-gray-200" style={{ minHeight: '600px' }}>
-            <Canvas dpr={Math.min(window.devicePixelRatio, 2)} gl={{ antialias: true, alpha: false }}>
-                <PerspectiveCamera makeDefault position={[0, 0, 0]} fov={75} />
-                <VideoSphere url="/hi_7.mp4" />
-                <OrbitControls enableZoom={true} enablePan={false} target={[0, 0, -0.01]} rotateSpeed={-0.4} />
-            </Canvas>
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 bg-black/60 backdrop-blur-md px-6 py-3 rounded-full text-xs text-white/80 border border-white/10 pointer-events-none">
-                Drag to look around • 360° Video Tour
-            </div>
-        </div>
-    );
-};
 
 
 const AiSolutionsPage = () => {
@@ -158,7 +118,6 @@ const AiSolutionsPage = () => {
         { id: 'cctv-ai', label: t('ai_solutions.cctv_ai'), icon: Video, color: 'text-blue-500', bg: 'bg-blue-50' },
         { id: 'industry-ai', label: t('ai_solutions.industry_ai'), icon: Factory, color: 'text-orange-500', bg: 'bg-orange-50' },
         { id: 'ai-employee-1', label: t('ai_solutions.ai_employee'), icon: Users, color: 'text-green-500', bg: 'bg-green-50' },
-        { id: 'services-tour', label: 'Services', icon: Maximize, color: 'text-teal-500', bg: 'bg-teal-50' },
         { id: 'help', label: t('ai_solutions.helps'), icon: HelpCircle, color: 'text-pink-500', bg: 'bg-pink-50' },
     ];
 
@@ -229,7 +188,6 @@ const AiSolutionsPage = () => {
                     return (
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-4xl mx-auto py-12 animate-in slide-in-from-bottom-4 duration-500">
                             {[
-                                { id: 'services', label: t('ai_solutions.services'), icon: Settings, color: 'text-blue-600', bg: 'bg-blue-50' },
                                 { id: 'case-study', label: t('ai_solutions.case_study'), icon: BookOpen, color: 'text-indigo-600', bg: 'bg-indigo-50' }
                             ].map((subView) => {
                                 const Icon = subView.icon;
@@ -315,165 +273,6 @@ const AiSolutionsPage = () => {
                     );
                 }
                 return null;
-
-            case 'services-tour':
-                return (
-                    <div className="animate-in fade-in duration-500 space-y-6 flex flex-col items-center">
-                        <div className="flex items-center gap-3 mb-2 w-full">
-                            <div className="bg-teal-50 p-3 rounded-xl">
-                                <Maximize className="w-7 h-7 text-teal-500" />
-                            </div>
-                            <div>
-                                <h2 className="text-xl font-bold text-gray-900">3D & 360° Services Tour</h2>
-                                <p className="text-sm text-gray-500">Explore our apartment walkthrough in 360 degrees</p>
-                            </div>
-                        </div>
-                        <div className="w-full relative h-[75vh]">
-                            <ServicesTourViewer />
-                        </div>
-                    </div>
-                );
-
-            case 'cctv-services-overview': // Fallback for previous block layout
-                return (
-                    <div className="animate-in fade-in duration-300 space-y-6" dir="rtl">
-                        <div className="flex items-center gap-3 mb-2">
-                            <div className="bg-blue-50 p-3 rounded-xl">
-                                <Settings className="w-7 h-7 text-blue-500" />
-                            </div>
-                            <div>
-                                <h2 className="text-xl font-bold text-gray-900">خدمات الذكاء الاصطناعي للمراقبة</h2>
-                                <p className="text-sm text-gray-500">تحليل ذكي في الوقت الفعلي باستخدام رؤية الحاسوب</p>
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {[
-                                {
-                                    icon: '👥',
-                                    title: 'إحصاء الزبائن',
-                                    desc: 'إحصاء دقيق للزبائن الداخلين والخارجين. يقوم نظام رؤية حاسوبية بإحصاء عدد الزبائن داخل المطعم في الوقت الفعلي وتتبع حركتهم.',
-                                    color: 'bg-blue-50 border-blue-100',
-                                    iconBg: 'bg-blue-100',
-                                },
-                                {
-                                    icon: '⏱️',
-                                    title: 'مراقبة الطوابير وأوقات الانتظار',
-                                    desc: 'تحليل تلقائي لطول الطابور ووقت الانتظار لكل زبون، مع تنبيهات فورية في حالة الازدحام.',
-                                    color: 'bg-amber-50 border-amber-100',
-                                    iconBg: 'bg-amber-100',
-                                },
-                                {
-                                    icon: '🧤',
-                                    title: 'مراقبة معدات الوقاية الشخصية',
-                                    desc: 'يكشف عن الأقنعة والقفازات وأغطية الرأس والمآزر ومؤشرات النظافة لدى طاقم المطبخ.',
-                                    color: 'bg-green-50 border-green-100',
-                                    iconBg: 'bg-green-100',
-                                },
-                                {
-                                    icon: '🧾',
-                                    title: 'مراقبة سلوك أمين الصندوق',
-                                    desc: 'يكشف عن تناول الطعام والتدخين والجلوس واستخدام الهاتف والابتعاد عن منضدة أمين الصندوق.',
-                                    color: 'bg-red-50 border-red-100',
-                                    iconBg: 'bg-red-100',
-                                },
-                                {
-                                    icon: '📊',
-                                    title: 'تقدير عمر وجنس الموظف',
-                                    desc: 'إحصائيات دقيقة في الوقت الفعلي مفيدة للتسويق وتحسين تجربة العملاء.',
-                                    color: 'bg-purple-50 border-purple-100',
-                                    iconBg: 'bg-purple-100',
-                                },
-                                {
-                                    icon: '🪑',
-                                    title: 'مراقبة الطاولات',
-                                    desc: 'يحدد تلقائيًا حالة كل طاولة (تنظيف، شاغرة، محجوزة) وينبهك عند الحاجة إلى التنظيف.',
-                                    color: 'bg-teal-50 border-teal-100',
-                                    iconBg: 'bg-teal-100',
-                                },
-                                {
-                                    icon: '🪪',
-                                    title: 'التعرف على وجوه الموظفين',
-                                    desc: 'نظام حضور ذكي بدون بصمات، يعتمد على كاميرات المطعم.',
-                                    color: 'bg-indigo-50 border-indigo-100',
-                                    iconBg: 'bg-indigo-100',
-                                },
-                                {
-                                    icon: '🚨',
-                                    title: 'تنبيهات ذكية للازدحام',
-                                    desc: 'تنبيهات فورية وذكية عند اكتشاف الازدحام أو الطوابير الطويلة.',
-                                    color: 'bg-orange-50 border-orange-100',
-                                    iconBg: 'bg-orange-100',
-                                },
-                            ].map((service, idx) => (
-                                <div
-                                    key={idx}
-                                    className={`flex items-start gap-4 p-5 rounded-2xl border ${service.color} hover:shadow-md transition-all duration-200 hover:-translate-y-0.5`}
-                                >
-                                    <div className={`text-2xl w-12 h-12 flex items-center justify-center rounded-xl ${service.iconBg} shrink-0`}>
-                                        {service.icon}
-                                    </div>
-                                    <div>
-                                        <h3 className="font-bold text-gray-900 mb-1">{service.title}</h3>
-                                        <p className="text-sm text-gray-600 leading-relaxed">{service.desc}</p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-
-                        {/* Intro Banner */}
-                        <div className="bg-gradient-to-l from-blue-600 to-indigo-700 rounded-2xl p-6 text-white">
-                            <p className="text-lg font-bold mb-1">✅ تم التثبيت بنجاح حتى الآن.</p>
-                            <p className="text-blue-100 font-semibold">أصبح الأمن أسهل! تتوفر العديد من أنظمة الحماية.</p>
-                        </div>
-
-                        {/* FAQ Cards */}
-                        <div className="space-y-4">
-                            {[
-                                {
-                                    icon: '🤖',
-                                    q: 'ما هو itcyanbu ai؟',
-                                    a: 'هو نظام مراقبة مدعوم بالذكاء الاصطناعي، يحلل بث الكاميرات المباشر في الوقت الفعلي لاكتشاف الأحداث المهمة، وإنشاء تنبيهات ذكية، وتوفير لوحات تحكم تساعدك على مراقبة موقعك واتخاذ قرارات أسرع وأفضل.',
-                                    color: 'border-blue-200 bg-blue-50/60',
-                                },
-                                {
-                                    icon: '⚡',
-                                    q: 'كيف يختلف عن أنظمة المراقبة التقليدية؟',
-                                    a: 'مع الأنظمة التقليدية، يجب على شخص ما مراقبة الشاشات باستمرار ومراجعة التسجيلات يدويًا. يستخدم itcyanbu ai الذكاء الاصطناعي للمراقبة التلقائية على مدار الساعة، وتصفية الأنشطة العادية، واكتشاف الأحداث غير المعتادة، وتحويل ساعات من الفيديو إلى تنبيهات ورؤى واضحة.',
-                                    color: 'border-amber-200 bg-amber-50/60',
-                                },
-                                {
-                                    icon: '📷',
-                                    q: 'هل أحتاج إلى استبدال كاميراتي الحالية؟',
-                                    a: 'في معظم الحالات، لا. itcyanbu ai مصمم للعمل مع معظم أنظمة الكاميرات الحديثة القائمة على بروتوكول الإنترنت. نقوم ببساطة بالاتصال ببنيتك التحتية الحالية ونساعدك على تحقيق أقصى استفادة من الكاميرات الموجودة لديك.',
-                                    color: 'border-green-200 bg-green-50/60',
-                                },
-                                {
-                                    icon: '🎯',
-                                    q: 'ما الأنشطة التي يمكن للنظام رصدها؟',
-                                    a: 'مع itcyanbu ai يمكن ضبط النظام لرصد حالات مثل: التواجد في المناطق المحظورة، والتجمعات غير المعتادة، والتنقل خلال ساعات غير مصرح بها، والتسكع في المناطق الحساسة، وغيرها من الأنماط التي قد تؤثر على السلامة والأمن والعمليات — وذلك حسب احتياجات موقعك.',
-                                    color: 'border-purple-200 bg-purple-50/60',
-                                },
-                                {
-                                    icon: '🔒',
-                                    q: 'كيف يتعامل النظام مع الخصوصية والأمن؟',
-                                    a: 'نولي أهمية قصوى للخصوصية والأمن. تُدار بثوث الفيديو والبيانات ذات الصلة وفقًا لضوابط صارمة للتحكم في الوصول والتسجيل وممارسات أمنية دقيقة، مما يضمن وصول المستخدمين المصرح لهم فقط إلى المعلومات، وأن النظام يلبي متطلبات البيئات المهنية.',
-                                    color: 'border-indigo-200 bg-indigo-50/60',
-                                },
-                            ].map((faq, idx) => (
-                                <div key={idx} className={`p-5 rounded-2xl border-2 ${faq.color}`}>
-                                    <div className="flex items-start gap-3">
-                                        <span className="text-2xl shrink-0">{faq.icon}</span>
-                                        <div>
-                                            <h4 className="font-bold text-gray-900 mb-2">{faq.q}</h4>
-                                            <p className="text-sm text-gray-700 leading-relaxed">{faq.a}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                );
 
             case 'industry-ai':
                 return (
