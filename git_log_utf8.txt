@@ -1,0 +1,25 @@
+﻿cd7f139 Force deploy: update HTML title to v1.1
+cb36544 Force deploy: update subtitle to verify sync
+2cd52dc Force deploy: adding v1.1 to title
+43afe1f Add 3D Services video tour to AI Solutions
+950662d Restore sharpening shader and enhance property tour optics
+235787e fix: remove non-360 still image from tour
+12a0fbe feat: use high-res 360 panorama assets for property tour
+3d5bcbb Fix UI overlap in property tour navigation
+847b658 Add simplified high-res apartment tour assets (10K 360 and 5K still)
+bcde732 Fix overlay z-index
+3a59642 Implement 4-step sequence into tour
+13bfbe1 Replace Google Maps with free Leaflet/OpenStreetMap alternative
+3c75749 Fix Property Tour issues with Bathrooms and FOV, add Bath panorama
+12dacec feat: complete flat tour architecture with bathrooms and store room
+9ebd1ec fix: implement adaptive sharpening shader for crystal clear views
+6fc9393 fix: remove location text and optimize zoom out optics
+8ba867b fix: restore reactive zoom and max quality filtering
+a89a296 fix: improve 3d tour zoom and resolution
+77fafa5 feat: implement multi-room 360 tour with zoom and fov controls
+5660e0e fix: refactor 3D Viewer to move R3F hooks inside Canvas context
+b86f5c6 fix: add Suspense boundary for 3D textures to prevent crash
+dbc9296 fix(vercel): clean up unused variables for production build
+01aa799 feat: Add 3D Property Tour
+d4cd9e8 feat: localize payments and contacts, fix contact modal lint, and redesign sidebar to be compact
+a98856d Refined login page internationalization and localized contacts page

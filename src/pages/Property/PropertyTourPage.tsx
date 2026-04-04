@@ -97,8 +97,8 @@ const MapStatus = (s: Status): ReactElement => {
 
 const ROOMS = [
     { id: 'hall', name: 'Big Hall', img: '/hall.png', icon: Box, defaultFov: 110, isPanorama: true },
-    { id: 'master', name: 'Main Bedroom', img: '/master_bedroom.png', icon: MapPin, defaultFov: 140, isPanorama: true },
-    { id: 'kids', name: 'Kids Bedroom', img: '/kids_room.png', icon: Users, defaultFov: 145, isPanorama: true },
+    { id: 'master', name: 'Main Bedroom', img: '/master_bedroom_v2.png', icon: MapPin, defaultFov: 140, isPanorama: true },
+    { id: 'kids', name: 'Kids Bedroom', img: '/kids_room_v2.png', icon: Users, defaultFov: 145, isPanorama: true },
     { id: 'kitchen', name: 'Kitchen', img: '/kitchen.png', icon: LayoutGrid, defaultFov: 110, isPanorama: true },
     { id: 'balcony', name: 'Balcony', img: '/balcony.png', icon: Globe, defaultFov: 110, isPanorama: true },
     // Bath rooms: real equirectangular 360° panorama (Greg Zaal / Poly Haven, CC0)
