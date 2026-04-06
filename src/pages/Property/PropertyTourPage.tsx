@@ -104,7 +104,7 @@ const ROOMS = [
     // Bath rooms: real equirectangular 360° panorama (Greg Zaal / Poly Haven, CC0)
     { id: 'bath1', name: 'Main Bath', img: '/bath_panorama.jpg', icon: Droplet, defaultFov: 140, isPanorama: true },
     { id: 'bath2', name: 'Common Bath', img: '/bath_panorama.jpg', icon: Droplet, defaultFov: 110, isPanorama: true },
-    { id: 'store', name: 'Store Room', img: '/store_pro.png', icon: Archive, defaultFov: 110, isPanorama: true },
+    { id: 'store', name: 'Store Room', img: '/store_room_v2.png', icon: Archive, defaultFov: 140, isPanorama: true },
 ];
 
 export const PropertyTourPage = () => {
