@@ -104,7 +104,7 @@ const ROOMS = [
     // Bath rooms: real equirectangular 360° panorama (Greg Zaal / Poly Haven, CC0)
     { id: 'bath1', name: 'Main Bath', img: '/bath_panorama.jpg', icon: Droplet, defaultFov: 140, isPanorama: true },
     { id: 'bath2', name: 'Common Bath', img: '/bath_panorama.jpg', icon: Droplet, defaultFov: 110, isPanorama: true },
-    { id: 'store', name: 'Store Room', img: '/store_room_v2.png', icon: Archive, defaultFov: 150, isPanorama: true },
+    { id: 'store', name: 'Store Room', img: '/store_room_v2.png', icon: Archive, defaultFov: 140, isPanorama: true },
 ];
 
 export const PropertyTourPage = () => {
@@ -161,12 +161,12 @@ export const PropertyTourPage = () => {
 
                 <div
                     className={`absolute inset-0 transition-opacity duration-700 ${view === 'interior' ? 'opacity-100 z-0' : 'opacity-0 -z-10'}`}
-                    onWheel={e => { if (view === 'interior') setFov(p => Math.max(30, Math.min(170, p + (e.deltaY > 0 ? 5 : -5)))); }}
+                    onWheel={e => { if (view === 'interior') setFov(p => Math.max(30, Math.min(150, p + (e.deltaY > 0 ? 5 : -5)))); }}
                 >
                     <div className="absolute right-6 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-2 p-2 bg-black/40 backdrop-blur-md rounded-xl border border-white/10">
                         <button onClick={() => setFov(p => Math.max(30, p - 10))} className="w-10 h-10 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-lg text-white text-xl font-bold">+</button>
                         <button onClick={() => setFov(room.defaultFov)} className="w-10 h-10 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-lg text-white"><RefreshCw size={18} /></button>
-                        <button onClick={() => setFov(p => Math.min(170, p + 10))} className="w-10 h-10 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-lg text-white text-xl font-bold">−</button>
+                        <button onClick={() => setFov(p => Math.min(150, p + 10))} className="w-10 h-10 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-lg text-white text-xl font-bold">−</button>
                     </div>
 
                     <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-20 flex gap-2 bg-black/40 backdrop-blur-xl p-2 rounded-2xl border border-white/10 overflow-x-auto max-w-[90vw] no-scrollbar">
