@@ -1,6 +1,13 @@
-import React, { useState } from 'react';
-import { X, Phone, Mail, MessageSquare, Calendar, Clock, Tag, MoreHorizontal } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Phone, Mail, MessageSquare, Calendar, Clock, Tag, MoreHorizontal, CheckCircle2, Circle, Plus, Trash2 } from 'lucide-react';
 import type { Contact } from '../types/contact';
+
+interface ContactTask {
+    id: string;
+    title: string;
+    completed: boolean;
+    createdAt: string;
+}
 
 interface ContactDetailSlideOverProps {
     contact: Contact | null;
@@ -11,6 +18,55 @@ interface ContactDetailSlideOverProps {
 
 const ContactDetailSlideOver: React.FC<ContactDetailSlideOverProps> = ({ contact, isOpen, onClose, onEdit }) => {
     const [activeTab, setActiveTab] = useState('Overview');
+    
+    // Tasks State
+    const [tasks, setTasks] = useState<ContactTask[]>([]);
+    const [newTaskTitle, setNewTaskTitle] = useState('');
+
+    // Load tasks from LocalStorage when contact changes
+    useEffect(() => {
+        if (contact?.id) {
+            const saved = localStorage.getItem(`contact_tasks_${contact.id}`);
+            if (saved) {
+                try {
+                    setTasks(JSON.parse(saved));
+                } catch (e) {
+                    setTasks([]);
+                }
+            } else {
+                setTasks([]);
+            }
+        }
+    }, [contact?.id]);
+
+    // Save tasks to LocalStorage when they change
+    useEffect(() => {
+        if (contact?.id) {
+            localStorage.setItem(`contact_tasks_${contact.id}`, JSON.stringify(tasks));
+        }
+    }, [tasks, contact?.id]);
+
+    const handleAddTask = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!newTaskTitle.trim()) return;
+        
+        const newTask: ContactTask = {
+            id: Date.now().toString(),
+            title: newTaskTitle,
+            completed: false,
+            createdAt: new Date().toISOString()
+        };
+        setTasks([...tasks, newTask]);
+        setNewTaskTitle('');
+    };
+
+    const toggleTask = (taskId: string) => {
+        setTasks(tasks.map(t => t.id === taskId ? { ...t, completed: !t.completed } : t));
+    };
+
+    const deleteTask = (taskId: string) => {
+        setTasks(tasks.filter(t => t.id !== taskId));
+    };
 
     const tabs = ['Overview', 'Notes', 'Tasks', 'Appointments', 'Documents'];
 
@@ -154,13 +210,76 @@ const ContactDetailSlideOver: React.FC<ContactDetailSlideOverProps> = ({ contact
                                 </div>
                             )}
 
-                            {activeTab !== 'Overview' && (
+                            {activeTab !== 'Overview' && activeTab !== 'Tasks' && (
                                 <div className="flex flex-col items-center justify-center h-full text-gray-500">
                                     <div className="p-4 bg-gray-50 rounded-full mb-4">
                                         <Clock size={32} className="text-gray-400" />
                                     </div>
                                     <h3 className="text-lg font-medium text-gray-900 mb-1">Coming Soon</h3>
                                     <p className="text-center max-w-xs">The {activeTab} feature is currently under development.</p>
+                                </div>
+                            )}
+
+                            {activeTab === 'Tasks' && (
+                                <div className="space-y-6">
+                                    {/* Add Task Form */}
+                                    <form onSubmit={handleAddTask} className="flex gap-2">
+                                        <input
+                                            type="text"
+                                            value={newTaskTitle}
+                                            onChange={(e) => setNewTaskTitle(e.target.value)}
+                                            placeholder="What needs to be done?"
+                                            className="flex-1 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-ghl-blue focus:border-ghl-blue outline-none"
+                                        />
+                                        <button 
+                                            type="submit"
+                                            disabled={!newTaskTitle.trim()}
+                                            className="px-4 py-2 bg-ghl-blue text-white rounded-md font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                                        >
+                                            <Plus size={18} />
+                                            Add
+                                        </button>
+                                    </form>
+
+                                    {/* Task List */}
+                                    <div className="space-y-3">
+                                        {tasks.length === 0 ? (
+                                            <div className="text-center py-8 text-gray-500">
+                                                <div className="inline-block p-3 bg-gray-50 rounded-full mb-3">
+                                                    <CheckCircle2 size={24} className="text-gray-400" />
+                                                </div>
+                                                <p>No tasks yet. Add one above!</p>
+                                            </div>
+                                        ) : (
+                                            tasks.map(task => (
+                                                <div 
+                                                    key={task.id} 
+                                                    className={`flex items-start gap-3 p-4 rounded-lg border transition-colors ${task.completed ? 'bg-gray-50 border-gray-200' : 'bg-white border-gray-200 hover:border-gray-300 shadow-sm'}`}
+                                                >
+                                                    <button 
+                                                        onClick={() => toggleTask(task.id)}
+                                                        className="mt-0.5 text-gray-400 hover:text-ghl-blue transition-colors flex-shrink-0"
+                                                    >
+                                                        {task.completed ? <CheckCircle2 size={20} className="text-emerald-500" /> : <Circle size={20} />}
+                                                    </button>
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className={`text-sm font-medium ${task.completed ? 'text-gray-500 line-through' : 'text-gray-900'}`}>
+                                                            {task.title}
+                                                        </p>
+                                                        <p className="text-xs text-gray-400 mt-1">
+                                                            Added {new Date(task.createdAt).toLocaleDateString()}
+                                                        </p>
+                                                    </div>
+                                                    <button 
+                                                        onClick={() => deleteTask(task.id)}
+                                                        className="text-gray-400 hover:text-rose-500 transition-colors p-1"
+                                                    >
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                </div>
+                                            ))
+                                        )}
+                                    </div>
                                 </div>
                             )}
                         </div>
