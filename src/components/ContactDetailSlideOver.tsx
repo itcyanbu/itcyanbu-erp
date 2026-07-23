@@ -53,15 +53,24 @@ const ContactDetailSlideOver: React.FC<ContactDetailSlideOverProps> = ({ contact
 
                             {/* Quick Actions */}
                             <div className="flex items-center gap-3">
-                                <button className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-md text-gray-700 font-medium hover:bg-gray-50 shadow-sm transition-colors">
+                                <button 
+                                    onClick={() => contact.phone && (window.location.href = `tel:${contact.phone}`)}
+                                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-md text-gray-700 font-medium hover:bg-gray-50 shadow-sm transition-colors"
+                                >
                                     <Phone size={18} className="text-gray-500" />
                                     Call
                                 </button>
-                                <button className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-md text-gray-700 font-medium hover:bg-gray-50 shadow-sm transition-colors">
+                                <button 
+                                    onClick={() => contact.phone && (window.location.href = `sms:${contact.phone}`)}
+                                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-md text-gray-700 font-medium hover:bg-gray-50 shadow-sm transition-colors"
+                                >
                                     <MessageSquare size={18} className="text-gray-500" />
                                     SMS
                                 </button>
-                                <button className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-md text-gray-700 font-medium hover:bg-gray-50 shadow-sm transition-colors">
+                                <button 
+                                    onClick={() => contact.email && (window.location.href = `mailto:${contact.email}`)}
+                                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-md text-gray-700 font-medium hover:bg-gray-50 shadow-sm transition-colors"
+                                >
                                     <Mail size={18} className="text-gray-500" />
                                     Email
                                 </button>
