@@ -95,11 +95,8 @@ export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children })
     }, [user]);
 
     // Data migration: sync localStorage to Supabase on first authentication
-    useEffect(() => {
-        if (user && isSupabaseEnabled && !synced) {
-            migrateLocalDataToSupabase();
-        }
-    }, [user, isSupabaseEnabled, synced]);
+    // NOTE: Removed - was causing duplicate contacts on every login
+
 
     // Persist field config whenever it changes
     useEffect(() => {
@@ -124,10 +121,9 @@ export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children })
                 setContacts(appContacts);
                 // Also save to localStorage as cache
                 saveToStorage(appContacts);
-            } else if (data && data.length === 0) {
-                // Supabase is empty, load the 10 demo contacts into it automatically!
-                const mocks = generateMockContacts();
-                bulkAddContacts(mocks);
+            } else {
+                // Supabase returned empty — just show empty list
+                setContacts([]);
             }
         } else {
             // Load from localStorage or mock data
