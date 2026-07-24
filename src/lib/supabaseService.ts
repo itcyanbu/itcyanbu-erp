@@ -35,7 +35,6 @@ export const contactsService = {
         const { data, error } = await supabase
             .from('contacts')
             .select('*')
-            .eq('user_id', user.id)
             .order('created_at', { ascending: false });
 
         return { data, error };
@@ -80,7 +79,6 @@ export const contactsService = {
             .from('contacts')
             .update(updates)
             .eq('id', id)
-            .eq('user_id', user.id)
             .select()
             .single();
 
@@ -103,8 +101,7 @@ export const contactsService = {
         const { error } = await supabase
             .from('contacts')
             .delete()
-            .eq('id', id)
-            .eq('user_id', user.id);
+            .eq('id', id);
 
         return { error };
     },
