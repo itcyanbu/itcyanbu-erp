@@ -119,11 +119,15 @@ export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children })
                 console.error('Failed to load contacts from Supabase:', error);
                 // Fallback to localStorage
                 loadFromLocalStorage();
-            } else if (data) {
+            } else if (data && data.length > 0) {
                 const appContacts = data.map(mapDbContactToAppContact);
                 setContacts(appContacts);
                 // Also save to localStorage as cache
                 saveToStorage(appContacts);
+            } else if (data && data.length === 0) {
+                // Supabase is empty, load the 10 demo contacts into it automatically!
+                const mocks = generateMockContacts();
+                bulkAddContacts(mocks);
             }
         } else {
             // Load from localStorage or mock data
