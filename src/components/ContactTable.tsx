@@ -54,11 +54,11 @@ const ContactTable: React.FC<ContactTableProps> = ({
             case 'name':
                 return (
                     <div className="flex items-center gap-3">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium ${contact.avatarColor}`}>
-                            {contact.initials}
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium ${contact.avatarColor || 'bg-gray-100 text-gray-600'}`}>
+                            {contact.initials || '??'}
                         </div>
                         <div>
-                            <div className="font-medium text-ghl-text">{contact.name}</div>
+                            <div className="font-medium text-ghl-text">{contact.name || ''}</div>
                         </div>
                     </div>
                 );
@@ -83,7 +83,7 @@ const ContactTable: React.FC<ContactTableProps> = ({
             case 'tags':
                 return (
                     <div className="flex flex-wrap gap-1 max-w-[200px]">
-                        {contact.tags.map(tag => (
+                        {(contact.tags || []).map(tag => (
                             <span key={tag} className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full capitalize border border-gray-200">
                                 {tag}
                             </span>

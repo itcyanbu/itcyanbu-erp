@@ -168,15 +168,15 @@ const ContactsPage = () => {
     const sortedContacts = (() => {
         const query = searchQuery || localSearch;
         const baseContacts = contacts.filter(contact =>
-            contact.name.toLowerCase().includes(query.toLowerCase()) ||
-            contact.email.toLowerCase().includes(query.toLowerCase())
+            (contact.name || '').toLowerCase().includes(query.toLowerCase()) ||
+            (contact.email || '').toLowerCase().includes(query.toLowerCase())
         );
         const filtered = applyFilters(baseContacts, activeFilters);
 
         const result = [...filtered];
         switch (sortBy) {
-            case 'name_asc': result.sort((a, b) => a.name.localeCompare(b.name)); break;
-            case 'name_desc': result.sort((a, b) => b.name.localeCompare(a.name)); break;
+            case 'name_asc': result.sort((a, b) => (a.name || '').localeCompare(b.name || '')); break;
+            case 'name_desc': result.sort((a, b) => (b.name || '').localeCompare(a.name || '')); break;
             case 'oldest': result.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()); break;
             default: result.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()); break;
         }
