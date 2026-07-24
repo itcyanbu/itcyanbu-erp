@@ -211,11 +211,11 @@ const ContactsPage = () => {
         setIsModalOpen(true);
     };
 
-    const handleActualSubmit = (data: any) => {
+    const handleActualSubmit = async (data: any) => {
         if (editingContact) {
-            updateContact(editingContact.id, data);
+            await updateContact(editingContact.id, data);
         } else {
-            addContact(data);
+            await addContact(data);
         }
     };
 

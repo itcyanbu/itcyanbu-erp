@@ -8,7 +8,7 @@ import type { FieldConfig, Contact } from '../types/contact';
 interface ContactModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSubmit: (data: any) => void;
+    onSubmit: (data: any) => void | Promise<void>;
     initialData?: Partial<Contact> | null;
 }
 
@@ -163,9 +163,10 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, onSubmit, 
                 ...customFields
             };
 
-            onSubmit(data);
+            await onSubmit(data);
 
             if (!addAnother) {
+                setIsSaving(false);
                 onClose();
             } else {
                 setIsSaving(false);
