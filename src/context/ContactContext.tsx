@@ -143,16 +143,14 @@ export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children })
                 setContacts(JSON.parse(savedContacts));
             } catch (error) {
                 console.error('Failed to parse contacts from local storage:', error);
-                // Fallback to mocks if parsing fails
-                const mocks = generateMockContacts();
-                setContacts(mocks);
-                localStorage.setItem(storageKey, JSON.stringify(mocks));
-                localStorage.setItem(versionKey, DATA_VERSION);
+                // Start fresh on parse error
+                setContacts([]);
+                localStorage.removeItem(storageKey);
+                localStorage.removeItem(versionKey);
             }
         } else {
-            const mocks = generateMockContacts();
-            setContacts(mocks);
-            localStorage.setItem(storageKey, JSON.stringify(mocks));
+            // No saved data — start with empty list
+            setContacts([]);
             localStorage.setItem(versionKey, DATA_VERSION);
         }
     };
