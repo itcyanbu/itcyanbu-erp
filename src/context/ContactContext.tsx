@@ -89,8 +89,18 @@ export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children })
 
     const DATA_VERSION = '4'; // Increment to force data refresh
 
-    // Load contacts on mount
+    // Load contacts on mount and clear any old cached mock data first
     useEffect(() => {
+        // Wipe any old mock-data localStorage keys so they can't be migrated
+        const keysToDelete: string[] = [];
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && (key.startsWith('ghl_contacts_') || key === 'ghl_contacts')) {
+                keysToDelete.push(key);
+            }
+        }
+        keysToDelete.forEach(k => localStorage.removeItem(k));
+
         loadContacts();
     }, [user]);
 
@@ -155,49 +165,7 @@ export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children })
         }
     };
 
-    const migrateLocalDataToSupabase = async () => {
-        if (!user) return;
 
-        const storageKey = `ghl_contacts_${user.id}`;
-        const savedContacts = localStorage.getItem(storageKey) || localStorage.getItem('ghl_contacts'); // Check legacy key too 
-
-        if (!savedContacts) {
-            setSynced(true);
-            return;
-        }
-
-        try {
-            const localContacts: Contact[] = JSON.parse(savedContacts);
-
-            // Check if Supabase already has contacts
-            const { data: existingContacts } = await contactsService.getAll();
-
-            if (existingContacts && existingContacts.length > 0) {
-                // Already has data, skip migration
-                console.log('Supabase already has contacts, skipping migration');
-                setSynced(true);
-                return;
-            }
-
-            // Migrate local contacts to Supabase
-            console.log(`Migrating ${localContacts.length} contacts to Supabase...`);
-            const dbContacts = localContacts.map(mapAppContactToDbContact);
-
-            const { error } = await contactsService.bulkCreate(dbContacts);
-
-            if (error) {
-                console.error('Failed to migrate contacts:', error);
-            } else {
-                console.log('✅ Successfully migrated contacts to Supabase');
-                // Reload from Supabase to get proper IDs
-                await loadContacts();
-            }
-        } catch (err) {
-            console.error('Error during migration:', err);
-        } finally {
-            setSynced(true);
-        }
-    };
 
     const saveToStorage = (newContacts: Contact[]) => {
         try {
