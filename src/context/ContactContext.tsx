@@ -83,7 +83,6 @@ export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children })
             return defaultFieldConfig;
         }
     });
-    const [synced, setSynced] = useState(false);
     const { user, isSupabaseEnabled } = useAuth();
 
     const DATA_VERSION = '4'; // Increment to force data refresh
