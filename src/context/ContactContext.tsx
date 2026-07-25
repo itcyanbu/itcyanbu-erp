@@ -87,18 +87,8 @@ export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children })
 
     const DATA_VERSION = '4'; // Increment to force data refresh
 
-    // Load contacts on mount and clear any old cached mock data first
+    // Load contacts on mount
     useEffect(() => {
-        // Wipe any old mock-data localStorage keys so they can't be migrated
-        const keysToDelete: string[] = [];
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            if (key && (key.startsWith('ghl_contacts_') || key === 'ghl_contacts')) {
-                keysToDelete.push(key);
-            }
-        }
-        keysToDelete.forEach(k => localStorage.removeItem(k));
-
         loadContacts();
     }, [user]);
 
