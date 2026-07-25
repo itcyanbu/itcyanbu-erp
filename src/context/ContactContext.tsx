@@ -1,6 +1,5 @@
 import { createContext, useContext, useState, useEffect, useMemo, type ReactNode } from 'react';
 import type { Contact, ContactContextType } from '../types/contact';
-import { generateMockContacts } from '../mock/contacts';
 import { contactsService } from '../lib/supabaseService';
 import { useAuth } from './AuthContext';
 
@@ -118,9 +117,11 @@ export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children })
     }, [fieldConfig]);
 
     const loadContacts = async () => {
+        console.log('[CONTACTS v2] loadContacts called. user:', !!user, 'isSupabaseEnabled:', isSupabaseEnabled);
         if (user && isSupabaseEnabled) {
             // Load from Supabase
             const { data, error } = await contactsService.getAll();
+            console.log('[CONTACTS v2] Supabase returned:', data?.length, 'contacts. Error:', error);
 
             if (error) {
                 console.error('Failed to load contacts from Supabase:', error);
@@ -133,10 +134,12 @@ export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children })
                 saveToStorage(appContacts);
             } else {
                 // Supabase returned empty — just show empty list
+                console.log('[CONTACTS v2] Supabase is empty, setting contacts to []');
                 setContacts([]);
             }
         } else {
-            // Load from localStorage or mock data
+            console.log('[CONTACTS v2] No user or Supabase disabled, loading from localStorage');
+            // Load from localStorage
             loadFromLocalStorage();
         }
     };
