@@ -162,7 +162,9 @@ export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children })
     const saveToStorage = (newContacts: Contact[]) => {
         try {
             const storageKey = user ? `ghl_contacts_${user.id}` : 'ghl_contacts';
+            const versionKey = user ? `ghl_contacts_version_${user.id}` : 'ghl_contacts_version';
             localStorage.setItem(storageKey, JSON.stringify(newContacts));
+            localStorage.setItem(versionKey, DATA_VERSION);
         } catch (error) {
             console.error('Failed to save contacts to localStorage:', error);
         }
