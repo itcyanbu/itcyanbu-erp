@@ -122,13 +122,29 @@ export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children })
                 // Also save to localStorage as cache
                 saveToStorage(appContacts);
             } else {
-                // Supabase returned empty — but check if we have local contacts first!
-                // This prevents a race condition where Supabase takes a long time to return 0,
-                // overwriting a contact the user just added locally.
-                setContacts(prev => {
-                    if (prev.length > 0) {
-                        return prev; // keep what the user just added
+                // Supabase returned empty.
+                // We should check if we have any fallback contacts in localStorage.
+                const storageKey = user ? `ghl_contacts_${user.id}` : 'ghl_contacts';
+                const versionKey = user ? `ghl_contacts_version_${user.id}` : 'ghl_contacts_version';
+                const savedContacts = localStorage.getItem(storageKey);
+                const savedVersion = localStorage.getItem(versionKey);
+
+                if (savedContacts && savedVersion === DATA_VERSION) {
+                    try {
+                        const parsed = JSON.parse(savedContacts);
+                        if (parsed && parsed.length > 0) {
+                            console.log('[CONTACTS v2] Supabase empty, loading fallback from localStorage');
+                            setContacts(parsed);
+                            return;
+                        }
+                    } catch (e) {
+                        // ignore parse errors
                     }
+                }
+                
+                // No fallback, set to empty but respect race conditions
+                setContacts(prev => {
+                    if (prev.length > 0) return prev;
                     return [];
                 });
             }
