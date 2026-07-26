@@ -122,9 +122,15 @@ export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children })
                 // Also save to localStorage as cache
                 saveToStorage(appContacts);
             } else {
-                // Supabase returned empty — just show empty list
-                console.log('[CONTACTS v2] Supabase is empty, setting contacts to []');
-                setContacts([]);
+                // Supabase returned empty — but check if we have local contacts first!
+                // This prevents a race condition where Supabase takes a long time to return 0,
+                // overwriting a contact the user just added locally.
+                setContacts(prev => {
+                    if (prev.length > 0) {
+                        return prev; // keep what the user just added
+                    }
+                    return [];
+                });
             }
         } else {
             console.log('[CONTACTS v2] No user or Supabase disabled, loading from localStorage');
@@ -191,8 +197,8 @@ export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children })
             const dbContact = mapAppContactToDbContact(newContact);
             const { data, error } = await contactsService.create(dbContact);
 
-            if (error) {
-                console.error('Failed to create contact in Supabase:', error);
+            if (error || !data) {
+                console.error('Failed to create contact in Supabase:', error || 'No data returned');
                 // Fallback to local-only
                 const localContact = { ...newContact, id: Math.random().toString(36).substr(2, 9), createdAt: new Date().toISOString() };
                 setContacts(prev => {
@@ -200,7 +206,7 @@ export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children })
                     saveToStorage(updated);
                     return updated;
                 });
-            } else if (data) {
+            } else {
                 const appContact = mapDbContactToAppContact(data);
                 setContacts(prev => {
                     const updated = [appContact, ...prev];
