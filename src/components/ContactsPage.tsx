@@ -22,7 +22,7 @@ const ContactsPage = () => {
     const isRtl = i18n.language === 'ar';
 
     // State
-    const [topTab, setTopTab] = useState('Smart Lists');
+    const [topTab, setTopTab] = useState('Contacts');
     const [activeListId, setActiveListId] = useState('all');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isImportWizardOpen, setIsImportWizardOpen] = useState(false);
