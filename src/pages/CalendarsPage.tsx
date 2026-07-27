@@ -22,7 +22,10 @@ const CalendarsPage = () => {
     const [selectedCalendars, setSelectedCalendars] = useState<string[]>(calendars.map(c => c.id));
     const [searchQuery, setSearchQuery] = useState('');
 
-    const todayStr = new Date().toISOString().split('T')[0];
+    const today = new Date();
+    const todayYear = today.getFullYear();
+    const todayMonth = today.getMonth();
+    const todayDate = today.getDate();
 
     const toggleCalendarFilter = (id: string) => {
         setSelectedCalendars(prev =>
@@ -69,7 +72,14 @@ const CalendarsPage = () => {
                 <div className="flex-1 grid grid-cols-7 grid-rows-6 auto-rows-fr divide-x divide-y divide-gray-100 overflow-y-auto custom-scrollbar">
                     {days.map((dateObj, idx) => {
                         const cellDate = new Date(year, dateObj.currentMonth ? month : (idx < 7 ? month - 1 : month + 1), dateObj.day);
-                        const cellDateStr = cellDate.toISOString().split('T')[0];
+                        
+                        // Compare local dates for "today"
+                        const isToday = cellDate.getFullYear() === todayYear && cellDate.getMonth() === todayMonth && cellDate.getDate() === todayDate;
+                        
+                        // Format local date as YYYY-MM-DD for appointment filtering
+                        const pad = (n: number) => n.toString().padStart(2, '0');
+                        const cellDateStr = `${cellDate.getFullYear()}-${pad(cellDate.getMonth() + 1)}-${pad(cellDate.getDate())}`;
+
                         const cellAppointments = appointments.filter(app =>
                             app.startTime.startsWith(cellDateStr) &&
                             selectedCalendars.includes(app.calendarId)
@@ -81,13 +91,13 @@ const CalendarsPage = () => {
                                 className={clsx(
                                     "min-h-[100px] p-2 transition-colors",
                                     dateObj.currentMonth ? "bg-white" : "bg-gray-50/30",
-                                    cellDateStr === todayStr && "bg-blue-50/20"
+                                    isToday && "bg-blue-50/20"
                                 )}
                             >
                                 <div className={clsx(
                                     "text-xs font-bold mb-1 w-6 h-6 flex items-center justify-center rounded-lg transition-colors",
                                     dateObj.currentMonth ? "text-gray-900" : "text-gray-400",
-                                    cellDateStr === todayStr && "bg-blue-600 text-white shadow-sm"
+                                    isToday && "bg-blue-600 text-white shadow-sm"
                                 )}>
                                     {dateObj.day}
                                 </div>
