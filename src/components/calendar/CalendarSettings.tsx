@@ -531,29 +531,6 @@ const CalendarSettings = ({ onBack }: { onBack: () => void }) => {
         </div>
     );
 
-    return (
-        <div className="flex flex-col h-full bg-white">
-            {/* Settings Header */}
-            <div className="px-8 py-4 border-b border-gray-200 flex items-center gap-4">
-                <button onClick={onBack} className="text-gray-500 hover:text-gray-700">
-                    <ChevronLeft size={20} />
-                </button>
-                <h1 className="text-xl font-semibold text-gray-900">Calendar Settings</h1>
-            </div>
-
-            {/* Tabs */}
-            <div className="px-8 border-b border-gray-200 flex gap-6">
-                {tabs.map(tab => (
-                    <button
-                        key={tab}
-                        onClick={() => setActiveTab(tab)}
-                        className={`py-4 text-sm font-medium border-b-2 transition-colors ${activeTab === tab ? 'border-ghl-blue text-ghl-blue' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
-                    >
-                        {tab}
-                    </button>
-                ))}
-            </div>
-
     const renderAvailabilityTab = () => (
         <div className="p-8 max-w-4xl">
             <div className="mb-8">
@@ -737,3 +714,4 @@ const CalendarSettings = ({ onBack }: { onBack: () => void }) => {
 };
 
 export default CalendarSettings;
+
