@@ -76,6 +76,8 @@ const ContactDetailSlideOver: React.FC<ContactDetailSlideOverProps> = ({ contact
 
     const tabs = ['Overview', 'Notes', 'Tasks', 'Appointments', 'Documents'];
 
+    if (!contact) return null;
+
     return (
         <div className={`fixed inset-0 z-50 transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
             {/* Backdrop */}
