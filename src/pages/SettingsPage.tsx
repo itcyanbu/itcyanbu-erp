@@ -127,6 +127,13 @@ const SettingsPage = () => {
             priority: ['Email', 'Phone Number']
         },
 
+        // WhatsApp Integration
+        whatsapp: {
+            connected: false,
+            phone: '',
+            wabaId: '1029384756'
+        },
+
         // Conversation AI
         conversationAi: {
             mode: 'OFF',
@@ -833,7 +840,7 @@ const SettingsPage = () => {
                     {activeTab === 'Pipelines' && <PipelinesSettings />}
                     {activeTab === 'Calendars' && <CalendarsSettings />}
                     {activeTab === 'Phone Numbers' && <PhoneNumbersSettings />}
-                    {activeTab === 'WhatsApp' && <WhatsAppSettings />}
+                    {activeTab === 'WhatsApp' && <WhatsAppSettings settings={settings} updateSetting={updateSetting} />}
                     {activeTab === 'Reputation Management' && <ReputationSettings />}
                     {activeTab === 'Custom Fields' && <CustomFieldsSettings />}
                     {activeTab === 'Custom Values' && <CustomValuesSettings />}

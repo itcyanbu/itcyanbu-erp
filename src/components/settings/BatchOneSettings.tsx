@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import SettingsSectionLayout from './SettingsSectionLayout';
 
 // Calendars
@@ -71,12 +71,29 @@ export const PhoneNumbersSettings = () => {
 };
 
 // WhatsApp
-export const WhatsAppSettings = () => {
+export const WhatsAppSettings = ({ settings, updateSetting }: { settings?: any, updateSetting?: (key: string, value: any) => void }) => {
     const [activeTab, setActiveTab] = useState('account');
-    const [connectionState, setConnectionState] = useState<'not_connected' | 'connecting' | 'connected'>('not_connected');
+    
+    // Fallbacks in case it's used without props (though we just added them)
+    const whatsappData = settings?.whatsapp || { connected: false, phone: '', wabaId: '1029384756' };
+    const isConnected = whatsappData.connected;
+
+    // Local state for the wizard flow
+    const [connectionState, setConnectionState] = useState<'not_connected' | 'connecting' | 'connected'>(isConnected ? 'connected' : 'not_connected');
     const [connectionMethod, setConnectionMethod] = useState<'method1' | 'method2' | 'method3' | null>(null);
     const [wizardStep, setWizardStep] = useState(1);
-    const [formData, setFormData] = useState({ phone: '', otp: '' });
+    
+    // Prefill phone from global settings if available
+    const [formData, setFormData] = useState({ phone: whatsappData.phone || (settings?.phone || ''), otp: '' });
+
+    // Sync local state if global settings change externally
+    useEffect(() => {
+        if (isConnected && connectionState !== 'connected') {
+            setConnectionState('connected');
+        } else if (!isConnected && connectionState === 'connected') {
+            setConnectionState('not_connected');
+        }
+    }, [isConnected, connectionState]);
 
     const handleStartConnection = (method: 'method1' | 'method2' | 'method3') => {
         setConnectionMethod(method);
@@ -92,6 +109,16 @@ export const WhatsAppSettings = () => {
         setConnectionState('connected');
         setConnectionMethod(null);
         setWizardStep(1);
+        if (updateSetting) {
+            updateSetting('whatsapp', { ...whatsappData, connected: true, phone: formData.phone });
+        }
+    };
+    
+    const handleDisconnect = () => {
+        setConnectionState('not_connected');
+        if (updateSetting) {
+            updateSetting('whatsapp', { ...whatsappData, connected: false });
+        }
     };
 
     const renderNotConnected = () => (
@@ -259,7 +286,7 @@ export const WhatsAppSettings = () => {
                                     Active
                                 </span>
                             </div>
-                            <p className="text-gray-500 font-medium">{formData.phone || "+1 (555) 123-4567"}</p>
+                            <p className="text-gray-500 font-medium">{whatsappData.phone || formData.phone || "+1 (555) 123-4567"}</p>
                         </div>
                     </div>
                 </div>
@@ -267,7 +294,7 @@ export const WhatsAppSettings = () => {
                 <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-gray-100 pt-8">
                     <div className="p-4 bg-gray-50 rounded-lg border border-gray-100">
                         <p className="text-sm text-gray-500 mb-1">WABA ID</p>
-                        <p className="font-mono text-sm text-gray-900 font-medium">1029384756</p>
+                        <p className="font-mono text-sm text-gray-900 font-medium">{whatsappData.wabaId}</p>
                     </div>
                     <div className="p-4 bg-gray-50 rounded-lg border border-gray-100">
                         <p className="text-sm text-gray-500 mb-1">Quality Rating</p>
@@ -281,7 +308,7 @@ export const WhatsAppSettings = () => {
 
                 <div className="mt-8 flex gap-4">
                     <button className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md font-medium hover:bg-gray-50 transition-colors shadow-sm">Manage Account</button>
-                    <button onClick={() => setConnectionState('not_connected')} className="px-4 py-2 bg-white border border-red-200 text-red-600 rounded-md font-medium hover:bg-red-50 transition-colors shadow-sm">Disconnect</button>
+                    <button onClick={handleDisconnect} className="px-4 py-2 bg-white border border-red-200 text-red-600 rounded-md font-medium hover:bg-red-50 transition-colors shadow-sm">Disconnect</button>
                 </div>
              </div>
         </div>

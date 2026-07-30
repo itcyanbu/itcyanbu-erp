@@ -22,11 +22,7 @@ const ContactsPage = () => {
     const isRtl = i18n.language === 'ar';
 
     // State
-    const [topTab, setTopTab] = useState<string>(() => {
-        // Always default to 'Contacts' — ignore any stale localStorage value
-        return 'Contacts';
-    });
-
+    const [topTab, setTopTab] = useState('Contacts');
     const [activeListId, setActiveListId] = useState('all');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isImportWizardOpen, setIsImportWizardOpen] = useState(false);
@@ -89,12 +85,6 @@ const ContactsPage = () => {
     useEffect(() => {
         localStorage.setItem('ghl_smart_lists', JSON.stringify(smartLists));
     }, [smartLists]);
-
-    // Always reset tab to 'Contacts' on mount (prevent stale state)
-    useEffect(() => {
-        setTopTab('Contacts');
-    }, []);
-
 
     // Update columns state when tab changes
     useEffect(() => {
