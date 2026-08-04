@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { X, Phone, Mail, MessageSquare, Calendar, Clock, Tag, MoreHorizontal, CheckCircle2, Circle, Plus, Trash2 } from 'lucide-react';
+import { X, Phone, Mail, MessageSquare, Calendar, Clock, Tag, MoreHorizontal, CheckCircle2, Circle, Plus, Trash2, Send, Activity, ChevronDown } from 'lucide-react';
+import { MESSAGE_TEMPLATES } from '../data/mockTemplates';
 import type { Contact } from '../types/contact';
 
 interface ContactTask {
@@ -24,6 +25,8 @@ interface ContactDetailSlideOverProps {
 
 const ContactDetailSlideOver: React.FC<ContactDetailSlideOverProps> = ({ contact, isOpen, onClose, onEdit }) => {
     const [activeTab, setActiveTab] = useState('Overview');
+    const [selectedTemplate, setSelectedTemplate] = useState('');
+    const [isSending, setIsSending] = useState(false);
     
     // Tasks State
     const [tasks, setTasks] = useState<ContactTask[]>([]);
@@ -218,6 +221,99 @@ const ContactDetailSlideOver: React.FC<ContactDetailSlideOverProps> = ({ contact
                                             <button className="px-3 py-1 border border-dashed border-gray-300 text-gray-500 rounded-full text-sm hover:border-ghl-blue hover:text-ghl-blue transition-colors">
                                                 + Add Tag
                                             </button>
+                                        </div>
+                                    </section>
+
+                                    <div className="border-t border-gray-100" />
+
+                                    {/* Quick Send Template */}
+                                    <section>
+                                        <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                            <MessageSquare size={16} className="text-[#25D366]" />
+                                            Send WhatsApp Template
+                                        </h3>
+                                        <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                                            <div className="flex gap-2">
+                                                <div className="relative flex-1">
+                                                    <select 
+                                                        value={selectedTemplate}
+                                                        onChange={(e) => setSelectedTemplate(e.target.value)}
+                                                        className="w-full h-10 pl-3 pr-10 bg-white border border-gray-300 rounded-lg text-sm text-gray-700 appearance-none focus:outline-none focus:ring-2 focus:ring-ghl-blue"
+                                                    >
+                                                        <option value="">Select a template to send...</option>
+                                                        {MESSAGE_TEMPLATES.map(t => (
+                                                            <option key={t.id} value={t.id}>{t.name} ({t.category})</option>
+                                                        ))}
+                                                    </select>
+                                                    <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                                                </div>
+                                                <button 
+                                                    disabled={!selectedTemplate || isSending}
+                                                    onClick={() => {
+                                                        setIsSending(true);
+                                                        setTimeout(() => {
+                                                            setIsSending(false);
+                                                            setSelectedTemplate('');
+                                                        }, 1000);
+                                                    }}
+                                                    className="px-4 h-10 bg-[#25D366] text-white rounded-lg text-sm font-medium hover:bg-[#128C7E] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-colors shadow-sm"
+                                                >
+                                                    {isSending ? <Clock size={16} className="animate-spin" /> : <Send size={16} />}
+                                                    Send
+                                                </button>
+                                            </div>
+                                            {selectedTemplate && (
+                                                <div className="mt-3 p-3 bg-white border border-gray-200 rounded-lg text-sm text-gray-600">
+                                                    <p className="whitespace-pre-wrap">{MESSAGE_TEMPLATES.find(t => t.id === selectedTemplate)?.preview}</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </section>
+
+                                    <div className="border-t border-gray-100" />
+
+                                    {/* Activity Timeline */}
+                                    <section>
+                                        <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                            <Activity size={16} className="text-ghl-blue" />
+                                            Recent Activity
+                                        </h3>
+                                        <div className="space-y-4">
+                                            {/* Dummy Timeline Items */}
+                                            <div className="flex gap-4">
+                                                <div className="mt-1">
+                                                    <div className="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
+                                                        <Tag size={14} />
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm font-medium text-gray-900">Added tag <span className="font-bold text-gray-700 bg-gray-100 px-1 rounded">lead</span></p>
+                                                    <p className="text-xs text-gray-500 mt-0.5">Today at 10:45 AM</p>
+                                                </div>
+                                            </div>
+                                            <div className="flex gap-4">
+                                                <div className="mt-1">
+                                                    <div className="w-8 h-8 rounded-full bg-emerald-50 text-[#25D366] flex items-center justify-center">
+                                                        <MessageSquare size={14} />
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm font-medium text-gray-900">WhatsApp message sent</p>
+                                                    <p className="text-sm text-gray-600 mt-1 bg-gray-50 p-2 rounded border border-gray-100">"Hello! Welcome to our store..."</p>
+                                                    <p className="text-xs text-gray-500 mt-1">Yesterday at 3:30 PM</p>
+                                                </div>
+                                            </div>
+                                            <div className="flex gap-4">
+                                                <div className="mt-1">
+                                                    <div className="w-8 h-8 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center">
+                                                        <Plus size={14} />
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm font-medium text-gray-900">Contact created</p>
+                                                    <p className="text-xs text-gray-500 mt-0.5">{new Date(contact.createdAt).toLocaleDateString()}</p>
+                                                </div>
+                                            </div>
                                         </div>
                                     </section>
                                 </div>

@@ -13,6 +13,7 @@ import DialerModal from './DialerModal';
 import { type ColumnDef } from './ColumnManager';
 import { ManageFieldsSidebar } from './ManageFieldsSidebar';
 import { ImportWizard } from './contacts/import/ImportWizard';
+import { WhatsAppBulkModal } from './WhatsAppBulkModal';
 import type { Contact } from '../types/contact';
 
 const ContactsPage = () => {
@@ -27,6 +28,7 @@ const ContactsPage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isImportWizardOpen, setIsImportWizardOpen] = useState(false);
     const [isDialerOpen, setIsDialerOpen] = useState(false);
+    const [isWhatsAppBulkOpen, setIsWhatsAppBulkOpen] = useState(false);
     const [editingContact, setEditingContact] = useState<any>(null);
     const [selectedContact, setSelectedContact] = useState<any>(null);
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -483,6 +485,13 @@ const ContactsPage = () => {
                                 <div className="mb-4 bg-blue-50 border border-blue-100 text-blue-700 px-4 py-3 rounded-md flex items-center justify-between animate-in fade-in slide-in-from-top-2 duration-200 rtl:flex-row-reverse">
                                     <span className="font-medium text-sm">{t('contacts.selection.selected', { count: selectedIds.size })}</span>
                                     <div className="flex items-center gap-3 rtl:flex-row-reverse">
+                                        <button
+                                            onClick={() => setIsWhatsAppBulkOpen(true)}
+                                            className="text-sm font-medium text-white flex items-center gap-2 bg-[#25D366] hover:bg-[#128C7E] px-3 py-1.5 rounded shadow-sm rtl:flex-row-reverse"
+                                        >
+                                            <MessageSquare size={14} />
+                                            WhatsApp Campaign
+                                        </button>
                                         <button
                                             onClick={() => {
                                                 selectedIds.forEach((id: string) => deleteContact(id));
@@ -1029,6 +1038,12 @@ const ContactsPage = () => {
             }
 
             <DialerModal isOpen={isDialerOpen} onClose={() => setIsDialerOpen(false)} />
+
+            <WhatsAppBulkModal 
+                isOpen={isWhatsAppBulkOpen} 
+                onClose={() => setIsWhatsAppBulkOpen(false)} 
+                selectedCount={selectedIds.size} 
+            />
 
             <ManageFieldsSidebar
                 isOpen={isColumnMenuOpen}
