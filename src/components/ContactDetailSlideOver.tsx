@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X, Phone, Mail, MessageSquare, Calendar, Clock, Tag, MoreHorizontal, CheckCircle2, Circle, Plus, Trash2, Send, Activity, ChevronDown, FileText, CalendarClock, Download, FilePlus, UploadCloud } from 'lucide-react';
 import { MESSAGE_TEMPLATES } from '../data/mockTemplates';
 import type { Contact } from '../types/contact';
@@ -42,29 +42,44 @@ const ContactDetailSlideOver: React.FC<ContactDetailSlideOverProps> = ({ contact
     const [notes, setNotes] = useState<ContactNote[]>([]);
     const [newNoteContent, setNewNoteContent] = useState('');
 
+    // Documents State
+    interface UploadedDoc { id: string; name: string; size: string; uploadedAt: string; }
+    const [uploadedDocs, setUploadedDocs] = useState<UploadedDoc[]>([
+        { id: 'mock1', name: 'Signed_Contract.pdf', size: '2.4 MB', uploadedAt: '2 days ago' },
+        { id: 'mock2', name: 'ID_Verification.jpg', size: '850 KB', uploadedAt: 'last week' }
+    ]);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // Appointments toast state
+    const [showApptToast, setShowApptToast] = useState(false);
+
+    // Slide-over toast state
+    const [slideToast, setSlideToast] = useState<string | null>(null);
+
+    const triggerSlideToast = (msg: string) => {
+        setSlideToast(msg);
+        setTimeout(() => setSlideToast(null), 3000);
+    };
+
     // Load tasks from LocalStorage when contact changes
     useEffect(() => {
         if (contact?.id) {
             const savedTasks = localStorage.getItem(`contact_tasks_${contact.id}`);
-            if (savedTasks) {
-                try {
-                    setTasks(JSON.parse(savedTasks));
-                } catch (e) {
-                    setTasks([]);
-                }
-            } else {
-                setTasks([]);
-            }
+            if (savedTasks) { try { setTasks(JSON.parse(savedTasks)); } catch { setTasks([]); } } else { setTasks([]); }
 
             const savedNotes = localStorage.getItem(`contact_notes_${contact.id}`);
-            if (savedNotes) {
+            if (savedNotes) { try { setNotes(JSON.parse(savedNotes)); } catch { setNotes([]); } } else { setNotes([]); }
+
+            const savedDocs = localStorage.getItem(`contact_docs_${contact.id}`);
+            if (savedDocs) {
                 try {
-                    setNotes(JSON.parse(savedNotes));
-                } catch (e) {
-                    setNotes([]);
-                }
-            } else {
-                setNotes([]);
+                    const parsed = JSON.parse(savedDocs);
+                    setUploadedDocs([
+                        { id: 'mock1', name: 'Signed_Contract.pdf', size: '2.4 MB', uploadedAt: '2 days ago' },
+                        { id: 'mock2', name: 'ID_Verification.jpg', size: '850 KB', uploadedAt: 'last week' },
+                        ...parsed
+                    ]);
+                } catch { /* ignore */ }
             }
         }
     }, [contact?.id]);
@@ -74,8 +89,11 @@ const ContactDetailSlideOver: React.FC<ContactDetailSlideOverProps> = ({ contact
         if (contact?.id) {
             localStorage.setItem(`contact_tasks_${contact.id}`, JSON.stringify(tasks));
             localStorage.setItem(`contact_notes_${contact.id}`, JSON.stringify(notes));
+            // Save only non-mock docs
+            const realDocs = uploadedDocs.filter(d => d.id !== 'mock1' && d.id !== 'mock2');
+            localStorage.setItem(`contact_docs_${contact.id}`, JSON.stringify(realDocs));
         }
-    }, [tasks, notes, contact?.id]);
+    }, [tasks, notes, uploadedDocs, contact?.id]);
 
     const handleAddTask = (e: React.FormEvent) => {
         e.preventDefault();
@@ -114,6 +132,26 @@ const ContactDetailSlideOver: React.FC<ContactDetailSlideOverProps> = ({ contact
 
     const deleteNote = (noteId: string) => {
         setNotes(notes.filter(n => n.id !== noteId));
+    };
+
+    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const sizeKB = file.size / 1024;
+        const sizeStr = sizeKB > 1024 ? `${(sizeKB / 1024).toFixed(1)} MB` : `${Math.round(sizeKB)} KB`;
+        const newDoc = {
+            id: Date.now().toString(),
+            name: file.name,
+            size: sizeStr,
+            uploadedAt: 'just now'
+        };
+        setUploadedDocs(prev => [...prev, newDoc]);
+        triggerSlideToast(`✅ "${file.name}" uploaded successfully!`);
+        if (fileInputRef.current) fileInputRef.current.value = '';
+    };
+
+    const deleteDoc = (docId: string) => {
+        setUploadedDocs(prev => prev.filter(d => d.id !== docId));
     };
 
     const tabs = ['Overview', 'Notes', 'Tasks', 'Appointments', 'Documents'];
@@ -416,11 +454,24 @@ const ContactDetailSlideOver: React.FC<ContactDetailSlideOverProps> = ({ contact
                                 <div className="space-y-6">
                                     <div className="flex justify-between items-center">
                                         <h3 className="text-base font-semibold text-gray-900">Upcoming</h3>
-                                        <button className="px-4 py-2 bg-ghl-blue text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors flex items-center gap-2 shadow-sm">
+                                        <button 
+                                            onClick={() => {
+                                                setShowApptToast(true);
+                                                setTimeout(() => setShowApptToast(false), 3000);
+                                            }}
+                                            className="px-4 py-2 bg-ghl-blue text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors flex items-center gap-2 shadow-sm"
+                                        >
                                             <Plus size={16} />
                                             Schedule
                                         </button>
                                     </div>
+
+                                    {showApptToast && (
+                                        <div className="flex items-center gap-3 bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded-xl text-sm font-medium animate-pulse">
+                                            <CalendarClock size={18} className="text-blue-500" />
+                                            Calendar scheduling integration coming soon!
+                                        </div>
+                                    )}
                                     
                                     <div className="space-y-3">
                                         {/* Mock Appointment */}
@@ -472,8 +523,21 @@ const ContactDetailSlideOver: React.FC<ContactDetailSlideOverProps> = ({ contact
                             )}
 
                             {activeTab === 'Documents' && (
-                                <div className="space-y-6">
-                                    <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:bg-gray-50 hover:border-ghl-blue transition-colors cursor-pointer group">
+                                <div className="space-y-4">
+                                    {/* Hidden real file input */}
+                                    <input 
+                                        ref={fileInputRef}
+                                        type="file" 
+                                        className="hidden"
+                                        onChange={handleFileUpload}
+                                        accept="*/*"
+                                    />
+
+                                    {/* Upload Zone */}
+                                    <div 
+                                        onClick={() => fileInputRef.current?.click()}
+                                        className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:bg-gray-50 hover:border-ghl-blue transition-colors cursor-pointer group"
+                                    >
                                         <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
                                             <UploadCloud size={24} />
                                         </div>
@@ -481,48 +545,46 @@ const ContactDetailSlideOver: React.FC<ContactDetailSlideOverProps> = ({ contact
                                         <p className="text-xs text-gray-500">Drag and drop files here, or click to browse</p>
                                     </div>
 
-                                    <div className="space-y-3 mt-8">
-                                        {/* Mock Document 1 */}
-                                        <div className="flex items-center justify-between p-3 border border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-sm transition-all bg-white group">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 bg-red-50 text-red-500 rounded-lg flex items-center justify-center">
-                                                    <FileText size={20} />
-                                                </div>
-                                                <div>
-                                                    <p className="text-sm font-medium text-gray-900">Signed_Contract.pdf</p>
-                                                    <p className="text-xs text-gray-500">2.4 MB • Uploaded 2 days ago</p>
-                                                </div>
+                                    {/* Document List */}
+                                    <div className="space-y-3">
+                                        {uploadedDocs.length === 0 ? (
+                                            <div className="text-center py-8 text-gray-500">
+                                                <p className="text-sm">No documents yet. Upload one above!</p>
                                             </div>
-                                            <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <button className="p-2 text-gray-400 hover:text-ghl-blue hover:bg-blue-50 rounded-lg transition-colors">
-                                                    <Download size={16} />
-                                                </button>
-                                                <button className="p-2 text-gray-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-colors">
-                                                    <Trash2 size={16} />
-                                                </button>
-                                            </div>
-                                        </div>
-
-                                        {/* Mock Document 2 */}
-                                        <div className="flex items-center justify-between p-3 border border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-sm transition-all bg-white group">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 bg-blue-50 text-blue-500 rounded-lg flex items-center justify-center">
-                                                    <FilePlus size={20} />
+                                        ) : (
+                                            uploadedDocs.map(doc => (
+                                                <div key={doc.id} className="flex items-center justify-between p-3 border border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-sm transition-all bg-white group">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                                                            doc.name.endsWith('.pdf') ? 'bg-red-50 text-red-500' :
+                                                            doc.name.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? 'bg-purple-50 text-purple-500' :
+                                                            'bg-blue-50 text-blue-500'
+                                                        }`}>
+                                                            {doc.name.endsWith('.pdf') ? <FileText size={20} /> : <FilePlus size={20} />}
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-sm font-medium text-gray-900">{doc.name}</p>
+                                                            <p className="text-xs text-gray-500">{doc.size} • Uploaded {doc.uploadedAt}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        <button 
+                                                            title="Download"
+                                                            className="p-2 text-gray-400 hover:text-ghl-blue hover:bg-blue-50 rounded-lg transition-colors"
+                                                        >
+                                                            <Download size={16} />
+                                                        </button>
+                                                        <button 
+                                                            title="Delete"
+                                                            onClick={() => deleteDoc(doc.id)}
+                                                            className="p-2 text-gray-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
+                                                        >
+                                                            <Trash2 size={16} />
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                                <div>
-                                                    <p className="text-sm font-medium text-gray-900">ID_Verification.jpg</p>
-                                                    <p className="text-xs text-gray-500">850 KB • Uploaded last week</p>
-                                                </div>
-                                            </div>
-                                            <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <button className="p-2 text-gray-400 hover:text-ghl-blue hover:bg-blue-50 rounded-lg transition-colors">
-                                                    <Download size={16} />
-                                                </button>
-                                                <button className="p-2 text-gray-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-colors">
-                                                    <Trash2 size={16} />
-                                                </button>
-                                            </div>
-                                        </div>
+                                            ))
+                                        )}
                                     </div>
                                 </div>
                             )}
@@ -590,6 +652,12 @@ const ContactDetailSlideOver: React.FC<ContactDetailSlideOverProps> = ({ contact
                                 </div>
                             )}
                         </div>
+                        {/* Slide-over toast notification */}
+                        {slideToast && (
+                            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-gray-900 text-white px-5 py-3 rounded-xl shadow-2xl text-sm font-medium z-10 whitespace-nowrap">
+                                {slideToast}
+                            </div>
+                        )}
                     </>
                 )}
             </div>
