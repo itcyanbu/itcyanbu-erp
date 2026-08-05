@@ -544,14 +544,6 @@ const ContactsPage = () => {
         }
     };
 
-    const handleTabChange = (listId: string) => {
-        setActiveListId(listId);
-        const list = smartLists.find(l => l.id === listId);
-        if (list) {
-            setActiveFilters(list.filters);
-        }
-    };
-
     const topTabs = ['Contacts', 'Smart Lists', 'Bulk Actions', 'Restore', 'Tasks', 'Companies', 'Manage Smart Lists'];
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -709,26 +701,31 @@ const ContactsPage = () => {
                     </div>
                 )}
 
-                {/* Smart List Tabs Row */}
-                <div className="px-6 flex items-center justify-between border-b border-gray-100 bg-white min-h-[44px]">
-                    <div className="flex items-center gap-5">
-                        {smartLists.map(list => (
+                {/* Status Tabs Row */}
+                <div className="px-6 flex items-center justify-between border-b border-gray-100 bg-white min-h-[50px] py-1.5">
+                    <div className="flex items-center gap-2">
+                        {(['All', 'Active', 'Leads', 'Inactive', 'Blocked'] as const).map(status => (
                             <button
-                                key={list.id}
-                                onClick={() => handleTabChange(list.id)}
+                                key={status}
+                                onClick={() => setStatusFilter(status)}
                                 className={clsx(
-                                    "px-1 py-1.5 text-[13px] font-black border-b-2 transition-all flex items-center gap-2 h-[44px]",
-                                    activeListId === list.id ? "border-ghl-blue text-ghl-blue" : "border-transparent text-gray-400 hover:text-gray-600"
+                                    "flex items-center gap-2 px-3 py-1.5 rounded-lg text-[13px] font-bold transition-all border",
+                                    statusFilter === status
+                                        ? "bg-gray-800 text-white border-gray-800 shadow-sm"
+                                        : "bg-transparent text-gray-600 border-transparent hover:bg-gray-100"
                                 )}
                             >
-                                <LayoutGrid size={15} />
-                                {list.name}
+                                {status}
+                                <span className={clsx(
+                                    "px-1.5 py-0.5 rounded-full text-[11px] font-bold",
+                                    statusFilter === status 
+                                        ? "bg-gray-700 text-white" 
+                                        : "bg-gray-200 text-gray-600"
+                                )}>
+                                    {statusCounts[status]}
+                                </span>
                             </button>
                         ))}
-                        <button className="flex items-center gap-2 text-[13px] font-black text-gray-400 hover:text-gray-600 px-1 py-1.5 transition-colors h-[44px]">
-                            <Plus size={15} />
-                            Add Smart List
-                        </button>
                     </div>
 
                     <div className="flex items-center gap-5">
@@ -869,44 +866,16 @@ const ContactsPage = () => {
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-6">
-                        {/* Status Tabs */}
-                        <div className="flex items-center bg-gray-50 p-1 rounded-xl border border-gray-200 shadow-sm">
-                            {(['All', 'Active', 'Leads', 'Inactive', 'Blocked'] as const).map(status => (
-                                <button
-                                    key={status}
-                                    onClick={() => setStatusFilter(status)}
-                                    className={clsx(
-                                        "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[13px] font-bold transition-all",
-                                        statusFilter === status
-                                            ? "bg-white text-gray-900 shadow-sm border border-gray-200/50"
-                                            : "text-gray-500 hover:text-gray-700 hover:bg-gray-100/50"
-                                    )}
-                                >
-                                    {status}
-                                    <span className={clsx(
-                                        "px-1.5 py-0.5 rounded-md text-[11px] font-bold",
-                                        statusFilter === status 
-                                            ? "bg-blue-100 text-blue-700" 
-                                            : "bg-gray-200 text-gray-600"
-                                    )}>
-                                        {statusCounts[status]}
-                                    </span>
-                                </button>
-                            ))}
-                        </div>
-
                         <div className="relative group">
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-ghl-blue transition-colors" size={16} />
                             <input
                                 type="text"
                                 placeholder="Search Contacts"
-                                className="h-10 pl-11 pr-4 w-[300px] border border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 text-[13px] font-bold placeholder:text-gray-300 bg-white transition-all shadow-sm"
+                                className="h-10 pl-11 pr-4 w-[350px] border border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 text-[13px] font-bold placeholder:text-gray-300 bg-white transition-all shadow-sm"
                                 value={localSearch}
                                 onChange={handleSearchChange}
                             />
                         </div>
-                    </div>
                 </div>
 
                 {/* Global List Banner */}
