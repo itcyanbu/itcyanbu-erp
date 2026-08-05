@@ -8,6 +8,7 @@ import { CalendarProvider } from './context/CalendarContext';
 import { EventProvider } from './context/EventContext';
 import { SiteProvider } from './context/SiteContext';
 import { PipelineProvider } from './context/PipelineContext';
+import { TwilioProvider } from './context/TwilioContext';
 import { useAuth } from './context/AuthContext';
 import LoginPage from './pages/auth/LoginPage';
 import AuthCallback from './pages/auth/AuthCallback';
@@ -133,18 +134,20 @@ function App() {
                 <EventProvider>
                   <SiteProvider>
                     <PipelineProvider>
-                      <div className="flex h-screen bg-ghl-bg font-sans text-ghl-text overflow-hidden">
-                        <Sidebar
-                          activeModule="AI Solutions"
-                          onModuleChange={() => {}}
-                        />
-                        <div className="flex-1 flex flex-col min-w-0 overflow-hidden min-h-0 relative">
-                          <Header />
-                          <div className="flex-1 flex flex-col overflow-y-auto">
-                            <MockupView />
+                      <TwilioProvider>
+                        <div className="flex h-screen bg-ghl-bg font-sans text-ghl-text overflow-hidden">
+                          <Sidebar
+                            activeModule="AI Solutions"
+                            onModuleChange={() => {}}
+                          />
+                          <div className="flex-1 flex flex-col min-w-0 overflow-hidden min-h-0 relative">
+                            <Header />
+                            <div className="flex-1 flex flex-col overflow-y-auto">
+                              <MockupView />
+                            </div>
                           </div>
                         </div>
-                      </div>
+                      </TwilioProvider>
                     </PipelineProvider>
                   </SiteProvider>
                 </EventProvider>
@@ -164,18 +167,20 @@ function App() {
                 <EventProvider>
                   <SiteProvider>
                     <PipelineProvider>
-                      <div className="flex h-screen bg-ghl-bg font-sans text-ghl-text overflow-hidden">
-                        <Sidebar
-                          activeModule={activeModule}
-                          onModuleChange={setActiveModule}
-                        />
-                        <div className="flex-1 flex flex-col min-w-0 overflow-hidden min-h-0 relative">
-                          <Header />
-                          <div className="flex-1 flex flex-col overflow-y-auto" key={activeModule}>
-                            {renderModule()}
+                      <TwilioProvider>
+                        <div className="flex h-screen bg-ghl-bg font-sans text-ghl-text overflow-hidden">
+                          <Sidebar
+                            activeModule={activeModule}
+                            onModuleChange={setActiveModule}
+                          />
+                          <div className="flex-1 flex flex-col min-w-0 overflow-hidden min-h-0 relative">
+                            <Header />
+                            <div className="flex-1 flex flex-col overflow-y-auto" key={activeModule}>
+                              {renderModule()}
+                            </div>
                           </div>
                         </div>
-                      </div>
+                      </TwilioProvider>
                     </PipelineProvider>
                   </SiteProvider>
                 </EventProvider>

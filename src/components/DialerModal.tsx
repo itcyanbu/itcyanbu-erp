@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Phone, Delete } from 'lucide-react';
 import ActiveCallOverlay from './ActiveCallOverlay';
+import { useTwilio } from '../context/TwilioContext';
 
 const WhatsAppIcon = ({ size = 24, className = "" }: { size?: number, className?: string }) => (
     <svg width={size} height={size} className={className} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -17,6 +18,7 @@ const DialerModal: React.FC<DialerModalProps> = ({ isOpen, onClose }) => {
     const [number, setNumber] = useState('');
     const [isCallActive, setIsCallActive] = useState(false);
     const [isWhatsAppCall, setIsWhatsAppCall] = useState(false);
+    const { makeCall } = useTwilio();
 
     if (!isOpen && !isCallActive) return null;
 
@@ -34,12 +36,14 @@ const DialerModal: React.FC<DialerModalProps> = ({ isOpen, onClose }) => {
         if (!number) return;
         setIsWhatsAppCall(false);
         setIsCallActive(true);
+        makeCall(number, false);
     };
 
     const handleWhatsAppCall = () => {
         if (!number) return;
         setIsWhatsAppCall(true);
         setIsCallActive(true);
+        makeCall(number, true);
     };
 
     const digits = [

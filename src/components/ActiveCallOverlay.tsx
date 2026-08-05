@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { PhoneOff, Mic, MicOff, Volume2, VolumeX, User } from 'lucide-react';
+import { useTwilio } from '../context/TwilioContext';
 
 interface ActiveCallOverlayProps {
     isOpen: boolean;
@@ -16,6 +17,7 @@ const ActiveCallOverlay: React.FC<ActiveCallOverlayProps> = ({
     phoneNumber,
     isWhatsApp = false 
 }) => {
+    const { currentCall, endCall, muteCall } = useTwilio();
     const [callStatus, setCallStatus] = useState<'calling' | 'connected' | 'ended'>('calling');
     const [callDuration, setCallDuration] = useState(0);
     const [isMuted, setIsMuted] = useState(false);
@@ -30,13 +32,38 @@ const ActiveCallOverlay: React.FC<ActiveCallOverlayProps> = ({
             return;
         }
 
-        // Simulate connecting after 3 seconds
-        const connectTimer = setTimeout(() => {
-            setCallStatus('connected');
-        }, 3000);
+        // Sync with Twilio Call state
+        if (currentCall) {
+            if (currentCall.status() === 'open') {
+                setCallStatus('connected');
+            } else if (currentCall.status() === 'closed') {
+                setCallStatus('ended');
+            }
+            
+            const handleAccept = () => setCallStatus('connected');
+            const handleDisconnect = () => setCallStatus('ended');
+            const handleCancel = () => setCallStatus('ended');
+            const handleReject = () => setCallStatus('ended');
 
-        return () => clearTimeout(connectTimer);
-    }, [isOpen]);
+            currentCall.on('accept', handleAccept);
+            currentCall.on('disconnect', handleDisconnect);
+            currentCall.on('cancel', handleCancel);
+            currentCall.on('reject', handleReject);
+
+            return () => {
+                currentCall.removeListener('accept', handleAccept);
+                currentCall.removeListener('disconnect', handleDisconnect);
+                currentCall.removeListener('cancel', handleCancel);
+                currentCall.removeListener('reject', handleReject);
+            };
+        } else {
+            // Mock connection after 3s if no real call exists (for testing UI)
+            const connectTimer = setTimeout(() => {
+                setCallStatus('connected');
+            }, 3000);
+            return () => clearTimeout(connectTimer);
+        }
+    }, [isOpen, currentCall]);
 
     useEffect(() => {
         let interval: ReturnType<typeof setInterval>;
@@ -52,9 +79,16 @@ const ActiveCallOverlay: React.FC<ActiveCallOverlayProps> = ({
 
     const handleEndCall = () => {
         setCallStatus('ended');
+        endCall();
         setTimeout(() => {
             onClose();
         }, 1500);
+    };
+
+    const handleToggleMute = () => {
+        const newMuteState = !isMuted;
+        setIsMuted(newMuteState);
+        muteCall(newMuteState);
     };
 
     const formatDuration = (seconds: number) => {
@@ -102,7 +136,7 @@ const ActiveCallOverlay: React.FC<ActiveCallOverlayProps> = ({
                 <div className="w-full px-12 pb-12 mt-auto">
                     <div className="grid grid-cols-2 gap-8 mb-12">
                         <button 
-                            onClick={() => setIsMuted(!isMuted)}
+                            onClick={handleToggleMute}
                             className={`flex flex-col items-center gap-2 transition-colors ${isMuted ? 'text-white' : 'text-white/60 hover:text-white'}`}
                         >
                             <div className={`w-16 h-16 rounded-full flex items-center justify-center ${isMuted ? 'bg-white/20' : 'bg-black/20'}`}>

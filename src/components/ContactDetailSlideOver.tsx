@@ -3,6 +3,7 @@ import { X, Phone, Mail, MessageSquare, Calendar, Clock, Tag, MoreHorizontal, Ch
 import { MESSAGE_TEMPLATES } from '../data/mockTemplates';
 import type { Contact } from '../types/contact';
 import ActiveCallOverlay from './ActiveCallOverlay';
+import { useTwilio } from '../context/TwilioContext';
 
 interface ContactTask {
     id: string;
@@ -68,6 +69,7 @@ const ContactDetailSlideOver: React.FC<ContactDetailSlideOverProps> = ({ contact
     const [showScheduleForm, setShowScheduleForm] = useState(false);
     const [newAppt, setNewAppt] = useState({ title: '', date: '', startTime: '', endTime: '', type: 'Call' });
     const [isCallActive, setIsCallActive] = useState(false);
+    const { makeCall } = useTwilio();
 
     // Slide-over toast state
     const [slideToast, setSlideToast] = useState<string | null>(null);
@@ -246,7 +248,12 @@ const ContactDetailSlideOver: React.FC<ContactDetailSlideOverProps> = ({ contact
                             {/* Quick Actions */}
                             <div className="flex items-center gap-2">
                                 <button 
-                                    onClick={() => contact.phone && (window.location.href = `tel:${contact.phone}`)}
+                                    onClick={() => {
+                                        if (contact.phone) {
+                                            setIsCallActive(true);
+                                            makeCall(contact.phone, false);
+                                        }
+                                    }}
                                     className="flex-1 flex items-center justify-center gap-1.5 px-2 py-2 bg-white border border-gray-300 rounded-md text-gray-700 font-medium hover:bg-gray-50 shadow-sm transition-colors text-sm"
                                 >
                                     <Phone size={16} className="text-gray-500" />
@@ -271,6 +278,7 @@ const ContactDetailSlideOver: React.FC<ContactDetailSlideOverProps> = ({ contact
                                     onClick={() => {
                                         if (contact.phone) {
                                             setIsCallActive(true);
+                                            makeCall(contact.phone, true);
                                         }
                                     }}
                                     className="flex-1 flex items-center justify-center gap-1.5 px-2 py-2 bg-[#25D366] text-white rounded-md font-medium hover:bg-[#20b958] shadow-sm transition-colors text-sm"
