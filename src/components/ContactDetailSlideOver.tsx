@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Phone, Mail, MessageSquare, Calendar, Clock, Tag, MoreHorizontal, CheckCircle2, Circle, Plus, Trash2, Send, Activity, ChevronDown } from 'lucide-react';
+import { X, Phone, Mail, MessageSquare, Calendar, Clock, Tag, MoreHorizontal, CheckCircle2, Circle, Plus, Trash2, Send, Activity, ChevronDown, FileText, CalendarClock, Download, FilePlus, UploadCloud } from 'lucide-react';
 import { MESSAGE_TEMPLATES } from '../data/mockTemplates';
 import type { Contact } from '../types/contact';
 
@@ -7,6 +7,12 @@ interface ContactTask {
     id: string;
     title: string;
     completed: boolean;
+    createdAt: string;
+}
+
+interface ContactNote {
+    id: string;
+    content: string;
     createdAt: string;
 }
 
@@ -32,28 +38,44 @@ const ContactDetailSlideOver: React.FC<ContactDetailSlideOverProps> = ({ contact
     const [tasks, setTasks] = useState<ContactTask[]>([]);
     const [newTaskTitle, setNewTaskTitle] = useState('');
 
+    // Notes State
+    const [notes, setNotes] = useState<ContactNote[]>([]);
+    const [newNoteContent, setNewNoteContent] = useState('');
+
     // Load tasks from LocalStorage when contact changes
     useEffect(() => {
         if (contact?.id) {
-            const saved = localStorage.getItem(`contact_tasks_${contact.id}`);
-            if (saved) {
+            const savedTasks = localStorage.getItem(`contact_tasks_${contact.id}`);
+            if (savedTasks) {
                 try {
-                    setTasks(JSON.parse(saved));
+                    setTasks(JSON.parse(savedTasks));
                 } catch (e) {
                     setTasks([]);
                 }
             } else {
                 setTasks([]);
             }
+
+            const savedNotes = localStorage.getItem(`contact_notes_${contact.id}`);
+            if (savedNotes) {
+                try {
+                    setNotes(JSON.parse(savedNotes));
+                } catch (e) {
+                    setNotes([]);
+                }
+            } else {
+                setNotes([]);
+            }
         }
     }, [contact?.id]);
 
-    // Save tasks to LocalStorage when they change
+    // Save tasks and notes to LocalStorage when they change
     useEffect(() => {
         if (contact?.id) {
             localStorage.setItem(`contact_tasks_${contact.id}`, JSON.stringify(tasks));
+            localStorage.setItem(`contact_notes_${contact.id}`, JSON.stringify(notes));
         }
-    }, [tasks, contact?.id]);
+    }, [tasks, notes, contact?.id]);
 
     const handleAddTask = (e: React.FormEvent) => {
         e.preventDefault();
@@ -75,6 +97,23 @@ const ContactDetailSlideOver: React.FC<ContactDetailSlideOverProps> = ({ contact
 
     const deleteTask = (taskId: string) => {
         setTasks(tasks.filter(t => t.id !== taskId));
+    };
+
+    const handleAddNote = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!newNoteContent.trim()) return;
+        
+        const newNote: ContactNote = {
+            id: Date.now().toString(),
+            content: newNoteContent,
+            createdAt: new Date().toISOString()
+        };
+        setNotes([newNote, ...notes]);
+        setNewNoteContent('');
+    };
+
+    const deleteNote = (noteId: string) => {
+        setNotes(notes.filter(n => n.id !== noteId));
     };
 
     const tabs = ['Overview', 'Notes', 'Tasks', 'Appointments', 'Documents'];
@@ -319,13 +358,172 @@ const ContactDetailSlideOver: React.FC<ContactDetailSlideOverProps> = ({ contact
                                 </div>
                             )}
 
-                            {activeTab !== 'Overview' && activeTab !== 'Tasks' && (
-                                <div className="flex flex-col items-center justify-center h-full text-gray-500">
-                                    <div className="p-4 bg-gray-50 rounded-full mb-4">
-                                        <Clock size={32} className="text-gray-400" />
+                            {activeTab === 'Notes' && (
+                                <div className="space-y-6">
+                                    <form onSubmit={handleAddNote} className="space-y-3">
+                                        <textarea
+                                            value={newNoteContent}
+                                            onChange={(e) => setNewNoteContent(e.target.value)}
+                                            placeholder="Write a note about this contact..."
+                                            className="w-full h-32 px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-ghl-blue focus:border-ghl-blue outline-none resize-none text-sm"
+                                        />
+                                        <div className="flex justify-end">
+                                            <button 
+                                                type="submit"
+                                                disabled={!newNoteContent.trim()}
+                                                className="px-6 py-2 bg-ghl-blue text-white rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shadow-sm"
+                                            >
+                                                <FileText size={16} />
+                                                Save Note
+                                            </button>
+                                        </div>
+                                    </form>
+
+                                    <div className="space-y-4">
+                                        {notes.length === 0 ? (
+                                            <div className="text-center py-12 text-gray-500 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                                                <div className="inline-block p-3 bg-white rounded-full mb-3 shadow-sm">
+                                                    <FileText size={24} className="text-gray-400" />
+                                                </div>
+                                                <p className="font-medium text-gray-900 mb-1">No notes yet</p>
+                                                <p className="text-sm">Write your first note above to keep track of details.</p>
+                                            </div>
+                                        ) : (
+                                            notes.map(note => (
+                                                <div key={note.id} className="bg-yellow-50/50 border border-yellow-100 p-4 rounded-xl shadow-sm relative group">
+                                                    <p className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed pr-8">{note.content}</p>
+                                                    <div className="mt-3 flex items-center justify-between text-xs text-gray-500">
+                                                        <span className="flex items-center gap-1">
+                                                            <Clock size={12} />
+                                                            {new Date(note.createdAt).toLocaleString()}
+                                                        </span>
+                                                        <button 
+                                                            onClick={() => deleteNote(note.id)}
+                                                            className="text-gray-400 hover:text-rose-500 transition-colors opacity-0 group-hover:opacity-100 p-1"
+                                                            title="Delete Note"
+                                                        >
+                                                            <Trash2 size={14} />
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))
+                                        )}
                                     </div>
-                                    <h3 className="text-lg font-medium text-gray-900 mb-1">Coming Soon</h3>
-                                    <p className="text-center max-w-xs">The {activeTab} feature is currently under development.</p>
+                                </div>
+                            )}
+
+                            {activeTab === 'Appointments' && (
+                                <div className="space-y-6">
+                                    <div className="flex justify-between items-center">
+                                        <h3 className="text-base font-semibold text-gray-900">Upcoming</h3>
+                                        <button className="px-4 py-2 bg-ghl-blue text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors flex items-center gap-2 shadow-sm">
+                                            <Plus size={16} />
+                                            Schedule
+                                        </button>
+                                    </div>
+                                    
+                                    <div className="space-y-3">
+                                        {/* Mock Appointment */}
+                                        <div className="bg-white border border-gray-200 p-4 rounded-xl shadow-sm flex items-start gap-4">
+                                            <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-lg flex flex-col items-center justify-center flex-shrink-0">
+                                                <span className="text-xs font-bold uppercase">{new Date(Date.now() + 86400000 * 2).toLocaleString('default', { month: 'short' })}</span>
+                                                <span className="text-lg font-bold leading-tight">{new Date(Date.now() + 86400000 * 2).getDate()}</span>
+                                            </div>
+                                            <div className="flex-1">
+                                                <div className="flex justify-between items-start">
+                                                    <div>
+                                                        <h4 className="font-semibold text-gray-900">Consultation Call</h4>
+                                                        <p className="text-sm text-gray-500 flex items-center gap-1 mt-1">
+                                                            <Clock size={14} /> 10:00 AM - 10:30 AM
+                                                        </p>
+                                                    </div>
+                                                    <span className="px-2.5 py-1 bg-amber-50 text-amber-700 text-xs font-semibold rounded-full border border-amber-100">
+                                                        Pending
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <h3 className="text-base font-semibold text-gray-900 mt-8 mb-4">Past Appointments</h3>
+                                    <div className="space-y-3 opacity-75">
+                                        {/* Mock Past Appointment */}
+                                        <div className="bg-gray-50 border border-gray-200 p-4 rounded-xl flex items-start gap-4">
+                                            <div className="w-12 h-12 bg-gray-200 text-gray-600 rounded-lg flex flex-col items-center justify-center flex-shrink-0">
+                                                <span className="text-xs font-bold uppercase">Jul</span>
+                                                <span className="text-lg font-bold leading-tight">14</span>
+                                            </div>
+                                            <div className="flex-1">
+                                                <div className="flex justify-between items-start">
+                                                    <div>
+                                                        <h4 className="font-semibold text-gray-900">Initial Discovery</h4>
+                                                        <p className="text-sm text-gray-500 flex items-center gap-1 mt-1">
+                                                            <CalendarClock size={14} /> Completed
+                                                        </p>
+                                                    </div>
+                                                    <span className="px-2.5 py-1 bg-emerald-50 text-emerald-700 text-xs font-semibold rounded-full border border-emerald-100">
+                                                        Showed
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {activeTab === 'Documents' && (
+                                <div className="space-y-6">
+                                    <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:bg-gray-50 hover:border-ghl-blue transition-colors cursor-pointer group">
+                                        <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+                                            <UploadCloud size={24} />
+                                        </div>
+                                        <h3 className="text-sm font-semibold text-gray-900 mb-1">Upload Document</h3>
+                                        <p className="text-xs text-gray-500">Drag and drop files here, or click to browse</p>
+                                    </div>
+
+                                    <div className="space-y-3 mt-8">
+                                        {/* Mock Document 1 */}
+                                        <div className="flex items-center justify-between p-3 border border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-sm transition-all bg-white group">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 bg-red-50 text-red-500 rounded-lg flex items-center justify-center">
+                                                    <FileText size={20} />
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm font-medium text-gray-900">Signed_Contract.pdf</p>
+                                                    <p className="text-xs text-gray-500">2.4 MB • Uploaded 2 days ago</p>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <button className="p-2 text-gray-400 hover:text-ghl-blue hover:bg-blue-50 rounded-lg transition-colors">
+                                                    <Download size={16} />
+                                                </button>
+                                                <button className="p-2 text-gray-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-colors">
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        {/* Mock Document 2 */}
+                                        <div className="flex items-center justify-between p-3 border border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-sm transition-all bg-white group">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 bg-blue-50 text-blue-500 rounded-lg flex items-center justify-center">
+                                                    <FilePlus size={20} />
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm font-medium text-gray-900">ID_Verification.jpg</p>
+                                                    <p className="text-xs text-gray-500">850 KB • Uploaded last week</p>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <button className="p-2 text-gray-400 hover:text-ghl-blue hover:bg-blue-50 rounded-lg transition-colors">
+                                                    <Download size={16} />
+                                                </button>
+                                                <button className="p-2 text-gray-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-colors">
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             )}
 
