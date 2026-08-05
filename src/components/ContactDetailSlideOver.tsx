@@ -261,9 +261,22 @@ const ContactDetailSlideOver: React.FC<ContactDetailSlideOverProps> = ({ contact
                                 <button 
                                     onClick={() => contact.phone && window.open(`https://wa.me/${contact.phone.replace(/[^0-9]/g, '')}`, '_blank')}
                                     className="flex-1 flex items-center justify-center gap-1.5 px-2 py-2 bg-white border border-[#25D366] text-[#25D366] rounded-md font-medium hover:bg-green-50 shadow-sm transition-colors text-sm"
+                                    title="WhatsApp Chat"
                                 >
                                     <WhatsAppIcon size={16} className="text-[#25D366]" />
-                                    WhatsApp
+                                    <span className="hidden sm:inline">WA Chat</span>
+                                </button>
+                                <button 
+                                    onClick={() => {
+                                        if (contact.phone) {
+                                            alert(`Initiating WhatsApp Voice Call to ${contact.phone}...`);
+                                        }
+                                    }}
+                                    className="flex-1 flex items-center justify-center gap-1.5 px-2 py-2 bg-[#25D366] text-white rounded-md font-medium hover:bg-[#20b958] shadow-sm transition-colors text-sm"
+                                    title="WhatsApp Voice Call"
+                                >
+                                    <Phone size={14} fill="currentColor" />
+                                    <span className="hidden sm:inline">WA Call</span>
                                 </button>
                                 <button 
                                     onClick={() => contact.email && (window.location.href = `mailto:${contact.email}`)}
