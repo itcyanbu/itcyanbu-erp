@@ -16,6 +16,16 @@ interface ContactNote {
     createdAt: string;
 }
 
+interface Appointment {
+    id: string;
+    title: string;
+    date: string;
+    startTime: string;
+    endTime: string;
+    type: string;
+    status: 'Pending' | 'Confirmed' | 'Cancelled';
+}
+
 const WhatsAppIcon = ({ size = 24, className = "" }: { size?: number, className?: string }) => (
     <svg width={size} height={size} className={className} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
         <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
@@ -50,8 +60,13 @@ const ContactDetailSlideOver: React.FC<ContactDetailSlideOverProps> = ({ contact
     ]);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    // Appointments toast state
-    const [showApptToast, setShowApptToast] = useState(false);
+    // Appointments State
+    const [appointments, setAppointments] = useState<Appointment[]>([
+        { id: 'mock-appt-1', title: 'Consultation Call', date: new Date(Date.now() + 86400000 * 2).toISOString().split('T')[0], startTime: '10:00', endTime: '10:30', type: 'Call', status: 'Pending' }
+    ]);
+    const [showScheduleForm, setShowScheduleForm] = useState(false);
+    const [newAppt, setNewAppt] = useState({ title: '', date: '', startTime: '', endTime: '', type: 'Call' });
+
 
     // Slide-over toast state
     const [slideToast, setSlideToast] = useState<string | null>(null);
@@ -81,19 +96,31 @@ const ContactDetailSlideOver: React.FC<ContactDetailSlideOverProps> = ({ contact
                     ]);
                 } catch { /* ignore */ }
             }
+
+            const savedAppts = localStorage.getItem(`contact_appts_${contact.id}`);
+            if (savedAppts) {
+                try {
+                    const parsed = JSON.parse(savedAppts);
+                    setAppointments([
+                        { id: 'mock-appt-1', title: 'Consultation Call', date: new Date(Date.now() + 86400000 * 2).toISOString().split('T')[0], startTime: '10:00', endTime: '10:30', type: 'Call', status: 'Pending' },
+                        ...parsed
+                    ]);
+                } catch { /* ignore */ }
+            }
         }
     }, [contact?.id]);
 
-    // Save tasks and notes to LocalStorage when they change
+    // Save tasks, notes, docs, appts to LocalStorage when they change
     useEffect(() => {
         if (contact?.id) {
             localStorage.setItem(`contact_tasks_${contact.id}`, JSON.stringify(tasks));
             localStorage.setItem(`contact_notes_${contact.id}`, JSON.stringify(notes));
-            // Save only non-mock docs
             const realDocs = uploadedDocs.filter(d => d.id !== 'mock1' && d.id !== 'mock2');
             localStorage.setItem(`contact_docs_${contact.id}`, JSON.stringify(realDocs));
+            const realAppts = appointments.filter(a => a.id !== 'mock-appt-1');
+            localStorage.setItem(`contact_appts_${contact.id}`, JSON.stringify(realAppts));
         }
-    }, [tasks, notes, uploadedDocs, contact?.id]);
+    }, [tasks, notes, uploadedDocs, appointments, contact?.id]);
 
     const handleAddTask = (e: React.FormEvent) => {
         e.preventDefault();
@@ -152,6 +179,28 @@ const ContactDetailSlideOver: React.FC<ContactDetailSlideOverProps> = ({ contact
 
     const deleteDoc = (docId: string) => {
         setUploadedDocs(prev => prev.filter(d => d.id !== docId));
+    };
+
+    const handleAddAppointment = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!newAppt.title.trim() || !newAppt.date || !newAppt.startTime) return;
+        const appt: Appointment = {
+            id: Date.now().toString(),
+            title: newAppt.title,
+            date: newAppt.date,
+            startTime: newAppt.startTime,
+            endTime: newAppt.endTime,
+            type: newAppt.type,
+            status: 'Confirmed'
+        };
+        setAppointments(prev => [...prev, appt]);
+        setNewAppt({ title: '', date: '', startTime: '', endTime: '', type: 'Call' });
+        setShowScheduleForm(false);
+        triggerSlideToast('✅ Appointment scheduled successfully!');
+    };
+
+    const deleteAppointment = (id: string) => {
+        setAppointments(prev => prev.filter(a => a.id !== id));
     };
 
     const tabs = ['Overview', 'Notes', 'Tasks', 'Appointments', 'Documents'];
@@ -451,74 +500,159 @@ const ContactDetailSlideOver: React.FC<ContactDetailSlideOverProps> = ({ contact
                             )}
 
                             {activeTab === 'Appointments' && (
-                                <div className="space-y-6">
+                                <div className="space-y-4">
                                     <div className="flex justify-between items-center">
                                         <h3 className="text-base font-semibold text-gray-900">Upcoming</h3>
                                         <button 
-                                            onClick={() => {
-                                                setShowApptToast(true);
-                                                setTimeout(() => setShowApptToast(false), 3000);
-                                            }}
+                                            onClick={() => setShowScheduleForm(prev => !prev)}
                                             className="px-4 py-2 bg-ghl-blue text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors flex items-center gap-2 shadow-sm"
                                         >
                                             <Plus size={16} />
-                                            Schedule
+                                            {showScheduleForm ? 'Cancel' : 'Schedule'}
                                         </button>
                                     </div>
 
-                                    {showApptToast && (
-                                        <div className="flex items-center gap-3 bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded-xl text-sm font-medium animate-pulse">
-                                            <CalendarClock size={18} className="text-blue-500" />
-                                            Calendar scheduling integration coming soon!
-                                        </div>
-                                    )}
-                                    
-                                    <div className="space-y-3">
-                                        {/* Mock Appointment */}
-                                        <div className="bg-white border border-gray-200 p-4 rounded-xl shadow-sm flex items-start gap-4">
-                                            <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-lg flex flex-col items-center justify-center flex-shrink-0">
-                                                <span className="text-xs font-bold uppercase">{new Date(Date.now() + 86400000 * 2).toLocaleString('default', { month: 'short' })}</span>
-                                                <span className="text-lg font-bold leading-tight">{new Date(Date.now() + 86400000 * 2).getDate()}</span>
-                                            </div>
-                                            <div className="flex-1">
-                                                <div className="flex justify-between items-start">
-                                                    <div>
-                                                        <h4 className="font-semibold text-gray-900">Consultation Call</h4>
-                                                        <p className="text-sm text-gray-500 flex items-center gap-1 mt-1">
-                                                            <Clock size={14} /> 10:00 AM - 10:30 AM
-                                                        </p>
-                                                    </div>
-                                                    <span className="px-2.5 py-1 bg-amber-50 text-amber-700 text-xs font-semibold rounded-full border border-amber-100">
-                                                        Pending
-                                                    </span>
+                                    {/* Schedule Form */}
+                                    {showScheduleForm && (
+                                        <form onSubmit={handleAddAppointment} className="bg-blue-50 border border-blue-200 rounded-xl p-4 space-y-3">
+                                            <h4 className="font-semibold text-gray-900 text-sm">New Appointment</h4>
+                                            <input
+                                                type="text"
+                                                placeholder="Title (e.g. Follow-up Call)"
+                                                value={newAppt.title}
+                                                onChange={e => setNewAppt(p => ({ ...p, title: e.target.value }))}
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ghl-blue"
+                                                required
+                                            />
+                                            <div className="grid grid-cols-2 gap-3">
+                                                <div>
+                                                    <label className="text-xs text-gray-500 font-medium mb-1 block">Date</label>
+                                                    <input
+                                                        type="date"
+                                                        value={newAppt.date}
+                                                        min={new Date().toISOString().split('T')[0]}
+                                                        onChange={e => setNewAppt(p => ({ ...p, date: e.target.value }))}
+                                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ghl-blue"
+                                                        required
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="text-xs text-gray-500 font-medium mb-1 block">Type</label>
+                                                    <select
+                                                        value={newAppt.type}
+                                                        onChange={e => setNewAppt(p => ({ ...p, type: e.target.value }))}
+                                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ghl-blue"
+                                                    >
+                                                        <option>Call</option>
+                                                        <option>Meeting</option>
+                                                        <option>Demo</option>
+                                                        <option>Follow-up</option>
+                                                        <option>Other</option>
+                                                    </select>
                                                 </div>
                                             </div>
-                                        </div>
+                                            <div className="grid grid-cols-2 gap-3">
+                                                <div>
+                                                    <label className="text-xs text-gray-500 font-medium mb-1 block">Start Time</label>
+                                                    <input
+                                                        type="time"
+                                                        value={newAppt.startTime}
+                                                        onChange={e => setNewAppt(p => ({ ...p, startTime: e.target.value }))}
+                                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ghl-blue"
+                                                        required
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="text-xs text-gray-500 font-medium mb-1 block">End Time</label>
+                                                    <input
+                                                        type="time"
+                                                        value={newAppt.endTime}
+                                                        onChange={e => setNewAppt(p => ({ ...p, endTime: e.target.value }))}
+                                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ghl-blue"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <button
+                                                type="submit"
+                                                className="w-full py-2.5 bg-ghl-blue text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 shadow-sm"
+                                            >
+                                                <CalendarClock size={16} />
+                                                Confirm Appointment
+                                            </button>
+                                        </form>
+                                    )}
+
+                                    {/* Upcoming Appointments */}
+                                    <div className="space-y-3">
+                                        {appointments.filter(a => new Date(a.date) >= new Date(new Date().toDateString())).length === 0 ? (
+                                            <div className="text-center py-8 text-gray-500 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                                                <p className="text-sm">No upcoming appointments. Click Schedule to add one!</p>
+                                            </div>
+                                        ) : (
+                                            appointments
+                                                .filter(a => new Date(a.date) >= new Date(new Date().toDateString()))
+                                                .sort((a, b) => a.date.localeCompare(b.date))
+                                                .map(appt => (
+                                                    <div key={appt.id} className="bg-white border border-gray-200 p-4 rounded-xl shadow-sm flex items-start gap-4 group">
+                                                        <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-lg flex flex-col items-center justify-center flex-shrink-0">
+                                                            <span className="text-xs font-bold uppercase">{new Date(appt.date + 'T12:00:00').toLocaleString('default', { month: 'short' })}</span>
+                                                            <span className="text-lg font-bold leading-tight">{new Date(appt.date + 'T12:00:00').getDate()}</span>
+                                                        </div>
+                                                        <div className="flex-1">
+                                                            <div className="flex justify-between items-start">
+                                                                <div>
+                                                                    <h4 className="font-semibold text-gray-900">{appt.title}</h4>
+                                                                    <p className="text-sm text-gray-500 flex items-center gap-1 mt-1">
+                                                                        <Clock size={13} /> {appt.startTime}{appt.endTime ? ` - ${appt.endTime}` : ''} · {appt.type}
+                                                                    </p>
+                                                                </div>
+                                                                <div className="flex items-center gap-2">
+                                                                    <span className={`px-2.5 py-1 text-xs font-semibold rounded-full border ${
+                                                                        appt.status === 'Confirmed' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' :
+                                                                        appt.status === 'Cancelled' ? 'bg-red-50 text-red-600 border-red-100' :
+                                                                        'bg-amber-50 text-amber-700 border-amber-100'
+                                                                    }`}>{appt.status}</span>
+                                                                    <button onClick={() => deleteAppointment(appt.id)} className="p-1 text-gray-300 hover:text-rose-500 transition-colors opacity-0 group-hover:opacity-100">
+                                                                        <Trash2 size={14} />
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))
+                                        )}
                                     </div>
 
-                                    <h3 className="text-base font-semibold text-gray-900 mt-8 mb-4">Past Appointments</h3>
-                                    <div className="space-y-3 opacity-75">
-                                        {/* Mock Past Appointment */}
-                                        <div className="bg-gray-50 border border-gray-200 p-4 rounded-xl flex items-start gap-4">
-                                            <div className="w-12 h-12 bg-gray-200 text-gray-600 rounded-lg flex flex-col items-center justify-center flex-shrink-0">
-                                                <span className="text-xs font-bold uppercase">Jul</span>
-                                                <span className="text-lg font-bold leading-tight">14</span>
+                                    {/* Past Appointments */}
+                                    {appointments.filter(a => new Date(a.date) < new Date(new Date().toDateString())).length > 0 && (
+                                        <>
+                                            <h3 className="text-base font-semibold text-gray-900 pt-4">Past Appointments</h3>
+                                            <div className="space-y-3 opacity-75">
+                                                {appointments
+                                                    .filter(a => new Date(a.date) < new Date(new Date().toDateString()))
+                                                    .map(appt => (
+                                                        <div key={appt.id} className="bg-gray-50 border border-gray-200 p-4 rounded-xl flex items-start gap-4 group">
+                                                            <div className="w-12 h-12 bg-gray-200 text-gray-600 rounded-lg flex flex-col items-center justify-center flex-shrink-0">
+                                                                <span className="text-xs font-bold uppercase">{new Date(appt.date + 'T12:00:00').toLocaleString('default', { month: 'short' })}</span>
+                                                                <span className="text-lg font-bold leading-tight">{new Date(appt.date + 'T12:00:00').getDate()}</span>
+                                                            </div>
+                                                            <div className="flex-1">
+                                                                <div className="flex justify-between items-start">
+                                                                    <div>
+                                                                        <h4 className="font-semibold text-gray-900">{appt.title}</h4>
+                                                                        <p className="text-sm text-gray-500 flex items-center gap-1 mt-1">
+                                                                            <CalendarClock size={13} /> Completed
+                                                                        </p>
+                                                                    </div>
+                                                                    <span className="px-2.5 py-1 bg-emerald-50 text-emerald-700 text-xs font-semibold rounded-full border border-emerald-100">Showed</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ))
+                                                }
                                             </div>
-                                            <div className="flex-1">
-                                                <div className="flex justify-between items-start">
-                                                    <div>
-                                                        <h4 className="font-semibold text-gray-900">Initial Discovery</h4>
-                                                        <p className="text-sm text-gray-500 flex items-center gap-1 mt-1">
-                                                            <CalendarClock size={14} /> Completed
-                                                        </p>
-                                                    </div>
-                                                    <span className="px-2.5 py-1 bg-emerald-50 text-emerald-700 text-xs font-semibold rounded-full border border-emerald-100">
-                                                        Showed
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                        </>
+                                    )}
                                 </div>
                             )}
 
