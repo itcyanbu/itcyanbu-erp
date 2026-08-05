@@ -1,5 +1,5 @@
 import React from 'react';
-import { Mail, Pencil, Trash2 } from 'lucide-react';
+import { Mail, Pencil, Trash2, Phone, Tag } from 'lucide-react';
 import { useContacts } from '../context/ContactContext';
 import type { Contact } from '../types/contact';
 
@@ -54,63 +54,65 @@ const ContactTable: React.FC<ContactTableProps> = ({
             case 'name':
                 return (
                     <div className="flex items-center gap-3">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium ${contact.avatarColor || 'bg-gray-100 text-gray-600'}`}>
+                        <div className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shadow-sm ${contact.avatarColor || 'bg-gray-100 text-gray-600'}`}>
                             {contact.initials || '??'}
                         </div>
                         <div>
-                            <div className="font-medium text-ghl-text">{contact.name || ''}</div>
+                            <div className="font-semibold text-gray-900 text-[13px] leading-tight">{contact.name || ''}</div>
                         </div>
                     </div>
                 );
             case 'phone':
-                return (
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                        {contact.phone}
+                return contact.phone ? (
+                    <div className="flex items-center gap-2 text-[13px] text-gray-700">
+                        <Phone size={13} className="text-gray-400 flex-shrink-0" />
+                        <span className="font-mono tracking-tight">{contact.phone}</span>
                     </div>
-                );
+                ) : <span className="text-gray-300 text-sm">—</span>;
             case 'email':
-                return (
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <Mail size={14} className="text-gray-400" />
-                        {contact.email}
+                return contact.email ? (
+                    <div className="flex items-center gap-2 text-[13px] text-gray-700">
+                        <Mail size={13} className="text-gray-400 flex-shrink-0" />
+                        <span className="truncate max-w-[180px]">{contact.email}</span>
                     </div>
-                );
+                ) : <span className="text-gray-300 text-sm">—</span>;
             case 'created':
-                return <span className="text-sm text-gray-600">{formatDate(contact.createdAt)}</span>;
+                return <span className="text-[13px] text-gray-500 tabular-nums">{formatDate(contact.createdAt)}</span>;
             case 'last_activity':
                 const activity = contact.lastActivity || contact.last_activity;
-                return <span className="text-sm text-gray-600">{activity ? formatDate(activity) : '-'}</span>;
+                return <span className="text-[13px] text-gray-500 tabular-nums">{activity ? formatDate(activity) : '—'}</span>;
             case 'tags':
                 return (
-                    <div className="flex flex-wrap gap-1 max-w-[200px]">
-                        {(contact.tags || []).map(tag => (
-                            <span key={tag} className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full capitalize border border-gray-200">
+                    <div className="flex flex-wrap gap-1.5 max-w-[220px]">
+                        {(contact.tags || []).length > 0 ? contact.tags.map(tag => (
+                            <span key={tag} className="inline-flex items-center gap-1 text-xs font-medium bg-blue-50 text-blue-700 px-2 py-0.5 rounded-md border border-blue-100">
+                                <Tag size={10} className="text-blue-400" />
                                 {tag}
                             </span>
-                        ))}
+                        )) : <span className="text-gray-300 text-sm">—</span>}
                     </div>
                 );
             default:
                 // Dynamic rendering for any other field
                 const value = contact[columnId as keyof Contact];
-                if (value === undefined || value === null) return <span className="text-gray-300">-</span>;
-                if (typeof value === 'boolean') return <span className="text-sm text-gray-600">{value ? 'Yes' : 'No'}</span>;
-                return <span className="text-sm text-gray-600 truncate max-w-[150px]" title={String(value)}>{String(value)}</span>;
+                if (value === undefined || value === null) return <span className="text-gray-300">—</span>;
+                if (typeof value === 'boolean') return <span className="text-[13px] text-gray-600">{value ? 'Yes' : 'No'}</span>;
+                return <span className="text-[13px] text-gray-600 truncate max-w-[150px]" title={String(value)}>{String(value)}</span>;
         }
     };
 
     const visibleColumns = columns.filter(col => col.visible);
 
     return (
-        <div className="bg-white border border-ghl-border rounded-lg overflow-hidden shadow-sm">
+        <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                     <thead>
-                        <tr className="bg-gray-50 border-b border-ghl-border text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                            <th className="p-4 w-10">
+                        <tr className="bg-gray-50/80 border-b border-gray-200">
+                            <th className="px-4 py-3 w-10">
                                 <input
                                     type="checkbox"
-                                    className="rounded border-gray-300 text-ghl-blue focus:ring-ghl-blue"
+                                    className="rounded border-gray-300 text-ghl-blue focus:ring-ghl-blue w-4 h-4"
                                     checked={allSelected}
                                     ref={input => {
                                         if (input) {
@@ -121,46 +123,55 @@ const ContactTable: React.FC<ContactTableProps> = ({
                                 />
                             </th>
                             {visibleColumns.map(col => (
-                                <th key={col.id} className="p-4">{col.label}</th>
+                                <th key={col.id} className="px-4 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                                    {col.label}
+                                </th>
                             ))}
-                            <th className="p-4 w-20"></th>
+                            <th className="px-4 py-3 w-20"></th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-ghl-border">
-                        {data.map((contact) => (
+                    <tbody>
+                        {data.map((contact, index) => (
                             <tr
                                 key={contact.id}
                                 onClick={() => onRowClick(contact)}
-                                className={`hover:bg-gray-50 transition-colors group cursor-pointer ${selectedIds.has(contact.id) ? 'bg-purple-50 hover:bg-purple-100' : ''}`}
+                                className={`
+                                    transition-colors group cursor-pointer
+                                    ${selectedIds.has(contact.id) 
+                                        ? 'bg-blue-50/60 hover:bg-blue-50' 
+                                        : 'hover:bg-gray-50/70'
+                                    }
+                                    ${index !== data.length - 1 ? 'border-b border-gray-100' : ''}
+                                `}
                             >
-                                <td className="p-4" onClick={e => e.stopPropagation()}>
+                                <td className="px-4 py-3.5" onClick={e => e.stopPropagation()}>
                                     <input
                                         type="checkbox"
-                                        className="rounded border-gray-300 text-ghl-blue focus:ring-ghl-blue"
+                                        className="rounded border-gray-300 text-ghl-blue focus:ring-ghl-blue w-4 h-4"
                                         checked={selectedIds.has(contact.id)}
                                         onChange={() => onSelectionChange(contact.id)}
                                     />
                                 </td>
                                 {visibleColumns.map(col => (
-                                    <td key={col.id} className="p-4">
+                                    <td key={col.id} className="px-4 py-3.5">
                                         {renderCell(contact, col.id)}
                                     </td>
                                 ))}
-                                <td className="p-4 text-right" onClick={e => e.stopPropagation()}>
-                                    <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <td className="px-4 py-3.5 text-right" onClick={e => e.stopPropagation()}>
+                                    <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                         <button
                                             onClick={() => onEdit(contact)}
-                                            className="p-1.5 text-gray-400 hover:text-ghl-blue hover:bg-blue-50 rounded transition-colors"
+                                            className="p-1.5 text-gray-400 hover:text-ghl-blue hover:bg-blue-50 rounded-md transition-colors"
                                             title="Edit"
                                         >
-                                            <Pencil size={16} />
+                                            <Pencil size={15} />
                                         </button>
                                         <button
                                             onClick={() => deleteContact(contact.id)}
-                                            className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
+                                            className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors"
                                             title="Delete"
                                         >
-                                            <Trash2 size={16} />
+                                            <Trash2 size={15} />
                                         </button>
                                     </div>
                                 </td>
@@ -169,8 +180,14 @@ const ContactTable: React.FC<ContactTableProps> = ({
 
                         {data.length === 0 && (
                             <tr>
-                                <td colSpan={visibleColumns.length + 2} className="p-8 text-center text-gray-500">
-                                    No contacts found.
+                                <td colSpan={visibleColumns.length + 2} className="px-6 py-16 text-center">
+                                    <div className="flex flex-col items-center gap-2">
+                                        <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+                                            <Mail size={20} className="text-gray-400" />
+                                        </div>
+                                        <p className="text-sm font-medium text-gray-900">No contacts found</p>
+                                        <p className="text-xs text-gray-500">Try adjusting your filters or add a new contact.</p>
+                                    </div>
                                 </td>
                             </tr>
                         )}
