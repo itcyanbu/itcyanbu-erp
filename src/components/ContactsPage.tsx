@@ -36,6 +36,7 @@ const ContactsPage = () => {
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
     const [activeActionModal, setActiveActionModal] = useState<string | null>(null);
+    const [statusFilter, setStatusFilter] = useState<'All' | 'Active' | 'Leads' | 'Inactive' | 'Blocked'>('All');
 
     // Smart Lists & Filters State
     interface Filter {
@@ -59,12 +60,13 @@ const ContactsPage = () => {
     const [sortBy, setSortBy] = useState<SortOption>('newest');
     const [activeFilters, setActiveFilters] = useState<Filter[]>([]);
     const DEFAULT_COLUMNS: ColumnDef[] = [
-        { id: 'name', label: 'Name', visible: true },
+        { id: 'name', label: 'Contact', visible: true },
         { id: 'phone', label: 'Phone', visible: true },
-        { id: 'email', label: 'Email', visible: true },
-        { id: 'created', label: 'Created', visible: true },
-        { id: 'last_activity', label: 'Last Activity', visible: true },
+        { id: 'company', label: 'Company', visible: true },
+        { id: 'status', label: 'Status', visible: true },
         { id: 'tags', label: 'Tags', visible: true },
+        { id: 'assignee', label: 'Assignee', visible: true },
+        { id: 'last_activity', label: 'Last Activity', visible: true },
     ];
 
     const [columns, setColumns] = useState<ColumnDef[]>(DEFAULT_COLUMNS);
@@ -72,7 +74,13 @@ const ContactsPage = () => {
         const saved = localStorage.getItem('ghl_smart_lists');
         if (saved) {
             try {
-                return JSON.parse(saved);
+                const parsed = JSON.parse(saved) as SmartList[];
+                // Add any missing default columns to saved lists
+                return parsed.map(list => {
+                    const listCols = list.columns || [];
+                    const missingCols = DEFAULT_COLUMNS.filter(dc => !listCols.find(lc => lc.id === dc.id));
+                    return { ...list, columns: [...listCols, ...missingCols] };
+                });
             } catch (e) {
                 console.error('Failed to parse saved smart lists', e);
             }
@@ -172,7 +180,11 @@ const ContactsPage = () => {
         const baseContacts = contacts.filter(contact =>
             (contact.name || '').toLowerCase().includes(query.toLowerCase()) ||
             (contact.email || '').toLowerCase().includes(query.toLowerCase())
-        );
+        ).filter(contact => {
+            if (statusFilter === 'All') return true;
+            // Mock matching if status field doesn't exist yet in real DB
+            return (contact.status || 'Active') === statusFilter;
+        });
         const filtered = applyFilters(baseContacts, activeFilters);
 
         const result = [...filtered];
@@ -184,6 +196,15 @@ const ContactsPage = () => {
         }
         return result;
     })();
+
+    // Status counts for tabs
+    const statusCounts = {
+        All: contacts.length,
+        Active: contacts.filter(c => (c.status || 'Active') === 'Active').length,
+        Leads: contacts.filter(c => c.status === 'Leads').length,
+        Inactive: contacts.filter(c => c.status === 'Inactive').length,
+        Blocked: contacts.filter(c => c.status === 'Blocked').length,
+    };
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setLocalSearch(e.target.value);
@@ -848,15 +869,43 @@ const ContactsPage = () => {
                         </div>
                     </div>
 
-                    <div className="relative group">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-ghl-blue transition-colors" size={16} />
-                        <input
-                            type="text"
-                            placeholder="Search Contacts"
-                            className="h-10 pl-11 pr-4 w-[350px] border border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 text-[13px] font-bold placeholder:text-gray-300 bg-white transition-all shadow-sm"
-                            value={localSearch}
-                            onChange={handleSearchChange}
-                        />
+                    <div className="flex items-center gap-6">
+                        {/* Status Tabs */}
+                        <div className="flex items-center bg-gray-50 p-1 rounded-xl border border-gray-200 shadow-sm">
+                            {(['All', 'Active', 'Leads', 'Inactive', 'Blocked'] as const).map(status => (
+                                <button
+                                    key={status}
+                                    onClick={() => setStatusFilter(status)}
+                                    className={clsx(
+                                        "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[13px] font-bold transition-all",
+                                        statusFilter === status
+                                            ? "bg-white text-gray-900 shadow-sm border border-gray-200/50"
+                                            : "text-gray-500 hover:text-gray-700 hover:bg-gray-100/50"
+                                    )}
+                                >
+                                    {status}
+                                    <span className={clsx(
+                                        "px-1.5 py-0.5 rounded-md text-[11px] font-bold",
+                                        statusFilter === status 
+                                            ? "bg-blue-100 text-blue-700" 
+                                            : "bg-gray-200 text-gray-600"
+                                    )}>
+                                        {statusCounts[status]}
+                                    </span>
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="relative group">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-ghl-blue transition-colors" size={16} />
+                            <input
+                                type="text"
+                                placeholder="Search Contacts"
+                                className="h-10 pl-11 pr-4 w-[300px] border border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 text-[13px] font-bold placeholder:text-gray-300 bg-white transition-all shadow-sm"
+                                value={localSearch}
+                                onChange={handleSearchChange}
+                            />
+                        </div>
                     </div>
                 </div>
 

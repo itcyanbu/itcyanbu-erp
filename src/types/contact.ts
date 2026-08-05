@@ -30,6 +30,9 @@ export interface Contact {
     tags: string[];
     initials: string;
     avatarColor: string;
+    status?: 'Active' | 'Leads' | 'Inactive' | 'Blocked';
+    assignee?: string;
+    company?: string;
     [key: string]: any; // Allow dynamic fields
 }
 

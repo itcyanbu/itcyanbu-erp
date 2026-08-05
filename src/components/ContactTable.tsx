@@ -92,6 +92,18 @@ const ContactTable: React.FC<ContactTableProps> = ({
                         )) : <span className="text-gray-300 text-sm">—</span>}
                     </div>
                 );
+            case 'company':
+                return <span className="text-[13px] text-gray-700 font-medium">{contact.company || '—'}</span>;
+            case 'status':
+                const st = contact.status || 'Active';
+                let colorClass = 'bg-gray-100 text-gray-700';
+                if (st === 'Active') colorClass = 'bg-green-100 text-green-700 border border-green-200';
+                if (st === 'Leads') colorClass = 'bg-blue-100 text-blue-700 border border-blue-200';
+                if (st === 'Inactive') colorClass = 'bg-orange-100 text-orange-700 border border-orange-200';
+                if (st === 'Blocked') colorClass = 'bg-red-100 text-red-700 border border-red-200';
+                return <span className={`text-[11px] font-bold px-2 py-0.5 rounded-md ${colorClass}`}>{st}</span>;
+            case 'assignee':
+                return <span className="text-[13px] text-gray-700">{contact.assignee || '—'}</span>;
             default:
                 // Dynamic rendering for any other field
                 const value = contact[columnId as keyof Contact];
