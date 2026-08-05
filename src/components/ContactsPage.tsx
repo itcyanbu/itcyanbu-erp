@@ -748,6 +748,22 @@ const ContactsPage = () => {
                 {/* Filter & Search Toolbar */}
                 <div className="px-6 py-3 flex items-center justify-between bg-white border-b border-gray-100">
                     <div className="flex items-center gap-3">
+                        {/* Global List Button */}
+                        <button
+                            onClick={() => {
+                                setActiveListId('all');
+                                setSearchQuery('');
+                                setLocalSearch('');
+                                setActiveFilters([]);
+                                triggerToast(isRtl ? 'تم عرض القائمة الكاملة' : 'Viewing Global List');
+                            }}
+                            className="flex items-center gap-2 px-4 h-10 text-[13px] font-black transition-all shadow-sm bg-white border border-gray-200 rounded-xl hover:bg-gray-50 text-gray-700"
+                        >
+                            <Globe size={16} className="text-gray-400" />
+                            Global List
+                            <span className="bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded-md text-[11px] font-bold ml-1">{contacts.length}</span>
+                        </button>
+
                         <div className="relative">
                             <button
                                 onClick={() => setIsFilterMenuOpen(!isFilterMenuOpen)}
@@ -877,22 +893,6 @@ const ContactsPage = () => {
                             />
                         </div>
                 </div>
-
-                {/* Global List Banner */}
-                <button
-                    onClick={() => {
-                        setActiveListId('all');
-                        setSearchQuery('');
-                        setLocalSearch('');
-                        setActiveFilters([]);
-                        triggerToast(isRtl ? 'تم عرض القائمة الكاملة' : 'Viewing Global List');
-                    }}
-                    className="px-6 py-2 bg-gray-50/50 flex items-center gap-2 text-[13px] text-gray-500 font-medium hover:bg-gray-100/80 transition-colors w-full border-t border-gray-100 group"
-                >
-                    <Globe size={14} className="text-gray-400 group-hover:text-ghl-blue transition-colors" />
-                    <span className="group-hover:text-gray-900 transition-colors">Global List</span>
-                    <span className="bg-gray-200/50 text-gray-500 px-1.5 py-0.5 rounded text-[10px] ml-1">{contacts.length}</span>
-                </button>
             </div>
 
             {/* Main Content Area */}
