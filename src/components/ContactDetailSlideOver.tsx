@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, Phone, Mail, MessageSquare, Calendar, Clock, Tag, MoreHorizontal, CheckCircle2, Circle, Plus, Trash2, Send, Activity, ChevronDown, FileText, CalendarClock, Download, FilePlus, UploadCloud } from 'lucide-react';
 import { MESSAGE_TEMPLATES } from '../data/mockTemplates';
 import type { Contact } from '../types/contact';
+import ActiveCallOverlay from './ActiveCallOverlay';
 
 interface ContactTask {
     id: string;
@@ -66,7 +67,7 @@ const ContactDetailSlideOver: React.FC<ContactDetailSlideOverProps> = ({ contact
     ]);
     const [showScheduleForm, setShowScheduleForm] = useState(false);
     const [newAppt, setNewAppt] = useState({ title: '', date: '', startTime: '', endTime: '', type: 'Call' });
-
+    const [isCallActive, setIsCallActive] = useState(false);
 
     // Slide-over toast state
     const [slideToast, setSlideToast] = useState<string | null>(null);
@@ -269,7 +270,7 @@ const ContactDetailSlideOver: React.FC<ContactDetailSlideOverProps> = ({ contact
                                 <button 
                                     onClick={() => {
                                         if (contact.phone) {
-                                            alert(`Initiating WhatsApp Voice Call to ${contact.phone}...`);
+                                            setIsCallActive(true);
                                         }
                                     }}
                                     className="flex-1 flex items-center justify-center gap-1.5 px-2 py-2 bg-[#25D366] text-white rounded-md font-medium hover:bg-[#20b958] shadow-sm transition-colors text-sm"
@@ -808,6 +809,14 @@ const ContactDetailSlideOver: React.FC<ContactDetailSlideOverProps> = ({ contact
                     </>
                 )}
             </div>
+
+            <ActiveCallOverlay 
+                isOpen={isCallActive} 
+                onClose={() => setIsCallActive(false)} 
+                contactName={contact?.name} 
+                phoneNumber={contact?.phone} 
+                isWhatsApp={true} 
+            />
         </div>
     );
 };

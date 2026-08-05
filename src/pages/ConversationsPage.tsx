@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { MessageSquare, Search, Send, Mail, MessageCircle, Phone, Star, Tag, CheckCheck, Filter, MoreHorizontal, ChevronDown, Plus, Eye, ThumbsUp, ThumbsDown, Trash2, Smile, Image } from 'lucide-react';
 import type { Conversation, Message, Channel } from '../types/conversations';
 import { mockConversations } from '../data/mockConversations';
+import ActiveCallOverlay from '../components/ActiveCallOverlay';
 
 const WhatsAppIcon = ({ size = 24, className = "" }: { size?: number, className?: string }) => (
     <svg width={size} height={size} className={className} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -21,6 +22,7 @@ const ConversationsPage = () => {
     const [isLeftPanelCollapsed, setIsLeftPanelCollapsed] = useState(false);
     const [isRightPanelCollapsed, setIsRightPanelCollapsed] = useState(false);
     const [selectedConversations, setSelectedConversations] = useState<Set<string>>(new Set());
+    const [isCallActive, setIsCallActive] = useState(false);
 
     const filteredConversations = useMemo(() => {
         let filtered = conversations;
@@ -276,7 +278,11 @@ const ConversationsPage = () => {
                                     <ChevronDown size={14} />
                                 </button>
                                 <button className="p-2 text-gray-400 hover:text-gray-600 rounded-md hover:bg-gray-100" title="Regular Phone Call"><Phone size={18} /></button>
-                                <button className="p-2 text-[#25D366] hover:bg-green-50 rounded-md flex items-center justify-center" title="WhatsApp Voice Call">
+                                <button 
+                                    onClick={() => setIsCallActive(true)}
+                                    className="p-2 text-[#25D366] hover:bg-green-50 rounded-md flex items-center justify-center" 
+                                    title="WhatsApp Voice Call"
+                                >
                                     <WhatsAppIcon size={18} />
                                 </button>
                                 <button className="p-2 text-gray-400 hover:text-gray-600 rounded-md hover:bg-gray-100"><Star size={18} /></button>
@@ -384,6 +390,14 @@ const ConversationsPage = () => {
                     </>
                 )}
             </div>
+
+            <ActiveCallOverlay 
+                isOpen={isCallActive}
+                onClose={() => setIsCallActive(false)}
+                contactName={selectedConv?.contact?.name}
+                phoneNumber={selectedConv?.contact?.phone || selectedConv?.contact?.email}
+                isWhatsApp={true}
+            />
 
             {/* Right Sidebar: Contact Details */}
             {selectedConv && (
