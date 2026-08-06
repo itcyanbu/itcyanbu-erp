@@ -729,7 +729,10 @@ const ContactsPage = () => {
                     </div>
 
                     <div className="flex items-center gap-5">
-                        <button className="flex items-center gap-2 text-[13px] font-black text-gray-400 hover:text-ghl-blue transition-colors">
+                        <button 
+                            onClick={() => setIsColumnMenuOpen(true)}
+                            className="flex items-center gap-2 text-[13px] font-black text-gray-400 hover:text-ghl-blue transition-colors"
+                        >
                             <LayoutGrid size={15} />
                             Customise List
                         </button>

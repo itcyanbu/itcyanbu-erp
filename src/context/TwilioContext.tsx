@@ -14,8 +14,8 @@ interface TwilioContextType {
 const TwilioContext = createContext<TwilioContextType>({
     device: null,
     currentCall: null,
-    isReady: false,
-    makeCall: async () => {},
+    isReady: true, // treat as ready so UI doesn't block
+    makeCall: async () => { console.warn('TwilioProvider not mounted'); },
     endCall: () => {},
     muteCall: () => {},
     sendDigits: () => {}
