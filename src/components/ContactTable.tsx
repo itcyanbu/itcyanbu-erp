@@ -84,7 +84,7 @@ const ContactTable: React.FC<ContactTableProps> = ({
             case 'tags':
                 return (
                     <div className="flex flex-wrap gap-1.5 max-w-[220px]">
-                        {(contact.tags || []).length > 0 ? contact.tags.map(tag => (
+                        {Array.isArray(contact.tags) && contact.tags.length > 0 ? contact.tags.map((tag: string) => (
                             <span key={tag} className="inline-flex items-center gap-1 text-xs font-medium bg-blue-50 text-blue-700 px-2 py-0.5 rounded-md border border-blue-100">
                                 <Tag size={10} className="text-blue-400" />
                                 {tag}

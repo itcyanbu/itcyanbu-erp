@@ -569,14 +569,6 @@ const ContactsPage = () => {
                                     {tab}
                                 </button>
                             ))}
-                            <div className="w-[1px] h-6 bg-gray-200 mx-2" />
-                            <button 
-                                onClick={() => window.location.href = '/settings'}
-                                className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
-                                title="Settings"
-                            >
-                                <Settings size={18} />
-                            </button>
                         </div>
                     </div>
 

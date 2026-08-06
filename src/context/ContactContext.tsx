@@ -325,7 +325,7 @@ export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children })
                 contactType: contact.contactType || 'Lead',
                 initials: (contact.firstName?.[0] || contact.name?.[0] || '?') + (contact.lastName?.[0] || contact.name?.split(' ')?.[1]?.[0] || '?'),
                 avatarColor: contact.avatarColor || 'bg-blue-100 text-blue-600',
-                tags: contact.tags || [],
+                tags: Array.isArray(contact.tags) ? contact.tags : (typeof contact.tags === 'string' ? [(contact.tags as string)] : []),
                 dndAllChannels: contact.dndAllChannels || false,
                 createdAt: new Date().toISOString(),
                 lastActivity: new Date().toISOString(),
