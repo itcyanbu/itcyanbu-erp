@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Mail, Pencil, Trash2, Phone, Tag } from 'lucide-react';
 import { useContacts } from '../context/ContactContext';
 import type { Contact } from '../types/contact';
@@ -26,9 +26,15 @@ const ContactTable: React.FC<ContactTableProps> = ({
 }) => {
     const { deleteContact } = useContacts();
 
+    // Pagination State
+    const [currentPage, setCurrentPage] = useState(1);
+    const pageSize = 50;
+    const totalPages = Math.ceil(data.length / pageSize) || 1;
+    const paginatedData = data.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
     // Use passed data directly - filtering happens in parent
-    const allSelected = data.length > 0 && data.every(c => selectedIds.has(c.id));
-    const someSelected = data.some(c => selectedIds.has(c.id));
+    const allSelected = paginatedData.length > 0 && paginatedData.every(c => selectedIds.has(c.id));
+    const someSelected = paginatedData.some(c => selectedIds.has(c.id));
 
     const formatDate = (dateString: string) => {
         try {
@@ -131,7 +137,7 @@ const ContactTable: React.FC<ContactTableProps> = ({
                                             input.indeterminate = someSelected && !allSelected;
                                         }
                                     }}
-                                    onChange={() => onSelectAll(data.map(c => c.id))}
+                                    onChange={() => onSelectAll(paginatedData.map(c => c.id))}
                                 />
                             </th>
                             {visibleColumns.map(col => (
@@ -143,7 +149,7 @@ const ContactTable: React.FC<ContactTableProps> = ({
                         </tr>
                     </thead>
                     <tbody>
-                        {data.map((contact, index) => (
+                        {paginatedData.map((contact, index) => (
                             <tr
                                 key={contact.id}
                                 onClick={() => onRowClick(contact)}
@@ -153,7 +159,7 @@ const ContactTable: React.FC<ContactTableProps> = ({
                                         ? 'bg-blue-50/60 hover:bg-blue-50' 
                                         : 'hover:bg-gray-50/70'
                                     }
-                                    ${index !== data.length - 1 ? 'border-b border-gray-100' : ''}
+                                    ${index !== paginatedData.length - 1 ? 'border-b border-gray-100' : ''}
                                 `}
                             >
                                 <td className="px-4 py-3.5" onClick={e => e.stopPropagation()}>
@@ -206,6 +212,32 @@ const ContactTable: React.FC<ContactTableProps> = ({
                     </tbody>
                 </table>
             </div>
+            
+            {/* Pagination Controls */}
+            {data.length > 0 && (
+                <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between bg-gray-50/50">
+                    <span className="text-sm text-gray-500 font-medium">
+                        Showing {Math.min((currentPage - 1) * pageSize + 1, data.length)} to {Math.min(currentPage * pageSize, data.length)} of {data.length} contacts
+                    </span>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                            disabled={currentPage === 1}
+                            className="px-3 py-1.5 text-sm font-bold border border-gray-200 rounded-md bg-white text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                        >
+                            Previous
+                        </button>
+                        <span className="text-sm font-bold text-gray-700 px-2">{currentPage} / {totalPages}</span>
+                        <button
+                            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                            disabled={currentPage === totalPages}
+                            className="px-3 py-1.5 text-sm font-bold border border-gray-200 rounded-md bg-white text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                        >
+                            Next
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
