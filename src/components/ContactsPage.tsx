@@ -37,6 +37,7 @@ const ContactsPage = () => {
     const [toastMessage, setToastMessage] = useState('');
     const [activeActionModal, setActiveActionModal] = useState<string | null>(null);
     const [statusFilter, setStatusFilter] = useState<'All' | 'Active' | 'Leads' | 'Inactive' | 'Blocked'>('All');
+    const [showProfileMenu, setShowProfileMenu] = useState(false);
 
     // Smart Lists & Filters State
     interface Filter {
@@ -569,7 +570,11 @@ const ContactsPage = () => {
                                 </button>
                             ))}
                             <div className="w-[1px] h-6 bg-gray-200 mx-2" />
-                            <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
+                            <button 
+                                onClick={() => window.location.href = '/settings'}
+                                className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                                title="Settings"
+                            >
                                 <Settings size={18} />
                             </button>
                         </div>
@@ -602,12 +607,38 @@ const ContactsPage = () => {
                             })}
                         </div>
                         <div className="w-[1px] h-6 bg-gray-200 mr-2" />
-                        <button className="flex items-center gap-2 px-2 hover:bg-gray-100 h-10 rounded-lg transition-colors group">
-                            <div className="w-8 h-8 rounded-full bg-[#c084fc] flex items-center justify-center text-white font-bold text-[13px] shadow-sm border border-purple-200">
-                                MM
-                            </div>
-                            <ChevronDown size={14} className="text-gray-400 group-hover:text-gray-600" />
-                        </button>
+                        <div className="relative">
+                            <button 
+                                onClick={() => setShowProfileMenu(prev => !prev)}
+                                className="flex items-center gap-2 px-2 hover:bg-gray-100 h-10 rounded-lg transition-colors group"
+                            >
+                                <div className="w-8 h-8 rounded-full bg-[#c084fc] flex items-center justify-center text-white font-bold text-[13px] shadow-sm border border-purple-200">
+                                    MM
+                                </div>
+                                <ChevronDown size={14} className="text-gray-400 group-hover:text-gray-600" />
+                            </button>
+                            {showProfileMenu && (
+                                <div className="absolute right-0 top-12 w-56 bg-white rounded-xl shadow-xl border border-gray-200 z-50 py-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                                    <div className="px-4 py-3 border-b border-gray-100">
+                                        <p className="text-sm font-semibold text-gray-900">My Account</p>
+                                        <p className="text-xs text-gray-500">itcyanbu@itcyanbu.net</p>
+                                    </div>
+                                    <button onClick={() => { window.location.href = '/settings'; setShowProfileMenu(false); }} className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3">
+                                        <Settings size={16} className="text-gray-400" />
+                                        Settings
+                                    </button>
+                                    <button onClick={() => { window.location.href = '/settings'; setShowProfileMenu(false); }} className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3">
+                                        <Briefcase size={16} className="text-gray-400" />
+                                        My Profile
+                                    </button>
+                                    <div className="border-t border-gray-100 my-1" />
+                                    <button onClick={() => setShowProfileMenu(false)} className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 flex items-center gap-3">
+                                        <X size={16} className="text-red-400" />
+                                        Sign Out
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
 
