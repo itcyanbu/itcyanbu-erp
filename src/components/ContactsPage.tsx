@@ -38,6 +38,15 @@ const ContactsPage = () => {
     const [activeActionModal, setActiveActionModal] = useState<string | null>(null);
     const [statusFilter, setStatusFilter] = useState<'All' | 'Active' | 'Leads' | 'Inactive' | 'Blocked'>('All');
     const [showProfileMenu, setShowProfileMenu] = useState(false);
+    
+    // Pagination
+    const [currentPage, setCurrentPage] = useState(1);
+    const ITEMS_PER_PAGE = 50;
+
+    // Reset pagination on filter change
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchQuery, localSearch, topTab, activeListId, statusFilter]);
 
     // Smart Lists & Filters State
     interface Filter {
@@ -530,7 +539,7 @@ const ContactsPage = () => {
                                 </div>
                             )}
                             <ContactTable
-                                data={sortedContacts}
+                                data={sortedContacts.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE)}
                                 columns={columns}
                                 onEdit={handleOpenModal}
                                 onRowClick={(contact: Contact) => setSelectedContact(contact)}
@@ -538,6 +547,30 @@ const ContactsPage = () => {
                                 onSelectionChange={handleSelectionChange}
                                 onSelectAll={handleSelectAll}
                             />
+                            {/* Pagination Footer */}
+                            {sortedContacts.length > ITEMS_PER_PAGE && (
+                                <div className="px-6 py-4 border-t border-gray-100 bg-[#f9fafb] flex items-center justify-between">
+                                    <span className="text-[13px] font-bold text-gray-500">
+                                        Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1} to {Math.min(currentPage * ITEMS_PER_PAGE, sortedContacts.length)} of {sortedContacts.length}
+                                    </span>
+                                    <div className="flex gap-2">
+                                        <button 
+                                            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                                            disabled={currentPage === 1}
+                                            className="px-4 py-2 border border-gray-200 rounded-lg text-[12px] font-black text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                        >
+                                            Previous
+                                        </button>
+                                        <button 
+                                            onClick={() => setCurrentPage(p => p + 1)}
+                                            disabled={currentPage >= Math.ceil(sortedContacts.length / ITEMS_PER_PAGE)}
+                                            className="px-4 py-2 border border-gray-200 rounded-lg text-[12px] font-black text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                        >
+                                            Next
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
                         </>
                     );
                 }
