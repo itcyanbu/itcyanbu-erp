@@ -332,8 +332,6 @@ export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children })
                 customFields: contact.customFields || {}
             }));
 
-            // Optimistically update local state for this chunk
-            setContacts(prev => [...chunkContacts, ...prev]);
             allNewContacts.push(...chunkContacts);
 
             // Background sync to Supabase (if enabled)
@@ -343,10 +341,6 @@ export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children })
                 if (error) {
                     console.error('Failed to bulk create contacts in Supabase', error);
                 }
-            } else {
-                // Local storage save for this chunk
-                // We need to wait a tick to allow UI to update
-                await new Promise(resolve => setTimeout(resolve, 0));
             }
 
             processed += chunk.length;
@@ -354,14 +348,20 @@ export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children })
                 onProgress(Math.round((processed / total) * 100));
             }
 
-            // Allow UI to breathe
-            await new Promise(resolve => setTimeout(resolve, 50));
+            // Allow UI to breathe without re-rendering the whole table
+            if (processed % 1000 === 0) {
+                await new Promise(resolve => setTimeout(resolve, 10));
+            }
         }
 
-        // Final save to storage for local-only mode
-        if (!user || !isSupabaseEnabled) {
-            saveToStorage([...allNewContacts, ...contacts]);
-        }
+        // Final single update to local state and storage
+        setContacts(prev => {
+            const updated = [...allNewContacts, ...prev];
+            if (!user || !isSupabaseEnabled) {
+                saveToStorage(updated);
+            }
+            return updated;
+        });
     };
 
     const updateFieldConfig = (newConfig: FieldConfig[]) => {
