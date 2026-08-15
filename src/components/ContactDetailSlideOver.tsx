@@ -360,7 +360,7 @@ const ContactDetailSlideOver: React.FC<ContactDetailSlideOverProps> = ({ contact
                                     <section>
                                         <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">Tags</h3>
                                         <div className="flex flex-wrap gap-2">
-                                            {contact.tags.map(tag => (
+                                            {(Array.isArray(contact.tags) ? contact.tags : []).map(tag => (
                                                 <span key={tag} className="flex items-center gap-1.5 px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium">
                                                     <Tag size={14} className="text-gray-400" />
                                                     {tag}

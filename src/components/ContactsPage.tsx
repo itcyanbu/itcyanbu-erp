@@ -196,13 +196,13 @@ const ContactsPage = () => {
             return (contact.status || 'Active') === statusFilter;
         });
         const filtered = applyFilters(baseContacts, activeFilters);
-
         const result = [...filtered];
+
         switch (sortBy) {
             case 'name_asc': result.sort((a, b) => (a.name || '').localeCompare(b.name || '')); break;
             case 'name_desc': result.sort((a, b) => (b.name || '').localeCompare(a.name || '')); break;
-            case 'oldest': result.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()); break;
-            default: result.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()); break;
+            case 'oldest': result.sort((a, b) => (a.createdAt || '').localeCompare(b.createdAt || '')); break;
+            default: result.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || '')); break;
         }
         return result;
     })();
