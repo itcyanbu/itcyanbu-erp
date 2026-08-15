@@ -1,8 +1,18 @@
 import React, { createContext, useContext, useState } from 'react';
 
+// Twilio types (mock until real SDK is connected with credentials)
+interface TwilioCallLike {
+    status: () => string;
+    disconnect: () => void;
+    mute: (muted: boolean) => void;
+    sendDigits: (digits: string) => void;
+    on: (event: string, handler: (...args: any[]) => void) => void;
+    removeListener: (event: string, handler: (...args: any[]) => void) => void;
+}
+
 interface TwilioContextType {
-    device: any;
-    currentCall: any;
+    device: any | null;
+    currentCall: TwilioCallLike | null;
     isReady: boolean;
     makeCall: (to: string, isWhatsApp?: boolean) => Promise<void>;
     endCall: () => void;
@@ -14,7 +24,7 @@ const TwilioContext = createContext<TwilioContextType>({
     device: null,
     currentCall: null,
     isReady: true,
-    makeCall: async () => { console.warn('TwilioProvider not mounted'); },
+    makeCall: async () => { console.warn('Twilio not configured'); },
     endCall: () => {},
     muteCall: () => {},
     sendDigits: () => {}
@@ -23,35 +33,38 @@ const TwilioContext = createContext<TwilioContextType>({
 export const useTwilio = () => useContext(TwilioContext);
 
 export const TwilioProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [currentCall, setCurrentCall] = useState<any>(null);
+    const [currentCall, setCurrentCall] = useState<TwilioCallLike | null>(null);
+    const [isReady] = useState(true);
 
-    // Mock mode — no Twilio credentials configured yet.
-    // When credentials are provided, we'll dynamically import @twilio/voice-sdk here.
+    // Mock mode: Twilio SDK will be dynamically loaded only when credentials are provided.
+    // For now, all call actions go through the ActiveCallOverlay UI simulation.
+
     const makeCall = async (to: string, isWhatsApp = false) => {
-        console.warn('Twilio: Simulating call to', to, isWhatsApp ? '(WhatsApp)' : '(Voice)');
+        console.log(`[Mock] Initiating ${isWhatsApp ? 'WhatsApp' : 'Voice'} call to: ${to}`);
+        // The ActiveCallOverlay handles the UI simulation
     };
 
     const endCall = () => {
         if (currentCall) {
-            try { currentCall.disconnect(); } catch (_) {}
+            currentCall.disconnect();
             setCurrentCall(null);
         }
     };
 
     const muteCall = (mute: boolean) => {
         if (currentCall) {
-            try { currentCall.mute(mute); } catch (_) {}
+            currentCall.mute(mute);
         }
     };
 
     const sendDigits = (digits: string) => {
         if (currentCall) {
-            try { currentCall.sendDigits(digits); } catch (_) {}
+            currentCall.sendDigits(digits);
         }
     };
 
     return (
-        <TwilioContext.Provider value={{ device: null, currentCall, isReady: true, makeCall, endCall, muteCall, sendDigits }}>
+        <TwilioContext.Provider value={{ device: null, currentCall, isReady, makeCall, endCall, muteCall, sendDigits }}>
             {children}
         </TwilioContext.Provider>
     );
