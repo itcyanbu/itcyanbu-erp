@@ -103,7 +103,7 @@ export default function ModernCarriersPage() {
 
   const sendWhatsAppAlerts = () => {
     const alerts = getAlerts();
-    const phone = "966508187381";
+    const phone = "966545450613";
     const today = new Date().toLocaleDateString('ar-SA', { year: 'numeric', month: 'long', day: 'numeric' });
     let message = `🚛 *تقرير تنبيهات التجديد*\n*trucks*\n📅 ${today}\n`;
     message += `${'─'.repeat(30)}\n\n`;
@@ -246,7 +246,7 @@ export default function ModernCarriersPage() {
           const lastSent = localStorage.getItem('callmebot_last_sent');
       
           if (apiKey && lastSent !== todayStr && tempAlerts.length > 0) {
-            const phone = '966508187381';
+            const phone = '966545450613';
             let msg = `🚛 *تنبيهات نواقل الحديثة*\n📅 ${todayStr}\n${'─'.repeat(25)}\n\n⚠️ *${tempAlerts.length} تنبيه:*\n\n`;
             tempAlerts.forEach((a, i) => {
               const ic = a.days < 0 ? '🔴' : a.days <= 7 ? '🟠' : '🟡';
@@ -1093,7 +1093,7 @@ export default function ModernCarriersPage() {
                 <MessageCircle size={20} />
                 إرسال التقرير عبر الواتساب
               </button>
-              <p className="text-[10px] text-gray-400 text-center">سيتم إرسال التقرير إلى الرقم: +966508187381</p>
+              <p className="text-[10px] text-gray-400 text-center">سيتم إرسال التقرير إلى الرقم: +966545450613</p>
             </div>
           </div>
         </div>
@@ -1203,7 +1203,7 @@ export default function ModernCarriersPage() {
                   )}
                 </div>
                 <p className="text-[10px] text-gray-400 mt-2 text-center">
-                  سيُرسل الإشعار مرة واحدة يومياً إلى: +966508187381
+                  سيُرسل الإشعار مرة واحدة يومياً إلى: +966545450613
                 </p>
               </div>
             </div>

@@ -156,13 +156,13 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule = 'Contacts', onModuleCh
                         </a>
 
                         <a
-                            href="https://wa.me/966508187381"
+                            href="https://wa.me/966545450613"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center gap-2 text-[#94a3b8] hover:text-white transition-colors group"
                         >
                             <MessageCircle size={14} className="shrink-0" />
-                            <span className="text-[11px]">+966508187381</span>
+                            <span className="text-[11px]">+966545450613</span>
                         </a>
 
                         <a
