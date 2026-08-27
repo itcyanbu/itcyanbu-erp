@@ -588,7 +588,7 @@ const ContactsPage = () => {
                 {/* Top Row: Navigation Tabs */}
                 <div className="px-6 flex items-center justify-between h-11 border-b border-gray-100">
                     <div className="flex items-center h-full gap-2 overflow-x-auto no-scrollbar">
-                        <span className="text-gray-900 font-bold mr-6 text-[14px]">Contacts</span>
+                        <span className="text-gray-900 font-bold mr-6 text-[14px]">Contacts (CRM)</span>
                         <div className="flex items-center h-full gap-1">
                             {topTabs.map(tab => (
                                 <button
@@ -675,7 +675,7 @@ const ContactsPage = () => {
                 {/* Title Row with Upper Action Row */}
                 <div className="px-6 py-3 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <h1 className="text-[20px] font-black text-[#111827]">Contacts</h1>
+                        <h1 className="text-[20px] font-black text-[#111827]">Contacts (CRM)</h1>
                         <span className="bg-[#eff6ff] text-[#2563eb] px-3 py-0.5 rounded-full text-[12px] font-black border border-[#dbeafe] h-6 flex items-center">
                             {contacts.length} Contacts
                         </span>
@@ -1120,6 +1120,7 @@ const ContactsPage = () => {
                 isOpen={isWhatsAppBulkOpen} 
                 onClose={() => setIsWhatsAppBulkOpen(false)} 
                 selectedCount={selectedIds.size} 
+                selectedContacts={contacts.filter(c => selectedIds.has(c.id))}
             />
 
             <ManageFieldsSidebar

@@ -1,29 +1,56 @@
 import React, { useState, useEffect } from 'react';
-import { X, Send, Clock, MessageSquare, CheckCircle2, Search, ArrowRight } from 'lucide-react';
+import { X, Send, Clock, MessageSquare, CheckCircle2, Search, ArrowRight, ExternalLink } from 'lucide-react';
 import { MESSAGE_TEMPLATES, type MessageTemplate } from '../data/mockTemplates';
 
 interface WhatsAppBulkModalProps {
     isOpen: boolean;
     onClose: () => void;
     selectedCount: number;
+    selectedContacts?: { id: string; name?: string; firstName?: string; phone?: string; }[];
 }
 
-export const WhatsAppBulkModal: React.FC<WhatsAppBulkModalProps> = ({ isOpen, onClose, selectedCount }) => {
+export const WhatsAppBulkModal: React.FC<WhatsAppBulkModalProps> = ({ isOpen, onClose, selectedCount, selectedContacts = [] }) => {
     const [step, setStep] = useState<1 | 2 | 3>(1);
-    const [selectedTemplate, setSelectedTemplate] = useState<MessageTemplate | null>(null);
+    const [selectedTemplate, setSelectedTemplate] = useState<MessageTemplate | null>(MESSAGE_TEMPLATES[0] || null);
     const [scheduleMode, setScheduleMode] = useState<'now' | 'scheduled'>('now');
     const [scheduleDate, setScheduleDate] = useState('');
     const [progress, setProgress] = useState(0);
     const [sent, setSent] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+
+    // Helpers
+    const firstContact = selectedContacts.length > 0 ? selectedContacts[0] : null;
+    const recipientName = firstContact?.name || firstContact?.firstName || 'Valued Customer';
+    const rawPhone = firstContact?.phone || '';
+    const cleanPhone = rawPhone.replace(/[^0-9]/g, '');
+
+    const getProcessedMessage = () => {
+        if (!selectedTemplate) return '';
+        return selectedTemplate.preview
+            .replace(/\{\{name\}\}/g, recipientName)
+            .replace(/\{\{order_id\}\}/g, 'ORD-9842')
+            .replace(/\{\{date\}\}/g, 'Tomorrow')
+            .replace(/\{\{link\}\}/g, 'https://itcyanbu.net/track')
+            .replace(/\{\{code\}\}/g, 'SAVE15');
+    };
+
+    const openDirectWhatsApp = () => {
+        const msg = getProcessedMessage();
+        const url = cleanPhone
+            ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`
+            : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+        window.open(url, '_blank');
+    };
 
     // Reset state when opened
     useEffect(() => {
         if (isOpen) {
             setStep(1);
-            setSelectedTemplate(null);
+            setSelectedTemplate(MESSAGE_TEMPLATES[0] || null);
             setScheduleMode('now');
             setProgress(0);
             setSent(false);
+            setSearchTerm('');
         }
     }, [isOpen]);
 
@@ -111,43 +138,57 @@ export const WhatsAppBulkModal: React.FC<WhatsAppBulkModalProps> = ({ isOpen, on
                     {/* STEP 1: Select Template */}
                     {step === 1 && (
                         <div className="space-y-6">
-                            <div className="flex items-center justify-between">
-                                <h3 className="text-base font-bold text-gray-900">Choose a pre-approved template</h3>
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                <div>
+                                    <h3 className="text-base font-bold text-gray-900">Choose a pre-approved template</h3>
+                                    <p className="text-xs text-gray-500 mt-0.5">A template is pre-selected for you — click any card to change it, then proceed.</p>
+                                </div>
                                 <div className="relative">
                                     <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                                     <input 
                                         type="text" 
                                         placeholder="Search templates..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
                                         className="pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-ghl-blue focus:border-ghl-blue outline-none transition-all w-64"
                                     />
                                 </div>
                             </div>
                             
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {MESSAGE_TEMPLATES.map(t => (
-                                    <div 
-                                        key={t.id}
-                                        onClick={() => setSelectedTemplate(t)}
-                                        className={`p-5 rounded-xl border-2 cursor-pointer transition-all ${
-                                            selectedTemplate?.id === t.id 
-                                                ? 'border-ghl-blue bg-blue-50/50 shadow-sm' 
-                                                : 'border-gray-200 hover:border-blue-300 bg-white hover:bg-gray-50'
-                                        }`}
-                                    >
-                                        <div className="flex items-start justify-between mb-3">
-                                            <span className={`px-2.5 py-1 rounded-md text-[11px] font-bold border ${getCategoryColor(t.category)}`}>
-                                                {t.category}
-                                            </span>
-                                            {selectedTemplate?.id === t.id && (
-                                                <CheckCircle2 size={20} className="text-ghl-blue" />
-                                            )}
+                                {MESSAGE_TEMPLATES.filter(t =>
+                                    t.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                    t.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                    t.preview.toLowerCase().includes(searchTerm.toLowerCase())
+                                ).map(t => {
+                                    const isSelected = selectedTemplate?.id === t.id;
+                                    return (
+                                        <div 
+                                            key={t.id}
+                                            onClick={() => setSelectedTemplate(t)}
+                                            className={`p-5 rounded-xl border-2 cursor-pointer transition-all ${
+                                                isSelected
+                                                    ? 'border-blue-600 bg-blue-50/60 shadow-md ring-2 ring-blue-500/20' 
+                                                    : 'border-gray-200 hover:border-blue-300 bg-white hover:bg-gray-50'
+                                            }`}
+                                        >
+                                            <div className="flex items-start justify-between mb-3">
+                                                <span className={`px-2.5 py-1 rounded-md text-[11px] font-bold border ${getCategoryColor(t.category)}`}>
+                                                    {t.category}
+                                                </span>
+                                                {isSelected && (
+                                                    <div className="flex items-center gap-1 text-[11px] font-bold text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full">
+                                                        <CheckCircle2 size={12} /> Selected
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <h4 className="text-sm font-bold text-gray-900 mb-2">{t.name}</h4>
+                                            <p className="text-xs text-gray-500 line-clamp-3 leading-relaxed">
+                                                {t.preview}
+                                            </p>
                                         </div>
-                                        <h4 className="text-sm font-bold text-gray-900 mb-2">{t.name}</h4>
-                                        <p className="text-xs text-gray-500 line-clamp-3 leading-relaxed">
-                                            {t.preview}
-                                        </p>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         </div>
                     )}
@@ -157,23 +198,45 @@ export const WhatsAppBulkModal: React.FC<WhatsAppBulkModalProps> = ({ isOpen, on
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
                             {/* Left: Message Preview (WhatsApp style UI) */}
                             <div className="flex flex-col">
-                                <h3 className="text-base font-bold text-gray-900 mb-4">Message Preview</h3>
-                                <div className="flex-1 bg-[#efeae2] rounded-2xl border border-gray-200 p-4 relative overflow-hidden flex flex-col justify-end min-h-[300px]">
-                                    {/* WhatsApp background pattern (simulated with CSS or opacity) */}
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-base font-bold text-gray-900">Message Preview</h3>
+                                    <span className="text-xs text-emerald-700 font-bold bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full">
+                                        Live Preview
+                                    </span>
+                                </div>
+                                <div className="flex-1 bg-[#efeae2] rounded-2xl border border-gray-200 p-4 relative overflow-hidden flex flex-col justify-between min-h-[300px] shadow-inner">
+                                    {/* WhatsApp background pattern */}
                                     <div className="absolute inset-0 opacity-40 bg-[url('https://i.pinimg.com/736x/8c/98/99/8c98994518b575bfd8c949e91d20548b.jpg')] bg-cover mix-blend-overlay"></div>
-                                    
-                                    <div className="relative z-10 bg-white p-3.5 rounded-xl rounded-tr-none shadow-sm max-w-[90%] self-end">
-                                        <div className="text-xs font-bold text-gray-400 mb-1 flex items-center gap-1.5">
-                                            <MessageSquare size={12} />
-                                            Template: {selectedTemplate.name}
+
+                                    {/* Recipient info chip */}
+                                    {firstContact && (
+                                        <div className="relative z-10 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-gray-200 text-xs text-gray-500 w-fit mx-auto text-center">
+                                            To: <strong className="text-gray-900">{recipientName}</strong>
+                                            {cleanPhone && <span className="ml-1 text-gray-400">({cleanPhone})</span>}
                                         </div>
-                                        <p className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">
-                                            {selectedTemplate.preview}
+                                    )}
+                                    
+                                    <div className="relative z-10 bg-[#d9fdd3] p-4 rounded-xl rounded-tr-none shadow-sm max-w-[90%] self-end border border-emerald-200/50 mt-4">
+                                        <div className="text-[11px] font-bold text-emerald-800 mb-1 flex items-center gap-1.5">
+                                            <MessageSquare size={12} />
+                                            {selectedTemplate.name}
+                                        </div>
+                                        <p className="text-sm text-gray-900 whitespace-pre-wrap leading-relaxed">
+                                            {getProcessedMessage()}
                                         </p>
-                                        <div className="text-[10px] text-gray-400 mt-2 text-right flex items-center justify-end gap-1">
-                                            10:42 AM <span className="text-blue-500 font-bold">✓✓</span>
+                                        <div className="text-[10px] text-gray-500 mt-2 text-right flex items-center justify-end gap-1">
+                                            Now <span className="text-blue-500 font-bold">✓✓</span>
                                         </div>
                                     </div>
+
+                                    {/* Direct WhatsApp button */}
+                                    <button
+                                        onClick={openDirectWhatsApp}
+                                        className="relative z-10 mt-4 w-full flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#128C7E] text-white py-2.5 rounded-xl font-bold transition-all shadow-md text-sm"
+                                    >
+                                        <ExternalLink size={15} />
+                                        Open in WhatsApp Web
+                                    </button>
                                 </div>
                             </div>
 

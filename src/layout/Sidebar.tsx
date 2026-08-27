@@ -45,7 +45,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule = 'Contacts', onModuleCh
         { icon: BarChart3, label: 'Dashboard', id: 'Dashboard', tKey: 'sidebar.dashboard' },
         { icon: MessageSquare, label: 'Conversations', id: 'Conversations', tKey: 'sidebar.conversations' },
         { icon: Calendar, label: 'Calendars', id: 'Calendars', tKey: 'sidebar.calendars' },
-        { icon: Users, label: 'Contacts', id: 'Contacts', tKey: 'sidebar.contacts' },
+        { icon: Users, label: 'Contacts (CRM)', id: 'Contacts', tKey: 'sidebar.contacts' },
         { icon: Filter, label: 'Opportunities', id: 'Opportunities', tKey: 'sidebar.opportunities' },
         { icon: CreditCard, label: 'Payments', id: 'Payments', tKey: 'sidebar.payments' },
         { icon: LayoutGrid, label: 'Marketing', id: 'Marketing', tKey: 'sidebar.marketing' },
