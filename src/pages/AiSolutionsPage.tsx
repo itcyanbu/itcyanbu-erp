@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Video, HelpCircle, Box, FileText, Globe, Play, Users, Factory, ArrowLeft, ChevronLeft, ChevronRight, BookOpen, Bot, Zap, Gauge, Target, MessageSquare, ShieldCheck, Maximize, Smartphone } from 'lucide-react';
+import { Video, HelpCircle, Box, FileText, Globe, Play, Users, Factory, ArrowLeft, ChevronLeft, ChevronRight, BookOpen, Bot, Zap, Gauge, Target, MessageSquare, ShieldCheck, Maximize, Smartphone, MapPin, Truck } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 
 import MockupView from '../components/MockupView';
+import { PropertyTourPage } from './Property/PropertyTourPage';
+import ModernCarriersPage from './ModernCarriersPage';
 
 const AiSolutionsPage = () => {
     const { t } = useTranslation();
@@ -112,6 +114,8 @@ const AiSolutionsPage = () => {
     ];
 
     const solutions = [
+        { id: '3d-tour', label: '3D Tour', icon: MapPin, color: 'text-indigo-500', bg: 'bg-indigo-50' },
+        { id: 'trucks', label: 'trucks', icon: Truck, color: 'text-amber-500', bg: 'bg-amber-50' },
         { id: 'getting-started', label: t('ai_solutions.getting_started'), icon: Play, color: 'text-purple-500', bg: 'bg-purple-50' },
         { id: 'mockup', label: 'Student App Mockup', icon: Smartphone, color: 'text-teal-500', bg: 'bg-teal-50' },
         { id: 'conversation-ai', label: 'Conversation AI', icon: Bot, color: 'text-blue-500', bg: 'bg-blue-50' },
@@ -208,6 +212,10 @@ const AiSolutionsPage = () => {
                 </div>
             </div>
         );
+        case '3d-tour':
+            return <PropertyTourPage />;
+        case 'trucks':
+            return <ModernCarriersPage />;
         case 'mockup':
             return <MockupView />;
         case 'cctv-ai':

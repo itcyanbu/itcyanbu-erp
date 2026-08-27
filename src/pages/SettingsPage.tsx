@@ -64,7 +64,7 @@ const SettingsPage = () => {
         friendlyName: 'itcyanbu',
         legalName: 'itcyanbu',
         email: 'itc@itcyanbu.net',
-        phone: '+966545450613',
+        phone: '+966508187381',
         website: 'https://itcyanbu.net',
         niche: 'Technology',
         brandedDomain: '',
@@ -92,7 +92,7 @@ const SettingsPage = () => {
         authorizedRep: {
             fullName: '',
             email: 'itc@itcyanbu.net',
-            phone: '+966545450613',
+            phone: '+966508187381',
             jobTitle: ''
         },
 

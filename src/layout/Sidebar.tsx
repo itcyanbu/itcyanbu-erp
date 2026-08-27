@@ -19,13 +19,11 @@ import {
     Image,
     Facebook,
     Settings,
-    MapPin,
     Brain,
     Phone,
     Mail,
     MessageCircle,
     Info,
-    Truck,
 } from 'lucide-react';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
@@ -43,7 +41,6 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule = 'Contacts', onModuleCh
     const [profileLogo] = useState('/itc-logo.jpg');
 
     const menuItems = [
-        { icon: MapPin, label: '3D Tour', id: 'Property Tour', tKey: '3D Tour' },
         { icon: Rocket, label: 'Launchpad', id: 'Launchpad', tKey: 'sidebar.launchpad' },
         { icon: BarChart3, label: 'Dashboard', id: 'Dashboard', tKey: 'sidebar.dashboard' },
         { icon: MessageSquare, label: 'Conversations', id: 'Conversations', tKey: 'sidebar.conversations' },
@@ -62,8 +59,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule = 'Contacts', onModuleCh
         { icon: LineChart, label: 'Agency Analytics', id: 'Agency Analytics', tKey: 'sidebar.agency_analytics' },
         { icon: Image, label: 'Media Library', id: 'Media Library', tKey: 'sidebar.media_library' },
         { icon: Facebook, label: 'Facebook Group', id: 'Facebook Group', tKey: 'sidebar.facebook_group' },
-        { icon: Brain, label: 'AI Solutions', id: 'AI Solutions', tKey: 'sidebar.ai_solutions' },
-        { icon: Truck, label: 'trucks', id: 'trucks', tKey: 'trucks' }
+        { icon: Brain, label: 'AI Solutions', id: 'AI Solutions', tKey: 'sidebar.ai_solutions' }
     ];
 
     const toggleLanguage = () => {
@@ -152,21 +148,21 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule = 'Contacts', onModuleCh
                 <div className="hidden lg:block pt-3 border-t border-[#334155/30]">
                     <div className="grid grid-cols-1 gap-1.5">
                         <a
-                            href="tel:+966545450613"
+                            href="tel:+966508187381"
                             className="flex items-center gap-2 text-[#94a3b8] hover:text-white transition-colors group"
                         >
                             <Phone size={14} className="shrink-0" />
-                            <span className="text-[11px]">+966545450613</span>
+                            <span className="text-[11px]">+966508187381</span>
                         </a>
 
                         <a
-                            href="https://wa.me/966545450613"
+                            href="https://wa.me/966508187381"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center gap-2 text-[#94a3b8] hover:text-white transition-colors group"
                         >
                             <MessageCircle size={14} className="shrink-0" />
-                            <span className="text-[11px]">+966545450613</span>
+                            <span className="text-[11px]">+966508187381</span>
                         </a>
 
                         <a

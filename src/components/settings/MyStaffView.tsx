@@ -29,7 +29,7 @@ const mockStaff: StaffMember[] = [
         firstName: 'itcyanbu',
         lastName: 'Admin',
         email: 'itc@example.com',
-        phone: '+966545450613',
+        phone: '+966508187381',
         role: 'Admin',
         status: 'Active',
         lastLogin: '2 mins ago',
