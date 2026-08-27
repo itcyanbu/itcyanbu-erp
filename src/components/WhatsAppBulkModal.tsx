@@ -58,16 +58,37 @@ export const WhatsAppBulkModal: React.FC<WhatsAppBulkModalProps> = ({ isOpen, on
 
     const handleSend = () => {
         setStep(3);
+
+        // Open real WhatsApp Web for each contact that has a phone number
+        const contactsWithPhone = selectedContacts.filter(c => c.phone && c.phone.trim() !== '');
+        
+        if (contactsWithPhone.length > 0) {
+            contactsWithPhone.forEach((contact, index) => {
+                const phone = (contact.phone || '').replace(/[^0-9]/g, '');
+                const name = contact.name || contact.firstName || 'Valued Customer';
+                const msg = selectedTemplate ? selectedTemplate.preview
+                    .replace(/\{\{name\}\}/g, name)
+                    .replace(/\{\{order_id\}\}/g, 'ORD-9842')
+                    .replace(/\{\{date\}\}/g, 'Tomorrow')
+                    .replace(/\{\{link\}\}/g, 'https://itcyanbu.net/track')
+                    .replace(/\{\{code\}\}/g, 'SAVE15') : '';
+                const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+                // Stagger openings slightly to avoid popup blockers
+                setTimeout(() => { window.open(url, '_blank'); }, index * 600);
+            });
+        }
+
+        // Run progress animation
         let p = 0;
         const interval = setInterval(() => {
-            p += Math.random() * 12 + 3;
+            p += Math.random() * 14 + 6;
             if (p >= 100) { 
                 p = 100; 
                 clearInterval(interval); 
                 setSent(true); 
             }
             setProgress(Math.min(p, 100));
-        }, 180);
+        }, 150);
     };
 
     const getCategoryColor = (category: string) => {
@@ -330,37 +351,71 @@ export const WhatsAppBulkModal: React.FC<WhatsAppBulkModalProps> = ({ isOpen, on
                                         <span>{Math.round(selectedCount * (progress/100))} / {selectedCount} Sent</span>
                                     </div>
                                 </>
-                            ) : (
-                                <div className="animate-in zoom-in duration-300">
-                                    <div className="w-24 h-24 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                                        <CheckCircle2 size={48} className="text-emerald-600" />
-                                    </div>
-                                    <h3 className="text-2xl font-black text-gray-900 mb-3">Campaign Launched! 🎉</h3>
-                                    <p className="text-gray-500 mb-8 leading-relaxed">
-                                        Successfully queued {selectedCount} messages for delivery. You can track performance in the Campaigns tab.
-                                    </p>
-                                    <div className="grid grid-cols-3 gap-4 mb-8">
-                                        <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
-                                            <div className="text-2xl font-black text-gray-900">{selectedCount}</div>
-                                            <div className="text-xs font-medium text-gray-500 uppercase tracking-wider mt-1">Total Sent</div>
+                            ) : (() => {
+                                    const contactsWithPhone = selectedContacts.filter(c => c.phone && c.phone.trim() !== '');
+                                    const noPhone = selectedCount - contactsWithPhone.length;
+                                    return (
+                                        <div className="animate-in zoom-in duration-300">
+                                            <div className="w-24 h-24 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                                                <CheckCircle2 size={48} className="text-emerald-600" />
+                                            </div>
+                                            <h3 className="text-2xl font-black text-gray-900 mb-3">WhatsApp Opened! 🎉</h3>
+                                            <p className="text-gray-500 mb-4 leading-relaxed">
+                                                {contactsWithPhone.length > 0
+                                                    ? <><strong className="text-gray-900">{contactsWithPhone.length}</strong> WhatsApp Web tab{contactsWithPhone.length > 1 ? 's were' : ' was'} opened with the message pre-filled. <strong>Click Send in each WhatsApp tab</strong> to deliver the message.</>
+                                                    : 'No contacts with phone numbers were found. Please add phone numbers to your contacts first.'
+                                                }
+                                            </p>
+                                            {noPhone > 0 && (
+                                                <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 px-4 py-2 rounded-lg mb-4">
+                                                    ⚠️ {noPhone} contact{noPhone > 1 ? 's have' : ' has'} no phone number and were skipped.
+                                                </p>
+                                            )}
+                                            {contactsWithPhone.length > 0 && (
+                                                <button
+                                                    onClick={() => {
+                                                        contactsWithPhone.forEach((contact, index) => {
+                                                            const phone = (contact.phone || '').replace(/[^0-9]/g, '');
+                                                            const name = contact.name || contact.firstName || 'Valued Customer';
+                                                            const msg = selectedTemplate ? selectedTemplate.preview
+                                                                .replace(/\{\{name\}\}/g, name)
+                                                                .replace(/\{\{order_id\}\}/g, 'ORD-9842')
+                                                                .replace(/\{\{date\}\}/g, 'Tomorrow')
+                                                                .replace(/\{\{link\}\}/g, 'https://itcyanbu.net/track')
+                                                                .replace(/\{\{code\}\}/g, 'SAVE15') : '';
+                                                            const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+                                                            setTimeout(() => { window.open(url, '_blank'); }, index * 600);
+                                                        });
+                                                    }}
+                                                    className="flex items-center justify-center gap-2 mx-auto px-6 py-2.5 bg-[#25D366] hover:bg-[#128C7E] text-white rounded-xl font-bold transition-all shadow-md text-sm mb-6"
+                                                >
+                                                    <ExternalLink size={16} />
+                                                    Re-open WhatsApp Tab{contactsWithPhone.length > 1 ? 's' : ''}
+                                                </button>
+                                            )}
+                                            <div className="grid grid-cols-3 gap-4 mb-6">
+                                                <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                                                    <div className="text-2xl font-black text-gray-900">{contactsWithPhone.length}</div>
+                                                    <div className="text-xs font-medium text-gray-500 uppercase tracking-wider mt-1">WA Opened</div>
+                                                </div>
+                                                <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                                                    <div className="text-2xl font-black text-amber-600">{noPhone}</div>
+                                                    <div className="text-xs font-medium text-gray-500 uppercase tracking-wider mt-1">No Phone</div>
+                                                </div>
+                                                <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                                                    <div className="text-2xl font-black text-blue-600">{selectedCount}</div>
+                                                    <div className="text-xs font-medium text-gray-500 uppercase tracking-wider mt-1">Total</div>
+                                                </div>
+                                            </div>
+                                            <button 
+                                                onClick={onClose}
+                                                className="px-8 py-3 bg-gray-900 text-white rounded-xl font-bold hover:bg-gray-800 transition-colors shadow-lg shadow-gray-900/20"
+                                            >
+                                                Done
+                                            </button>
                                         </div>
-                                        <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
-                                            <div className="text-2xl font-black text-blue-600">{Math.round(selectedCount * 0.94)}</div>
-                                            <div className="text-xs font-medium text-gray-500 uppercase tracking-wider mt-1">Est. Delivered</div>
-                                        </div>
-                                        <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
-                                            <div className="text-2xl font-black text-purple-600">{Math.round(selectedCount * 0.76)}</div>
-                                            <div className="text-xs font-medium text-gray-500 uppercase tracking-wider mt-1">Est. Opens</div>
-                                        </div>
-                                    </div>
-                                    <button 
-                                        onClick={onClose}
-                                        className="px-8 py-3 bg-gray-900 text-white rounded-xl font-bold hover:bg-gray-800 transition-colors shadow-lg shadow-gray-900/20"
-                                    >
-                                        Done
-                                    </button>
-                                </div>
-                            )}
+                                    );
+                                })()}
                         </div>
                     )}
                 </div>
