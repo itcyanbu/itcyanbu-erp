@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { X, Send, Clock, MessageSquare, CheckCircle2, Search, ArrowRight, ExternalLink } from 'lucide-react';
+import { X, Send, Clock, MessageSquare, CheckCircle2, Search, ArrowRight, ExternalLink, Wifi } from 'lucide-react';
 import { MESSAGE_TEMPLATES, type MessageTemplate } from '../data/mockTemplates';
+import { getWAConfig, sendBulkTextMessages, type WASendResult } from '../utils/whatsappApi';
 
 interface WhatsAppBulkModalProps {
     isOpen: boolean;
@@ -17,6 +18,12 @@ export const WhatsAppBulkModal: React.FC<WhatsAppBulkModalProps> = ({ isOpen, on
     const [progress, setProgress] = useState(0);
     const [sent, setSent] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
+    const [sendResults, setSendResults] = useState<WASendResult[]>([]);
+    const [sendMode, setSendMode] = useState<'api' | 'web'>('web');
+
+    // Check if Meta Cloud API is configured
+    const waCfg = getWAConfig();
+    const hasApiConfig = !!waCfg;
 
     // Helpers
     const firstContact = selectedContacts.length > 0 ? selectedContacts[0] : null;
@@ -24,15 +31,18 @@ export const WhatsAppBulkModal: React.FC<WhatsAppBulkModalProps> = ({ isOpen, on
     const rawPhone = firstContact?.phone || '';
     const cleanPhone = rawPhone.replace(/[^0-9]/g, '');
 
-    const getProcessedMessage = () => {
+    const buildMessage = (contact: { name?: string; firstName?: string }) => {
         if (!selectedTemplate) return '';
+        const name = contact.name || contact.firstName || 'Valued Customer';
         return selectedTemplate.preview
-            .replace(/\{\{name\}\}/g, recipientName)
+            .replace(/\{\{name\}\}/g, name)
             .replace(/\{\{order_id\}\}/g, 'ORD-9842')
             .replace(/\{\{date\}\}/g, 'Tomorrow')
             .replace(/\{\{link\}\}/g, 'https://itcyanbu.net/track')
             .replace(/\{\{code\}\}/g, 'SAVE15');
     };
+
+    const getProcessedMessage = () => buildMessage(firstContact || {});
 
     const openDirectWhatsApp = () => {
         const msg = getProcessedMessage();
@@ -51,44 +61,51 @@ export const WhatsAppBulkModal: React.FC<WhatsAppBulkModalProps> = ({ isOpen, on
             setProgress(0);
             setSent(false);
             setSearchTerm('');
+            setSendResults([]);
+            setSendMode(hasApiConfig ? 'api' : 'web');
         }
-    }, [isOpen]);
+    }, [isOpen, hasApiConfig]);
 
     if (!isOpen) return null;
 
-    const handleSend = () => {
-        setStep(3);
+    const contactsWithPhone = selectedContacts.filter(c => c.phone && c.phone.trim() !== '');
 
-        // Open real WhatsApp Web for each contact that has a phone number
-        const contactsWithPhone = selectedContacts.filter(c => c.phone && c.phone.trim() !== '');
-        
-        if (contactsWithPhone.length > 0) {
+    const handleSend = async () => {
+        setStep(3);
+        setProgress(0);
+        setSendResults([]);
+
+        if (hasApiConfig && waCfg && sendMode === 'api') {
+            // ── Real Meta Cloud API send ──
+            const messages = contactsWithPhone.map(c => ({
+                to: (c.phone || '').replace(/[^0-9+]/g, '').replace(/^\+/, ''),
+                body: buildMessage(c),
+            }));
+
+            await sendBulkTextMessages(waCfg, messages, (done, total, result) => {
+                setProgress(Math.round((done / total) * 100));
+                setSendResults(prev => [...prev, result]);
+                if (done === total) setSent(true);
+            });
+
+            if (messages.length === 0) { setProgress(100); setSent(true); }
+        } else {
+            // ── WhatsApp Web fallback ──
             contactsWithPhone.forEach((contact, index) => {
                 const phone = (contact.phone || '').replace(/[^0-9]/g, '');
-                const name = contact.name || contact.firstName || 'Valued Customer';
-                const msg = selectedTemplate ? selectedTemplate.preview
-                    .replace(/\{\{name\}\}/g, name)
-                    .replace(/\{\{order_id\}\}/g, 'ORD-9842')
-                    .replace(/\{\{date\}\}/g, 'Tomorrow')
-                    .replace(/\{\{link\}\}/g, 'https://itcyanbu.net/track')
-                    .replace(/\{\{code\}\}/g, 'SAVE15') : '';
+                const msg = buildMessage(contact);
                 const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
-                // Stagger openings slightly to avoid popup blockers
                 setTimeout(() => { window.open(url, '_blank'); }, index * 600);
             });
-        }
 
-        // Run progress animation
-        let p = 0;
-        const interval = setInterval(() => {
-            p += Math.random() * 14 + 6;
-            if (p >= 100) { 
-                p = 100; 
-                clearInterval(interval); 
-                setSent(true); 
-            }
-            setProgress(Math.min(p, 100));
-        }, 150);
+            // Animate progress
+            let p = 0;
+            const interval = setInterval(() => {
+                p += Math.random() * 14 + 6;
+                if (p >= 100) { p = 100; clearInterval(interval); setSent(true); }
+                setProgress(Math.min(p, 100));
+            }, 150);
+        }
     };
 
     const getCategoryColor = (category: string) => {
@@ -263,8 +280,48 @@ export const WhatsAppBulkModal: React.FC<WhatsAppBulkModalProps> = ({ isOpen, on
 
                             {/* Right: Options */}
                             <div className="space-y-6">
+                                {/* Send Method */}
                                 <div>
-                                    <h3 className="text-base font-bold text-gray-900 mb-4">Delivery Options</h3>
+                                    <h3 className="text-base font-bold text-gray-900 mb-3">Send Method</h3>
+                                    <div className="flex gap-3">
+                                        <button
+                                            onClick={() => setSendMode('api')}
+                                            disabled={!hasApiConfig}
+                                            className={`flex-1 flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 transition-all ${
+                                                sendMode === 'api'
+                                                    ? 'border-emerald-500 bg-emerald-50'
+                                                    : hasApiConfig ? 'border-gray-200 bg-white hover:bg-gray-50' : 'border-gray-100 bg-gray-50 opacity-50 cursor-not-allowed'
+                                            }`}
+                                        >
+                                            <Wifi size={22} className={sendMode === 'api' && hasApiConfig ? 'text-emerald-600' : 'text-gray-400'} />
+                                            <span className="font-bold text-xs text-gray-900 text-center">Meta Cloud API{'\n'}(Automatic)</span>
+                                            {!hasApiConfig && <span className="text-[10px] text-gray-400">Configure in Settings</span>}
+                                            {hasApiConfig && <span className="text-[10px] text-emerald-600 font-bold">● Connected</span>}
+                                        </button>
+                                        <button
+                                            onClick={() => setSendMode('web')}
+                                            className={`flex-1 flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 transition-all ${
+                                                sendMode === 'web' ? 'border-ghl-blue bg-blue-50/50' : 'border-gray-200 bg-white hover:bg-gray-50'
+                                            }`}
+                                        >
+                                            <ExternalLink size={22} className={sendMode === 'web' ? 'text-ghl-blue' : 'text-gray-400'} />
+                                            <span className="font-bold text-xs text-gray-900 text-center">WhatsApp Web{'\n'}(Manual)</span>
+                                        </button>
+                                    </div>
+                                    {sendMode === 'api' && hasApiConfig && (
+                                        <p className="text-xs text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-lg px-3 py-2 mt-2">
+                                            ✅ Messages will be sent automatically via Meta Cloud API — no manual clicking required.
+                                        </p>
+                                    )}
+                                    {sendMode === 'web' && (
+                                        <p className="text-xs text-blue-700 bg-blue-50 border border-blue-100 rounded-lg px-3 py-2 mt-2">
+                                            WhatsApp Web tabs will open — click Send in each tab to deliver. <a href="#" onClick={() => { onClose(); }} className="underline">Configure Meta API in Settings</a> for automatic sending.
+                                        </p>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <h3 className="text-base font-bold text-gray-900 mb-3">Schedule</h3>
                                     <div className="flex gap-3">
                                         <button
                                             onClick={() => setScheduleMode('now')}
@@ -352,25 +409,46 @@ export const WhatsAppBulkModal: React.FC<WhatsAppBulkModalProps> = ({ isOpen, on
                                     </div>
                                 </>
                             ) : (() => {
-                                    const contactsWithPhone = selectedContacts.filter(c => c.phone && c.phone.trim() !== '');
                                     const noPhone = selectedCount - contactsWithPhone.length;
+                                    const successCount = sendResults.filter(r => r.success).length;
+                                    const failCount = sendResults.filter(r => !r.success).length;
+                                    const isApiMode = sendMode === 'api' && hasApiConfig;
                                     return (
-                                        <div className="animate-in zoom-in duration-300">
-                                            <div className="w-24 h-24 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                                                <CheckCircle2 size={48} className="text-emerald-600" />
+                                        <div className="animate-in zoom-in duration-300 w-full">
+                                            <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-5">
+                                                <CheckCircle2 size={44} className="text-emerald-600" />
                                             </div>
-                                            <h3 className="text-2xl font-black text-gray-900 mb-3">WhatsApp Opened! 🎉</h3>
-                                            <p className="text-gray-500 mb-4 leading-relaxed">
-                                                {contactsWithPhone.length > 0
-                                                    ? <><strong className="text-gray-900">{contactsWithPhone.length}</strong> WhatsApp Web tab{contactsWithPhone.length > 1 ? 's were' : ' was'} opened with the message pre-filled. <strong>Click Send in each WhatsApp tab</strong> to deliver the message.</>
-                                                    : 'No contacts with phone numbers were found. Please add phone numbers to your contacts first.'
+                                            <h3 className="text-2xl font-black text-gray-900 mb-3">
+                                                {isApiMode ? '✅ Messages Sent!' : '📱 WhatsApp Opened!'}
+                                            </h3>
+                                            <p className="text-gray-500 mb-4 leading-relaxed text-sm">
+                                                {isApiMode
+                                                    ? <>{successCount > 0 ? <><strong className="text-gray-900">{successCount}</strong> message{successCount > 1 ? 's' : ''} delivered via Meta Cloud API.</> : 'No messages were sent.'}{failCount > 0 && <span className="text-red-600"> {failCount} failed.</span>}</>
+                                                    : contactsWithPhone.length > 0
+                                                        ? <><strong className="text-gray-900">{contactsWithPhone.length}</strong> WhatsApp Web tab{contactsWithPhone.length > 1 ? 's' : ''} opened — click Send in each tab.</>
+                                                        : 'No contacts with phone numbers found.'
                                                 }
                                             </p>
                                             {noPhone > 0 && (
                                                 <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 px-4 py-2 rounded-lg mb-4">
-                                                    ⚠️ {noPhone} contact{noPhone > 1 ? 's have' : ' has'} no phone number and were skipped.
+                                                    ⚠️ {noPhone} contact{noPhone > 1 ? 's' : ''} had no phone number and {noPhone > 1 ? 'were' : 'was'} skipped.
                                                 </p>
                                             )}
+
+                                            {/* Per-contact result list (API mode only) */}
+                                            {isApiMode && sendResults.length > 0 && (
+                                                <div className="mb-5 max-h-32 overflow-y-auto text-xs space-y-1 border border-gray-100 rounded-xl p-3 bg-gray-50 text-left">
+                                                    {sendResults.map((r, i) => (
+                                                        <div key={i} className={`flex items-center gap-2 ${r.success ? 'text-emerald-700' : 'text-red-600'}`}>
+                                                            <span>{r.success ? '✅' : '❌'}</span>
+                                                            <span className="font-mono">{r.to}</span>
+                                                            {r.error && <span className="text-gray-400 truncate">— {r.error}</span>}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+
+
                                             {contactsWithPhone.length > 0 && (
                                                 <button
                                                     onClick={() => {

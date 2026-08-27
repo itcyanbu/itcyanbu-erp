@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import SettingsSectionLayout from './SettingsSectionLayout';
+import { getWAConfig, saveWAConfig, clearWAConfig, testWAConnection, type WhatsAppAPIConfig } from '../../utils/whatsappApi';
 
 // Calendars
 export const CalendarsSettings = () => {
@@ -72,11 +73,59 @@ export const PhoneNumbersSettings = () => {
 
 // WhatsApp
 export const WhatsAppSettings = ({ settings, updateSetting }: { settings?: any, updateSetting?: (key: string, value: any) => void }) => {
-    const [activeTab, setActiveTab] = useState('account');
+    const [activeTab, setActiveTab] = useState('cloud-api');
     
     // Fallbacks in case it's used without props (though we just added them)
     const whatsappData = settings?.whatsapp || { connected: false, phone: '', wabaId: '1029384756' };
     const isConnected = whatsappData.connected;
+
+    // --- Meta Cloud API State ---
+    const [apiCfg, setApiCfg] = useState<WhatsAppAPIConfig>(() => getWAConfig() || { phoneNumberId: '', accessToken: '', apiVersion: 'v20.0' });
+    const [testStatus, setTestStatus] = useState<'idle' | 'testing' | 'ok' | 'fail'>('idle');
+    const [testMsg, setTestMsg] = useState('');
+    const [savedOk, setSavedOk] = useState(false);
+
+    // Load saved config on mount
+    useEffect(() => {
+        const saved = getWAConfig();
+        if (saved) {
+            setApiCfg(saved);
+            setTestStatus('ok');
+            setTestMsg(`Connected ✓`);
+        }
+    }, []);
+
+    const handleSaveApiConfig = () => {
+        saveWAConfig(apiCfg);
+        setSavedOk(true);
+        setTimeout(() => setSavedOk(false), 3000);
+    };
+
+    const handleTestConnection = async () => {
+        if (!apiCfg.phoneNumberId || !apiCfg.accessToken) {
+            setTestStatus('fail');
+            setTestMsg('Please fill in Phone Number ID and Access Token first.');
+            return;
+        }
+        setTestStatus('testing');
+        setTestMsg('Testing connection...');
+        const result = await testWAConnection(apiCfg);
+        if (result.ok) {
+            setTestStatus('ok');
+            setTestMsg(`✅ Connected! Number: ${result.display_phone_number}`);
+            saveWAConfig(apiCfg);
+        } else {
+            setTestStatus('fail');
+            setTestMsg(`❌ Failed: ${result.error}`);
+        }
+    };
+
+    const handleDisconnectApi = () => {
+        clearWAConfig();
+        setApiCfg({ phoneNumberId: '', accessToken: '', apiVersion: 'v20.0' });
+        setTestStatus('idle');
+        setTestMsg('');
+    };
 
     // Local state for the wizard flow
     const [connectionState, setConnectionState] = useState<'not_connected' | 'connecting' | 'connected'>(isConnected ? 'connected' : 'not_connected');
@@ -318,29 +367,136 @@ export const WhatsAppSettings = ({ settings, updateSetting }: { settings?: any, 
         <SettingsSectionLayout
             title="WhatsApp"
             description="Manage your WhatsApp Business integration"
-            tabs={connectionState === 'connected' ? [
-                { id: 'account', label: 'Account' },
+            tabs={[
+                { id: 'cloud-api', label: '🔌 Meta Cloud API' },
+                { id: 'account', label: 'Account (Wizard)' },
                 { id: 'conversations', label: 'Conversations' },
                 { id: 'templates', label: 'Templates' },
-            ] : undefined}
+            ]}
             activeTab={activeTab}
             onTabChange={setActiveTab}
         >
-            {connectionState === 'not_connected' && renderNotConnected()}
-            {connectionState === 'connecting' && renderConnecting()}
-            {connectionState === 'connected' && activeTab === 'account' && renderConnected()}
-            {connectionState === 'connected' && activeTab !== 'account' && (
-                <div className="px-6 py-12 text-center bg-white m-8 border border-gray-200 rounded-xl">
-                    <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-100">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+            {/* ─── META CLOUD API TAB ─── */}
+            {activeTab === 'cloud-api' && (
+                <div className="p-8 max-w-2xl mx-auto space-y-8">
+                    {/* Status banner */}
+                    {testStatus === 'ok' && (
+                        <div className="flex items-center gap-3 bg-emerald-50 border border-emerald-200 rounded-xl px-5 py-4">
+                            <span className="text-2xl">✅</span>
+                            <div>
+                                <p className="font-bold text-emerald-800 text-sm">Meta Cloud API Connected</p>
+                                <p className="text-emerald-700 text-xs mt-0.5">{testMsg}</p>
+                            </div>
+                            <button onClick={handleDisconnectApi} className="ml-auto text-xs text-red-500 hover:text-red-700 font-bold border border-red-200 px-3 py-1.5 rounded-lg hover:bg-red-50 transition-colors">Disconnect</button>
+                        </div>
+                    )}
+                    {testStatus === 'fail' && (
+                        <div className="flex items-start gap-3 bg-red-50 border border-red-200 rounded-xl px-5 py-4">
+                            <span className="text-xl">❌</span>
+                            <p className="text-red-700 text-sm">{testMsg}</p>
+                        </div>
+                    )}
+
+                    {/* How to get credentials */}
+                    <div className="bg-blue-50 border border-blue-100 rounded-xl p-5">
+                        <h3 className="font-bold text-blue-900 text-sm mb-3">📋 How to get your Meta Cloud API credentials</h3>
+                        <ol className="text-blue-800 text-xs space-y-1.5 list-decimal pl-4">
+                            <li>Go to <a href="https://developers.facebook.com" target="_blank" rel="noopener noreferrer" className="underline font-medium">developers.facebook.com</a> → Create App → Business type</li>
+                            <li>Add <strong>WhatsApp</strong> product to your app</li>
+                            <li>Go to <strong>WhatsApp → Getting Started</strong> — copy your <strong>Phone Number ID</strong></li>
+                            <li>Go to <strong>System Users</strong> in Business Manager → Generate a <strong>Permanent Token</strong> with <code className="bg-blue-100 px-1 rounded">whatsapp_business_messaging</code> permission</li>
+                            <li>Paste them below and click <strong>Test &amp; Save</strong></li>
+                        </ol>
+                        <a href="https://developers.facebook.com/docs/whatsapp/cloud-api/get-started" target="_blank" rel="noopener noreferrer" className="mt-3 inline-block text-xs text-blue-600 font-bold underline">→ Full Meta Cloud API Guide</a>
                     </div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-1">No {activeTab} data found</h3>
-                    <p className="text-gray-500 text-sm">Your {activeTab} will appear here once they are synced.</p>
+
+                    {/* Credentials Form */}
+                    <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm space-y-5">
+                        <h3 className="font-bold text-gray-900 text-base">API Credentials</h3>
+
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Phone Number ID <span className="text-red-500">*</span></label>
+                            <input
+                                type="text"
+                                value={apiCfg.phoneNumberId}
+                                onChange={e => setApiCfg(p => ({ ...p, phoneNumberId: e.target.value.trim() }))}
+                                placeholder="e.g. 123456789012345"
+                                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm transition-all"
+                            />
+                            <p className="text-xs text-gray-400 mt-1">Found in Meta for Developers → WhatsApp → Getting Started</p>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Permanent Access Token <span className="text-red-500">*</span></label>
+                            <input
+                                type="password"
+                                value={apiCfg.accessToken}
+                                onChange={e => setApiCfg(p => ({ ...p, accessToken: e.target.value.trim() }))}
+                                placeholder="EAAxxxxxx..."
+                                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm transition-all"
+                            />
+                            <p className="text-xs text-gray-400 mt-1">Generate from Business Manager → System Users → Generate Token</p>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-1.5">API Version</label>
+                            <select
+                                value={apiCfg.apiVersion}
+                                onChange={e => setApiCfg(p => ({ ...p, apiVersion: e.target.value }))}
+                                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-all"
+                            >
+                                <option value="v20.0">v20.0 (Recommended)</option>
+                                <option value="v19.0">v19.0</option>
+                                <option value="v18.0">v18.0</option>
+                                <option value="v17.0">v17.0</option>
+                            </select>
+                        </div>
+
+                        <div className="flex gap-3 pt-2">
+                            <button
+                                onClick={handleTestConnection}
+                                disabled={testStatus === 'testing'}
+                                className="flex-1 py-2.5 bg-[#25D366] hover:bg-[#128C7E] disabled:bg-gray-300 text-white rounded-lg font-bold transition-colors shadow-sm text-sm"
+                            >
+                                {testStatus === 'testing' ? '⏳ Testing...' : '🔌 Test & Save Connection'}
+                            </button>
+                            <button
+                                onClick={handleSaveApiConfig}
+                                className="px-6 py-2.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg font-bold transition-colors shadow-sm text-sm"
+                            >
+                                {savedOk ? '✅ Saved!' : '💾 Save'}
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Info */}
+                    <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-amber-800 text-xs space-y-1.5">
+                        <p className="font-bold">⚠️ Important Notes</p>
+                        <ul className="list-disc pl-4 space-y-1">
+                            <li>Credentials are saved locally in your browser only</li>
+                            <li>You can only send to numbers that have opted-in (WhatsApp policy)</li>
+                            <li>The platform sends <strong>plain text messages</strong> — to use official templates they must be pre-approved by Meta (24–48 hrs)</li>
+                            <li>Free conversations: first 1,000 user-initiated / month are free</li>
+                        </ul>
+                    </div>
+                </div>
+            )}
+
+            {/* ─── ACCOUNT WIZARD TAB ─── */}
+            {activeTab === 'account' && connectionState === 'not_connected' && renderNotConnected()}
+            {activeTab === 'account' && connectionState === 'connecting' && renderConnecting()}
+            {activeTab === 'account' && connectionState === 'connected' && renderConnected()}
+
+            {/* ─── OTHER TABS ─── */}
+            {(activeTab === 'conversations' || activeTab === 'templates') && (
+                <div className="px-6 py-12 text-center bg-white m-8 border border-gray-200 rounded-xl">
+                    <p className="text-gray-500">No {activeTab} data yet.</p>
                 </div>
             )}
         </SettingsSectionLayout>
     );
 };
+
 
 // Reputation Management
 export const ReputationSettings = () => {
