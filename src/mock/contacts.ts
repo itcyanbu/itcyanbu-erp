@@ -40,7 +40,10 @@ export const generateMockContacts = (): Contact[] => {
             last_activity: new Date(Date.now() - Math.floor(Math.random() * 100000000)).toISOString(),
             tags,
             initials,
-            avatarColor: COLORS[index % COLORS.length]
+            avatarColor: COLORS[index % COLORS.length],
+            status: (['Active', 'Active', 'Leads', 'Active', 'Inactive'][index % 5]) as Contact['status'],
+            company: ['Tech Solutions', 'Global Marketing', 'Apex Logistics', 'Yanbu IT Services'][index % 4],
+            assignee: 'Esam Mousa'
         };
     });
 };

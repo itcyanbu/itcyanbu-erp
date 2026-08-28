@@ -8,7 +8,7 @@ import type { ColumnDef } from './ColumnManager';
 interface ContactTableProps {
     data: Contact[];
     columns: ColumnDef[];
-    onEdit: (contact: Contact) => void;
+    onEdit: (contact: any) => void;
     onRowClick: (contact: Contact) => void;
     selectedIds?: Set<string>;
     onSelectionChange?: (id: string) => void;
@@ -194,12 +194,37 @@ const ContactTable: React.FC<ContactTableProps> = ({
                         {data.length === 0 && (
                             <tr>
                                 <td colSpan={visibleColumns.length + 2} className="px-6 py-16 text-center">
-                                    <div className="flex flex-col items-center gap-2">
-                                        <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
-                                            <Mail size={20} className="text-gray-400" />
+                                    <div className="flex flex-col items-center gap-3">
+                                        <div className="w-14 h-14 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center">
+                                            <Mail size={24} />
                                         </div>
-                                        <p className="text-sm font-medium text-gray-900">No contacts found</p>
-                                        <p className="text-xs text-gray-500">Try adjusting your filters or add a new contact.</p>
+                                        <div>
+                                            <h3 className="text-base font-bold text-gray-900 mb-1">No contacts found</h3>
+                                            <p className="text-xs text-gray-500 max-w-sm mb-4">You can add your first contact or load standard sample contacts.</p>
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                            <button
+                                                onClick={() => onEdit(null)}
+                                                className="px-4 py-2 bg-[#0052cc] hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1.5"
+                                            >
+                                                + Add New Contact
+                                            </button>
+                                            <button
+                                                onClick={() => {
+                                                    import('../mock/contacts').then(({ generateMockContacts }) => {
+                                                        const fresh = generateMockContacts();
+                                                        fresh[0].name = 'Esam Mousa';
+                                                        fresh[0].phone = '+966545450613';
+                                                        fresh[0].status = 'Active';
+                                                        localStorage.setItem('ghl_contacts', JSON.stringify(fresh));
+                                                        window.location.reload();
+                                                    });
+                                                }}
+                                                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs font-bold transition-all"
+                                            >
+                                                ↻ Reload Sample Contacts
+                                            </button>
+                                        </div>
                                     </div>
                                 </td>
                             </tr>
