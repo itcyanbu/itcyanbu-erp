@@ -186,19 +186,23 @@ export const WhatsAppBulkModal: React.FC<WhatsAppBulkModalProps> = ({ isOpen, on
                         <div className="space-y-6">
                             {/* Mode Toggle Header */}
                             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-4">
-                                <div className="flex gap-2 bg-gray-100 p-1 rounded-xl">
+                                <div className="flex gap-2 bg-gray-100 p-1.5 rounded-xl border border-gray-200">
                                     <button
+                                        type="button"
+                                        key="btn-templates"
                                         onClick={() => setIsCustomMode(false)}
-                                        className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+                                        className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer select-none ${
                                             !isCustomMode ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'
                                         }`}
                                     >
                                         📑 Pre-made Templates
                                     </button>
                                     <button
+                                        type="button"
+                                        key="btn-custom"
                                         onClick={() => setIsCustomMode(true)}
-                                        className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
-                                            isCustomMode ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-900'
+                                        className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer select-none ${
+                                            isCustomMode ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-500 hover:text-gray-900'
                                         }`}
                                     >
                                         ✏️ Write Custom Message & Attachments
