@@ -70,8 +70,32 @@ const mapAppContactToDbContact = (appContact: any): any => {
     };
 };
 
+import { generateMockContacts } from '../mock/contacts';
+
+const getInitialContacts = (): Contact[] => {
+    try {
+        const saved = localStorage.getItem('ghl_contacts');
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+    } catch {
+        // ignore
+    }
+    const mocks = generateMockContacts();
+    if (mocks.length > 0) {
+        mocks[0].name = 'Esam Mousa';
+        mocks[0].phone = '+966545450613';
+        mocks[0].status = 'Active';
+    }
+    try {
+        localStorage.setItem('ghl_contacts', JSON.stringify(mocks));
+    } catch {}
+    return mocks;
+};
+
 export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const [contacts, setContacts] = useState<Contact[]>([]);
+    const [contacts, setContacts] = useState<Contact[]>(getInitialContacts);
     const [searchQuery, setSearchQuery] = useState('');
     const [fieldConfig, setFieldConfig] = useState<FieldConfig[]>(() => {
         // Load from localStorage on initial render
@@ -85,16 +109,12 @@ export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children })
     });
     const { user, isSupabaseEnabled } = useAuth();
 
-    const DATA_VERSION = '4'; // Increment to force data refresh
+    const DATA_VERSION = '5'; // Increment to force data refresh
 
     // Load contacts on mount
     useEffect(() => {
         loadContacts();
     }, [user]);
-
-    // Data migration: sync localStorage to Supabase on first authentication
-    // NOTE: Removed - was causing duplicate contacts on every login
-
 
     // Persist field config whenever it changes
     useEffect(() => {
@@ -106,63 +126,22 @@ export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children })
     }, [fieldConfig]);
 
     const loadContacts = async () => {
-        console.log('[CONTACTS v2] loadContacts called. user:', !!user, 'isSupabaseEnabled:', isSupabaseEnabled);
         if (user && isSupabaseEnabled) {
-            // Load from Supabase
             const { data, error } = await contactsService.getAll();
-            console.log('[CONTACTS v2] Supabase returned:', data?.length, 'contacts. Error:', error);
-
-            if (error) {
-                console.error('Failed to load contacts from Supabase:', error);
-                // Fallback to localStorage
-                loadFromLocalStorage();
-            } else if (data && data.length > 0) {
+            if (!error && data && data.length > 0) {
                 const appContacts = data.map(mapDbContactToAppContact);
                 setContacts(appContacts);
-                // Also save to localStorage as cache
                 saveToStorage(appContacts);
-            } else {
-                // Supabase returned empty.
-                // We should check if we have any fallback contacts in localStorage.
-                const storageKey = user ? `ghl_contacts_${user.id}` : 'ghl_contacts';
-                const versionKey = user ? `ghl_contacts_version_${user.id}` : 'ghl_contacts_version';
-                const savedContacts = localStorage.getItem(storageKey);
-                const savedVersion = localStorage.getItem(versionKey);
-
-                if (savedContacts && savedVersion === DATA_VERSION) {
-                    try {
-                        const parsed = JSON.parse(savedContacts);
-                        if (parsed && parsed.length > 0) {
-                            console.log('[CONTACTS v2] Supabase empty, loading fallback from localStorage');
-                            setContacts(parsed);
-                            return;
-                        }
-                    } catch (e) {
-                        // ignore parse errors
-                    }
-                }
-                
-                // No fallback, set to empty but respect race conditions
-                setContacts(prev => {
-                    if (prev.length > 0) return prev;
-                    return [];
-                });
+                return;
             }
-        } else {
-            console.log('[CONTACTS v2] No user or Supabase disabled, loading from localStorage');
-            // Load from localStorage
-            loadFromLocalStorage();
         }
+        loadFromLocalStorage();
     };
 
     const loadFromLocalStorage = () => {
         const storageKey = user ? `ghl_contacts_${user.id}` : 'ghl_contacts';
-        const versionKey = user ? `ghl_contacts_version_${user.id}` : 'ghl_contacts_version';
-
         const savedContacts = localStorage.getItem(storageKey);
-        const savedVersion = localStorage.getItem(versionKey);
-
-        if (savedContacts && savedVersion === DATA_VERSION) {
+        if (savedContacts) {
             try {
                 const parsed = JSON.parse(savedContacts);
                 if (Array.isArray(parsed) && parsed.length > 0) {
@@ -170,22 +149,19 @@ export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children })
                     return;
                 }
             } catch (error) {
-                console.error('Failed to parse contacts from local storage:', error);
+                console.error('Failed to parse contacts:', error);
             }
         }
-        // Initialize with default demo contacts including real phone numbers for WhatsApp testing
-        import('../mock/contacts').then(({ generateMockContacts }) => {
-            const initialContacts = generateMockContacts();
-            // Ensure first contact has a phone number ready for testing
-            if (initialContacts.length > 0) {
-                initialContacts[0].name = 'Esam Mousa';
-                initialContacts[0].phone = '+966545450613';
-                initialContacts[0].status = 'Active';
-            }
-            setContacts(initialContacts);
-            localStorage.setItem(storageKey, JSON.stringify(initialContacts));
-            localStorage.setItem(versionKey, DATA_VERSION);
-        });
+        const fresh = generateMockContacts();
+        if (fresh.length > 0) {
+            fresh[0].name = 'Esam Mousa';
+            fresh[0].phone = '+966545450613';
+            fresh[0].status = 'Active';
+        }
+        setContacts(fresh);
+        try {
+            localStorage.setItem(storageKey, JSON.stringify(fresh));
+        } catch {}
     };
 
 
