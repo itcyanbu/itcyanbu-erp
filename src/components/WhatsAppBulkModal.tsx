@@ -98,12 +98,13 @@ export const WhatsAppBulkModal: React.FC<WhatsAppBulkModalProps> = ({ isOpen, on
 
             if (messages.length === 0) { setProgress(100); setSent(true); }
         } else {
-            // ── WhatsApp Web fallback ──
+            // ── Direct WhatsApp Web send ──
             contactsWithPhone.forEach((contact, index) => {
                 const phone = (contact.phone || '').replace(/[^0-9]/g, '');
                 const msg = buildMessage(contact);
-                const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
-                setTimeout(() => { window.open(url, '_blank'); }, index * 600);
+                // Direct WhatsApp Web URL opens the chat directly without the intermediate landing page
+                const url = `https://web.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(msg)}`;
+                setTimeout(() => { window.open(url, '_blank'); }, index * 800);
             });
 
             // Animate progress
