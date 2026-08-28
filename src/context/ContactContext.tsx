@@ -164,19 +164,28 @@ export const ContactProvider: React.FC<{ children: ReactNode }> = ({ children })
 
         if (savedContacts && savedVersion === DATA_VERSION) {
             try {
-                setContacts(JSON.parse(savedContacts));
+                const parsed = JSON.parse(savedContacts);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    setContacts(parsed);
+                    return;
+                }
             } catch (error) {
                 console.error('Failed to parse contacts from local storage:', error);
-                // Start fresh on parse error
-                setContacts([]);
-                localStorage.removeItem(storageKey);
-                localStorage.removeItem(versionKey);
             }
-        } else {
-            // No saved data — start with empty list
-            setContacts([]);
-            localStorage.setItem(versionKey, DATA_VERSION);
         }
+        // Initialize with default demo contacts including real phone numbers for WhatsApp testing
+        import('../mock/contacts').then(({ generateMockContacts }) => {
+            const initialContacts = generateMockContacts();
+            // Ensure first contact has a phone number ready for testing
+            if (initialContacts.length > 0) {
+                initialContacts[0].name = 'Esam Mousa';
+                initialContacts[0].phone = '+966545450613';
+                initialContacts[0].status = 'Active';
+            }
+            setContacts(initialContacts);
+            localStorage.setItem(storageKey, JSON.stringify(initialContacts));
+            localStorage.setItem(versionKey, DATA_VERSION);
+        });
     };
 
 
